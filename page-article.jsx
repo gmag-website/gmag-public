@@ -1,0 +1,670 @@
+/* Gosan Weblog — article reading view: two-column feature + listen bar + footnotes */
+
+/* article category → home section key (matches NcCatSection ids on the home page) */
+const TAG_TO_SECTION = {
+  'جستار': 'essay',
+  'دیدگاه': 'viewpoint',
+  'یادمان': 'memoriam',
+  'گفتگو': 'interview',
+  'نقد و بررسی': 'review',
+  'پیشنهاد': 'proposal',
+  'پروندهٔ سیاست‌گذاری فرهنگی': 'dossier-policy',
+  'پروندهٔ اقتصاد خلاق': 'dossier-economy',
+  'پروندهٔ آموزش': 'dossier-education',
+};
+function goToHomeSection(tag) {
+  const key = TAG_TO_SECTION[tag];
+  if (key) {
+    try { sessionStorage.setItem('gosan-scroll', 'cat-' + key); } catch (e) {}
+    window.location.hash = '#/';
+  } else {
+    window.location.hash = '#/archive/' + encodeURIComponent(tag);
+  }
+}
+
+/* Author avatars: the five board members use the SAME photo file as the About
+   page board (assets/board-*.png), so replacing one file updates both the byline
+   circle and the About page. Contributing writers use assets/author-*.png, which
+   the About page never reads. Writers with no file here show no circle at all. */
+const AUTHOR_PHOTOS = {
+  "حافظ باباشاهی": "assets/board-hafez.png",
+  "یلدا زمانی": "assets/board-yalda.png",
+  "مصطفی بوشهری": "assets/author-mostafa-bushehri.png",
+  "مهرداد غلامی": "assets/author-mehrdad-gholami.png",
+  "حامد امان‌پور قرایی": "assets/author-hamed-amanpour-gharaei.png",
+  "احمدرضا قائم‌مقامی": "assets/author-ahmadreza-ghaemmaghami.png?v=2"
+};
+
+/* interview guests — the bio block shows the interviewee, not the interviewer */
+const GUEST_BY_SLUG = {
+  "interview-farnaz-modarresifar": "فرناز مدرسی‌فر"
+};
+
+const AUTHOR_BIOS = {
+  "مصطفی بوشهری": "پژوهشگر حوزهٔ اقتصاد، مالی و انرژی است. او پیش‌تر به‌عنوان پژوهشگر انرژی جهانی در مرکز سیاست‌گذاری انرژی جهانی دانشگاه کلمبیا فعالیت داشته و دارای مدرک کارشناسی ارشد مدیریت و امور مالی از دانشگاه کلمبیا است.",
+  "یلدا زمانی": "رهبر ارکستر ایرانی–آلمانی مقیم برلین و متخصص موسیقی معاصر؛ دستیار رهبر ارکستر آنسامبل اینترکنتمپورن در فیلارمونی پاریس و بنیان‌گذار ارکستر مجلسی اِلبه در هامبورگ. مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان.",
+  "حافظ باباشاهی": "موسیقیدان و دانش‌آموختهٔ دانشگاه موسیقی وین، بنیان‌گذار جشنوارهٔ آواز کلاسیک «وینر لیدر هربست»، مدیر هنری مسابقهٔ پیانوی ماکان، مدرس پیانو در کنسرواتوار ریشارد واگنر وین و از بنیان‌گذاران گاهنامهٔ «گوسان» است.",
+  "مهرداد غلامی": "فلوتیست و استاد دانشگاه Western Washington University در ایالت واشنگتن است.",
+  "سام گیوراد": "نویسندهٔ حوزهٔ تاریخ و فرهنگ ایران است.",
+  "فرناز مدرسی‌فر": "آهنگساز، نوازندهٔ سنتور و شاعر ایرانی-فرانسوی، متولد ۱۳۶۸ (۱۹۸۹) در تهران است. او پس از تحصیل در هنرستان موسیقی دختران و دانشکدهٔ هنرهای زیبای دانشگاه تهران، در رشتهٔ نوازندگی سنتور و کارشناسی موسیقی فارغ‌التحصیل شد و رتبهٔ نخست نوازندگی را کسب کرد.\nاو پس از اقامت در پاریس، تحصیلات خود را ادامه داد و موفق به دریافت چندین دیپلم و مدرک کارشناسی ارشد در رشته‌های آهنگسازی، بداهه‌نوازی و موسیقی‌شناسی شد.\nمدرسی‌فر به‌عنوان آهنگساز، پژوهشگر و هنرمند مقیم (پانسیونر) آکادمی فرانسه در رم (ویلا مدیچی)، برای سال‌های ۲۰۲۵ و ۲۰۲۶ برگزیده شده است. او همچنین از برگزیدگان کارگاه آهنگسازی ژرژ آپرگیس و برندهٔ چندین جایزهٔ ملی و بین‌المللی از جمله جایزهٔ آهنگسازی آلان لوویه، بیست‌وچهارمین جایزهٔ سوپرفونیک (۲۰۲۳)، جایزهٔ آهنگسازی کلود آریو از ساسم (SACEM) (۲۰۲۴) و جایزهٔ بنیاد سینیاتور (Fondation Signature) و انجمن آهنگسازان و نویسندگان هنرهای دراماتیک فرانسه (SACD) در سال ۲۰۲۶ است.\nاو به‌عنوان آهنگساز، نوازنده و هنرمند مدعو با آنسامبل‌ها، مجموعه‌ها و جشنواره‌های معتبر متعددی همکاری داشته است؛ از جمله آنسامبل اینترکنتمپورن، کور-سیرکویی، آرس نوا، رشرش، سیاژ و خانهٔ موسیقی معاصر پاریس.\nاو همچنین به‌عنوان مدرس آهنگسازی، مدعو بنیاد روایومون در آکادمی «صداهای نو» (۲۰۲۶) است و به‌عنوان آهنگساز و نوازنده با هنرمندان برجسته‌ای چون بارتاباس، لارس وگت، ونسان اووگِه و همایون شجریان همکاری کرده است. آثار و اجراهای او از رادیو France Musique پخش شده و در تئاتر شهر پاریس و بسیاری از جشنواره‌های معتبر اروپایی به روی صحنه رفته‌اند.\nفرناز مدرسی‌فر همچنین از برگزیدگان آکادمی آهنگسازان جوان ارکستر مجلسی پاریس است. آثار او در مراکز و سالن‌های مهمی همچون فیلارمونی پاریس، تئاتر شاتله، اپرای رنس، بوزار بروکسل، اپرای نانت و آنژه، اودیتوریوم پواتیه و بنیاد گولبنکیان لیسبون به اجرا درآمده‌اند."
+};
+
+/* render a bio string: newlines become paragraph breaks, bare URLs become links */
+function bioWithLinks(text) {
+  const paras = String(text || '').split('\n').filter(function (p) { return p.trim(); });
+  return paras.map(function (para, pi) {
+    const inner = para.split(/(https?:\/\/[^\s—]+)/g).map(function (p, i) {
+      return /^https?:\/\//.test(p)
+        ? <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{p.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>
+        : <React.Fragment key={i}>{p}</React.Fragment>;
+    });
+    return <React.Fragment key={pi}>{pi > 0 ? <React.Fragment><br /><br /></React.Fragment> : null}{inner}</React.Fragment>;
+  });
+}
+
+function toFa(n) {
+  return String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+/* two-part titles: the part after «:» or «؛» drops to the next line */
+const ART_TITLE_BREAKS = {
+  "تأویلی آذرکیوانی از اسطورۀ آفرینش زردشتی در کتاب دبستان مذاهب": [
+    "تأویلی آذرکیوانی",
+    "از اسطورۀ آفرینش زردشتی",
+    "در کتاب دبستان مذاهب"
+  ]
+};
+function splitTitle(t) {
+  const s = String(t == null ? '' : t);
+  const m = s.match(/^(.+?)\s*[:؛—–]\s*(.+)$/);
+  return m ? [m[1].trim(), m[2].trim()] : [s, null];
+}
+
+/* Persian title line-breaking: a wrapped line must START with a connector
+   (از، در، و، به…). All other spaces become no-break spaces; segments that
+   grow too long fall back to normal wrapping so nothing ever overflows. */
+function smartTitleBreaks(t) {
+  const CONN = new Set(['از', 'در', 'و', 'به', 'با', 'برای', 'میان', 'بر', 'تا', 'نزد', 'چون', 'همچون', 'دربارهٔ', 'دربارۀ']);
+  const words = String(t == null ? '' : t).split(' ').filter(Boolean);
+  if (words.length < 2) return String(t == null ? '' : t);
+  const segs = [[words[0]]];
+  for (let i = 1; i < words.length; i++) {
+    if (CONN.has(words[i])) segs.push([words[i]]);
+    else segs[segs.length - 1].push(words[i]);
+  }
+  return segs.map((seg) => {
+    const joined = seg.join(' ');
+    return joined.length > 30 ? joined : seg.join('\u00A0');
+  }).join(' ');
+}
+
+function TitleLines({ text }) {
+  /* long one-part titles wrap at a fixed point — same size, same colour.
+     A trailing «(بخش …)» label loses its parentheses and drops to its own,
+     smaller line. */
+  const raw = String(text == null ? '' : text);
+  const pm = raw.match(/^(.*?)\s*(?:\((بخش\s[^)]+)\)|[—–-]\s*(بخش\s.+?))\s*$/);
+  const base = pm ? pm[1] : raw;
+  const partEl = pm ? <span className="title-part">{pm[2] || pm[3]}</span> : null;
+  const br = ART_TITLE_BREAKS[base];
+  if (br) return <React.Fragment>{br.map((l, i) => <React.Fragment key={i}>{i > 0 ? <br /> : null}{l}</React.Fragment>)}{partEl}</React.Fragment>;
+  const [main, sub] = splitTitle(base);
+  return sub ? <React.Fragment>{smartTitleBreaks(main)}<span className="title-sub">{smartTitleBreaks(sub)}</span>{partEl}</React.Fragment> : <React.Fragment>{smartTitleBreaks(base)}{partEl}</React.Fragment>;
+}
+
+/* footnote contents for the featured essay (referenced by Footnote n=…) */
+const ESSAY_FOOTNOTES = [
+  'واژهٔ «گوسان» ریشه در زبان پارتی دارد. مری بویس در مقالهٔ کلاسیک خود، «گوسان پارتی و سنت رامشگری ایرانی» (۱۹۵۷)، این واژه را با نقش خنیاگرانِ راوی پیوند داده است.',
+  'خداینامه، متن گمشدهٔ تاریخ‌نگاری دورهٔ ساسانی، یکی از سرچشمه‌های اصلی روایت‌های ملی ایران و از منابع دور شاهنامهٔ فردوسی به شمار می‌رود.',
+  'ابونصر فارابی در «کتاب موسیقی کبیر» به پیوند ژرف شعر و نغمه در فرهنگ ایرانی و یونانی پرداخته و جای‌گاه موسیقی را در تربیت جان آدمی برجسته کرده است.',
+  'اشاره به بیت فردوسی در شرح روزگار چیرگی ضحاک: «هنر خوار شد جادویی ارجمند / نهان راستی، آشکارا گزند».',
+];
+
+function AuthorAvatar({ name, bioHtml }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  const src = AUTHOR_PHOTOS[name];
+  /* only board members (those with a photo) get an avatar circle; others none */
+  if (!src) return null;
+  /* bioHtml = the essay-end biography (content-override); the popover always
+     mirrors it when present, AUTHOR_BIOS is only the fallback */
+  const bio = AUTHOR_BIOS[name] || 'از نویسندگان و پژوهشگران همکار گاهنامهٔ گوسان.';
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+  return (
+    <span className="author-avatar-wrap" ref={ref}>
+      <button
+        type="button"
+        className="author-avatar-btn"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label={`دربارهٔ ${name}`}
+        title={`دربارهٔ ${name}`}
+      >
+        {src
+          ? <img className="author-avatar" src={src} alt={name} />
+          : <span className="author-avatar author-avatar--mono">{(name || '؟').trim().charAt(0)}</span>}
+      </button>
+      {open ? (
+        <div className="author-bio-card" role="dialog">
+          <span className="author-bio-name">{name}</span>
+          {bioHtml
+            ? <p className="author-bio-text" dangerouslySetInnerHTML={{ __html: bioHtml }} />
+            : <p className="author-bio-text">{bio}</p>}
+        </div>
+      ) : null}
+    </span>
+  );
+}
+
+/* compact writer / interviewee biography, shown at the end of the article */
+const AUTHOR_SITES = {
+  "فرناز مدرسی‌فر": "https://www.farnazmodarresifar.com",
+  "مهرداد غلامی": "https://www.mehrdadgholami.com"
+};
+
+function AuthorBioBlock({ post, ov }) {
+  const isInterview = !!GUEST_BY_SLUG[post.slug];
+  const person = isInterview ? GUEST_BY_SLUG[post.slug] : post.author;
+  const bio = AUTHOR_BIOS[person];
+  const photo = AUTHOR_PHOTOS[person];
+  const kind = isInterview ? 'مهمان' : 'نویسنده';
+  const site = AUTHOR_SITES[person];
+  const nameStyle = { color: 'var(--accent)', fontWeight: 700 };
+  const nameEl = site
+    ? <a href={site} target="_blank" rel="noopener noreferrer" style={{ ...nameStyle, textDecoration: 'underline', textUnderlineOffset: '3px' }}>{person}</a>
+    : <span style={nameStyle}>{person}</span>;
+  const bioEl = ov && ov.bio
+    ? <span className="article-bio-editable" dangerouslySetInnerHTML={{ __html: ov.bio }} />
+    : <span className="article-bio-editable">{bio ? bioWithLinks(bio) : ('معرفی کوتاه ' + kind + ' در دست تکمیل است.')}</span>;
+  return (
+    <div className="article-bio">
+      {photo ? <span className="article-bio-avatar"><img src={photo} alt={person} /></span> : null}
+      <div className="article-bio-body">
+        <p className="article-bio-text">{nameEl} {bioEl}</p>
+      </div>
+    </div>
+  );
+}
+
+function ReadingIndicator() {
+  const [progress, setProgress] = React.useState(0);
+  React.useEffect(() => {
+    const onScroll = () => {
+      const el = document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      setProgress(max > 0 ? Math.min(1, el.scrollTop / max) : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <div style={{ position: 'fixed', top: '90px', left: '2.2rem', bottom: '2.2rem', width: '3px', zIndex: 40 }}>
+      <div style={{ position: 'absolute', inset: 0, width: '1px', right: 'auto', background: 'var(--line-draft)' }}></div>
+      <div style={{ position: 'absolute', top: 0, width: '3px', height: `${progress * 100}%`, background: 'var(--ink)', transition: 'height 0.1s linear' }}></div>
+      <span className="gsn-technical" style={{ position: 'absolute', bottom: '-1.4rem', left: '-0.4rem', fontSize: '0.6rem' }}>
+        {Math.round(progress * 100)}%
+      </span>
+    </div>
+  );
+}
+
+/* ---------- footnotes ---------- */
+function Footnote({ n }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  const content = ESSAY_FOOTNOTES[n - 1];
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+  return (
+    <span className="fn" ref={ref}>
+      <button
+        type="button"
+        className={`fn-ref${open ? ' is-open' : ''}`}
+        onClick={() => setOpen((v) => !v)}
+        onMouseEnter={() => setOpen(true)}
+        aria-label={`پی‌نوشت ${toFa(n)}`}
+      >{toFa(n)}</button>
+      <span className={`fn-card${open ? ' is-open' : ''}`} dir={acNoteIsLatin(content) ? 'ltr' : undefined} role="note" onMouseLeave={() => setOpen(false)}>
+        <span className="fn-card-num">{acNoteIsLatin(content) ? n : toFa(n)}</span>
+        <span className="fn-card-text">{content}</span>
+      </span>
+    </span>
+  );
+}
+
+function FootnotesList() {
+  return (
+    <section className="fn-list-sec">
+      <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', marginBottom: '0.5rem', textAlign: 'right' }}>NOTES // پی‌نوشت</span>
+      <ol className="fn-list">
+        {ESSAY_FOOTNOTES.map((t, i) => (
+          <li key={i} id={`fn-${i + 1}`} dir={acNoteIsLatin(t) ? 'ltr' : undefined}><span className="fn-list-num">{acNoteIsLatin(t) ? i + 1 : toFa(i + 1)}</span>{t}</li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/* ---------- listen bar — placeholder only for now (editor-in-chief, 2 Aug 2026):
+   browser TTS reads Persian as gibberish, so playback is disabled until real
+   narration files are ready. The bar stays as a visual placeholder. ---------- */
+function ListenBar({ getText }) {
+  return (
+    <div className="listen-bar is-disabled">
+      <button type="button" className="listen-play" disabled aria-label="پخش (به‌زودی)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z" /></svg>
+      </button>
+      <div className="listen-body">
+        <div className="listen-top">
+          <span className="listen-label">نسخهٔ صوتی</span>
+        </div>
+        <div className="listen-track">
+          <span className="listen-fill" style={{ width: '0%' }}></span>
+        </div>
+      </div>
+      <span className="listen-tag">AUDIO</span>
+    </div>
+  );
+}
+
+/* ---------- article meta chips (reading time + word count) ---------- */
+function ArticleMeta({ articleRef }) {
+  const [stats, setStats] = React.useState(null);
+  React.useEffect(() => {
+    if (!articleRef.current) return;
+    const text = (articleRef.current.textContent || '').trim();
+    const words = (text.match(/[^\s]+/g) || []).length;
+    const minutes = Math.max(1, Math.round(words / 200));
+    setStats({ words, minutes });
+  }, [articleRef]);
+  if (!stats) return null;
+  return (
+    <div className="article-chips">
+      <span className="article-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        {toFa(stats.minutes)} دقیقه مطالعه
+      </span>
+      <span className="article-chip-sep"></span>
+      <span className="article-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V5h16v2" /><path d="M9 19h6" /><path d="M12 5v14" /></svg>
+        {stats.words.toLocaleString('fa-IR')} واژه
+      </span>
+    </div>
+  );
+}
+
+/* ---------- article table of contents (only when > 3 headings) ---------- */
+function TableOfContents({ articleRef, slug }) {
+  const [items, setItems] = React.useState([]);
+  React.useEffect(() => {
+    if (!articleRef.current) return;
+    const hs = Array.prototype.slice.call(articleRef.current.querySelectorAll('h2.gsn-display'));
+    if (hs.length <= 3) { setItems([]); return; }
+    const list = hs.map((h, i) => {
+      if (!h.id) h.id = 'sec-' + slug + '-' + i;
+      return { id: h.id, text: (h.textContent || '').trim() };
+    });
+    setItems(list);
+  }, [articleRef, slug]);
+  if (items.length <= 3) return null;
+  const jump = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  return (
+    <nav className="article-toc" aria-label="فهرست مطالب">
+      <span className="article-toc-head">فهرست</span>
+      <ol>
+        {items.map((it) => (
+          <li key={it.id}><a href={'#' + it.id} onClick={(e) => jump(e, it.id)}>{it.text}</a></li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
+/* ---------- social / share icons ---------- */
+const GOSAN_SITE_BASE = 'https://gmag-website.github.io/gmag-public/';
+
+function ShareIcon({ kind }) {
+  if (kind === 'x') {
+    /* official X (formerly Twitter) logo — solid glyph */
+    return (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    );
+  }
+  const common = { width: 17, height: 17, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const paths = {
+    link: <React.Fragment><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></React.Fragment>,
+    facebook: <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />,
+    telegram: <polygon points="22 2 15 22 11 13 2 9 22 2" />,
+    whatsapp: <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
+    print: <React.Fragment><path d="M6 9V3h12v6" /><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="7" /></React.Fragment>,
+  };
+  return <svg {...common}>{paths[kind]}</svg>;
+}
+
+function ShareRow({ post }) {
+  const [copied, setCopied] = React.useState(false);
+  const slug = post ? post.slug : '';
+  /* social buttons point at a lightweight per-article share page that carries the
+     Open Graph cover image, then redirects real visitors to the article. */
+  const shareUrl = GOSAN_SITE_BASE + 'share/' + slug + '.html';
+  const articleUrl = GOSAN_SITE_BASE + '#/article/' + slug;
+  const text = (post ? post.title : 'گوسان') + ' — گوسان';
+  const enc = encodeURIComponent;
+  const pop = (url) => (e) => { e.preventDefault(); window.open(url, '_blank', 'noopener,noreferrer,width=620,height=560'); };
+  const copy = (e) => {
+    e.preventDefault();
+    try { navigator.clipboard.writeText(articleUrl); } catch (err) {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
+  const xUrl = 'https://twitter.com/intent/tweet?text=' + enc(text) + '&url=' + enc(shareUrl);
+  const fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + enc(shareUrl);
+  const tgUrl = 'https://t.me/share/url?url=' + enc(shareUrl) + '&text=' + enc(text);
+  const waUrl = 'https://wa.me/?text=' + enc(text + ' ' + shareUrl);
+  return (
+    <div className="share-row">
+      <span className="share-label">{copied ? 'نشانی رونوشت شد ✓' : 'این متن را به اشتراک بگذارید'}</span>
+      <div className="share-icons">
+        <a href="#" onClick={copy} aria-label="رونوشت پیوند" title="رونوشت پیوند"><ShareIcon kind="link" /></a>
+        <a href={xUrl} onClick={pop(xUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در ایکس" title="ایکس (X)"><ShareIcon kind="x" /></a>
+        <a href={fbUrl} onClick={pop(fbUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در فیسبوک" title="فیسبوک"><ShareIcon kind="facebook" /></a>
+        <a href={tgUrl} onClick={pop(tgUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در تلگرام" title="تلگرام"><ShareIcon kind="telegram" /></a>
+        <a href={waUrl} onClick={pop(waUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در واتساپ" title="واتساپ"><ShareIcon kind="whatsapp" /></a>
+        <a href="#" onClick={(e) => { e.preventDefault(); window.print(); }} aria-label="چاپ یا ذخیره به PDF" title="چاپ / ذخیره به PDF"><ShareIcon kind="print" /></a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- summary aside (چکیده) — always visible ---------- */
+/* ---------- desk injection ----------
+   The edit desk stages a payload in sessionStorage before loading this page in
+   its iframe, so an essay that is NOT on the public site can still be rendered
+   for editing from private data. Completely inert when no payload is staged. */
+function deskPayload(slug) {
+  try {
+    const raw = window.sessionStorage.getItem('gosan-desk-payload');
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    return p && p.slug === slug ? p : null;
+  } catch (e) { return null; }
+}
+
+/* ---------- approved web-edits override the JSX content (content-overrides/<slug>.json) ---------- */
+function useContentOverride(slug) {
+  const [ov, setOv] = React.useState(null);
+  React.useEffect(() => {
+    let on = true;
+    const staged = deskPayload(slug);
+    if (staged && staged.override) { setOv(staged.override); return () => { on = false; }; }
+    setOv(null);
+    fetch('content-overrides/' + slug + '.json', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (on && j && (j.body || j.summary || j.date || j.bio)) setOv(j); })
+      .catch(() => {});
+    return () => { on = false; };
+  }, [slug]);
+  return ov;
+}
+
+function SummaryAside({ post, getText, ov }) {
+  return (
+    <aside className="article-aside">
+      <ListenBar getText={getText} />
+      <div className="summary-card">
+        <span className="summary-head">چکیده</span>
+        <hr className="summary-rule" />
+        {ov && ov.summary
+          ? <p className="summary-text" dangerouslySetInnerHTML={{ __html: ov.summary }} />
+          : <p className="summary-text">{(window.GOSAN_SUMMARIES && window.GOSAN_SUMMARIES[post.slug]) || post.summary || post.excerpt}</p>}
+      </div>
+      <div className="share-card">
+        <ShareRow post={post} />
+      </div>
+    </aside>
+  );
+}
+
+/* ---------- reader comments ---------- */
+function CommentsSection() {
+  const [sent, setSent] = React.useState(false);
+  return (
+    <section className="comments-section">
+      <hr className="gsn-rule-gold" style={{ margin: '0 0 2.4rem' }} />
+      <h2 className="gsn-display" style={{ fontSize: '1.7rem', color: 'var(--gold-deep)', margin: '0 0 1.8rem' }}>
+        دیدگاه خود را با ما به اشتراک بگذارید
+      </h2>
+      {sent ? (
+        <p style={{ color: 'var(--accent-strong)', fontWeight: 500, margin: 0 }}>
+          سپاس؛ دیدگاه شما ثبت شد و پس از بازبینی منتشر می‌شود.
+        </p>
+      ) : (
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const v = (id) => (document.getElementById(id) || {}).value || '';
+          const fields = {
+            name: v('cm-name'), email: v('cm-mail'), message: v('cm-msg'),
+            subject: 'دیدگاه تازه — گوسان' + (typeof document !== 'undefined' && document.title ? ' (' + document.title + ')' : ''),
+            page: (typeof location !== 'undefined' ? location.href : ''),
+          };
+          gosanFormSubmit(fields).then(() => setSent(true)).catch(() => { gosanMailtoFallback(fields); setSent(true); });
+        }}>
+          <div className="comments-row">
+            <FormField id="cm-name" placeholder="نام شما" />
+            <FormField id="cm-mail" type="email" placeholder="ایمیل شما" />
+          </div>
+          <FormField id="cm-msg" multiline placeholder="پیام خود را بنویسید…" />
+          <Button variant="gold">ارسال پیام</Button>
+        </form>
+      )}
+    </section>
+  );
+}
+
+function FullEssayBody() {
+  return (
+    <React.Fragment>
+      <p className="essay-lede">
+        از روزگاران کهن در ایران باستان، رامشگران و نغمه‌خوانانی در کار پاسداری از تاریخ و افسانه‌های این سرزمین بودند.
+        «گوسان»ها، آن‌طور که در زبان پهلوی خوانده می‌شدند<Footnote n={1} />، روایتگر بودند؛ روایتگر شادی و اندوه مردمان،
+        روایتگر رزم و بزم شاهان، روایتگر پیروزی و شکست قهرمانان.
+      </p>
+
+      <div className="essay-cols">
+        <p>
+          آنها این همه را به دیبای وزن و قافیه می‌آراستند و به نوای سازهای خوش‌آهنگ خویش می‌آمیختند تا به دل‌ها بنشیند
+          و در یادها بماند، تا سینه به سینه باز گفته و باز خوانده شود. گوسان‌ها می‌سرودند و می‌نواختند تا تاریخ و افسانه
+          را در جامهٔ زربفت چامه و موسیقی از گزند فراموشی در امان بدارند. از پس آنان خداینامه‌نویسان ساسانی آمدند<Footnote n={2} />
+          و پسان‌تر سرایندگان پارسی‌گوی از توس و بخارا تا تبریز و گنجه.
+        </p>
+        <p>
+          امروز که غبار «وحشتی بزرگ» بر شئون زندگانی ایرانیان سایه افکنده، و نشانه‌های بحران از فرهنگ و هنر تا اقتصاد
+          و اقلیم این کهن‌دیار را فرا گرفته‌اند، ما فرزندان این بوم و بر بیش از هر زمان دیگری از خود می‌پرسیم
+          در کجای این شب تاریک ایستاده‌ایم. بیش از هر زمان دیگری نشان فرهنگ و تاریخ خویش را می‌جوییم تا در ریسمان‌های آن چنگ زنیم.
+        </p>
+      </div>
+
+      <PullQuote cite="از همین جستار" style={{ margin: '2.8rem 0' }}>
+        فرهنگ و هنر، نه کالاهای تفننی، که ستون‌های تاب‌آوری، بازسازی و بازشناسی هویت یک ملت‌اند
+      </PullQuote>
+
+      <figure className="essay-figure">
+        <DraftFrame label="FIG. 03 — CYPRESS LANDSCAPE">
+          <img src="assets/cypress-landscape.png" alt="" style={{ display: 'block', width: '100%' }} />
+        </DraftFrame>
+        <figcaption>سروهای کهن در نگاره‌های ایرانی؛ نشانی از ایستادگی و پایداری در برابر تندباد روزگار.</figcaption>
+      </figure>
+
+      <div className="essay-cols">
+        <p>
+          میراث نیاکان، نه یادگاری‌های خاموش، که ریسمان‌هایی در هم پیوسته‌اند برای ایستادگی در تندبادهای فراموشی و سرگردانی؛
+          ریسمان‌های ایران. ما بر این باوریم که گذار از بحران عمیق کنونی، نه با قرار دادن خود در جایگاه قربانی،
+          که تنها با بازشناسی نقش خویش ممکن است.
+        </p>
+        <p>
+          در سرزمینی غارت‌شده و جامعه‌ای بحران‌زده که نهادهای آن رو به فرسایش‌اند، آیا نمی‌توان فرهنگ و هنر را
+          به نیرویی برای بازسازی بدل کرد؟<Footnote n={3} /> آیا نمی‌توان و نباید هنر و فرهنگ را از حاشیهٔ فراموشی به متن احیاء
+          یک ملت آورد و با آن پلی به سوی فردایی روشن‌تر ساخت؟
+        </p>
+      </div>
+
+      <div className="essay-verse">
+        <Verse hemistichs={['هنر خوار شد جادویی ارجمند', 'نهان راستی، آشکارا گزند']} poet="حکیم ابوالقاسم فردوسی" />
+        <Footnote n={4} />
+      </div>
+
+      <p className="essay-close">
+        ما فرزندان ایران در گاهنامهٔ «گوسان» می‌کوشیم در مسیر این هدف گام برداشته، پلی باشیم میان میراث کهن پدران
+        و چشم‌انداز فردا، و نیز همراهی برای همهٔ آنان که در گرگ و میش شب، نور مهر ایران را در دل دارند.
+      </p>
+
+      <FootnotesList />
+    </React.Fragment>
+  );
+}
+
+/* default template for every article that doesn't yet have hand-set full content.
+   Same format as the lead essay — lede + two-column body + pull quote + a fillable
+   image figure + closing — using the article's own data and editable placeholders. */
+function TemplateEssayBody({ post }) {
+  const ph = 'متنِ کاملِ این نوشتار در این بخش جای می‌گیرد. این قالب آمادهٔ ویرایش است؛ پاراگراف‌های اصلی مقاله را اینجا بگذارید تا در همین نظم و آرایش، یک‌دست با دیگر نوشتارهای گوسان، منتشر شوند.';
+  return (
+    <React.Fragment>
+      <div className="essay-cols">
+        <p>{ph}</p>
+        <p>{ph}</p>
+      </div>
+
+      <PullQuote cite={post.author} style={{ margin: '2.8rem 0' }}>
+        جملهٔ شاخصِ این نوشتار را در اینجا برجسته کنید.
+      </PullQuote>
+
+      <figure className="essay-figure">
+        <DraftFrame label="FIG. 01">
+          <div className="nc-img-wrap" style={{ aspectRatio: '16 / 9' }}>
+            {React.createElement('image-slot', { id: `slot-article-${post.slug}`, placeholder: 'تصویر مقاله را اینجا رها کنید', shape: 'rect' })}
+          </div>
+        </DraftFrame>
+        <figcaption>توضیح تصویر مقاله در این بخش قرار می‌گیرد.</figcaption>
+      </figure>
+
+      <div className="essay-cols">
+        <p>{ph}</p>
+        <p>{ph}</p>
+      </div>
+
+      <p className="essay-close">{ph}</p>
+    </React.Fragment>
+  );
+}
+
+function ArticleView({ slug }) {
+  const post = (deskPayload(slug) || {}).post || GOSAN_POSTS.find((p) => p.slug === slug) || GOSAN_POSTS[0];
+  const articleRef = React.useRef(null);
+  const ov = useContentOverride(post.slug);
+  /* override HTML has no React handlers — delegate the footnote-card behaviour */
+  React.useEffect(() => {
+    if (!(ov && ov.body) || !articleRef.current) return;
+    const root = articleRef.current;
+    const closeAll = () => root.querySelectorAll('.fn-card.is-open, .fn-ref.is-open')
+      .forEach((n) => n.classList.remove('is-open'));
+    const openFor = (btn) => {
+      closeAll();
+      btn.classList.add('is-open');
+      const card = btn.parentElement && btn.parentElement.querySelector('.fn-card');
+      if (card) card.classList.add('is-open');
+    };
+    const onOver = (e) => {
+      const btn = e.target.closest && e.target.closest('.fn-ref');
+      if (btn && root.contains(btn) && !btn.classList.contains('is-open')) openFor(btn);
+    };
+    const onOut = (e) => {
+      const card = e.target.closest && e.target.closest('.fn-card');
+      if (card && !(e.relatedTarget && card.contains(e.relatedTarget))) closeAll();
+    };
+    const onClick = (e) => {
+      const btn = e.target.closest && e.target.closest('.fn-ref');
+      if (btn && root.contains(btn)) { openFor(btn); return; }
+      if (!(e.target.closest && e.target.closest('.fn'))) closeAll();
+    };
+    root.addEventListener('mouseover', onOver);
+    root.addEventListener('mouseout', onOut);
+    document.addEventListener('click', onClick);
+    return () => {
+      root.removeEventListener('mouseover', onOver);
+      root.removeEventListener('mouseout', onOut);
+      document.removeEventListener('click', onClick);
+    };
+  }, [ov]);
+  const getText = React.useCallback(() => {
+    const el = articleRef.current;
+    if (!el) return '';
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('.fn-card, .fn-list-sec, .gsn-technical').forEach((n) => n.remove());
+    return clone.textContent || '';
+  }, []);
+  return (
+    <main data-screen-label={`نوشتار — ${post.title}`}>
+      <ReadingIndicator />
+
+      <div className="article-head">
+        <DraftLineH top="2.4rem" right="-6rem" left="-6rem" />
+        <h1 className="gsn-display" style={{ fontSize: '2.4rem', margin: '0.6rem 0 1rem' }}><TitleLines text={post.title} /></h1>
+        <div className="article-byline">
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+            <AuthorAvatar name={post.author} bioHtml={GUEST_BY_SLUG[post.slug] ? null : ((ov && ov.bio) || null)} />
+            <span style={{ color: 'var(--text-body)', fontWeight: 500 }}>{post.author}</span>
+          </span>
+          <span className="byline-date" style={{ color: 'var(--accent)' }}>{(ov && ov.date) || post.date}</span>
+        </div>
+        <ArticleMeta articleRef={articleRef} />
+      </div>
+
+      <div className="article-layout">
+        <article ref={articleRef}>
+          <TableOfContents articleRef={articleRef} slug={post.slug + (ov && ov.body ? '-ov' : '')} />
+          {ov && ov.body ? (
+            <div dangerouslySetInnerHTML={{ __html: ov.body }} />
+          ) : post.full ? (
+            <FullEssayBody />
+          ) : (window.GOSAN_ARTICLE_BODIES && window.GOSAN_ARTICLE_BODIES[post.slug]) ? (
+            React.createElement(window.GOSAN_ARTICLE_BODIES[post.slug])
+          ) : (
+            <TemplateEssayBody post={post} />
+          )}
+        </article>
+        <SummaryAside post={post} getText={getText} ov={ov} />
+      </div>
+
+      <AuthorBioBlock post={post} ov={ov} />
+
+      <CommentsSection />
+
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 2rem 3rem', display: 'flex', justifyContent: 'center', borderTop: '1px solid var(--line)', paddingTop: '2rem' }}>
+        <Button variant="ghost" href="#/">← بازگشت به خانه</Button>
+      </div>
+    </main>
+  );
+}
+
+Object.assign(window, { ArticleView });
