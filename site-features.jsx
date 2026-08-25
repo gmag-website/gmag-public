@@ -106,7 +106,7 @@ function BackToTop() {
 /* The subscription endpoint — a Cloudflare Worker holding the Brevo key.
    Set this to the Worker's URL once deployed (tools/subscribe-worker/README.md).
    While it is empty nothing is sent, and the forms say so rather than pretending. */
-const GOSAN_SUBSCRIBE_ENDPOINT = '';
+const GOSAN_SUBSCRIBE_ENDPOINT = 'https://gosan-subscribe.gosan.workers.dev';
 
 const SUB_MSG = {
   pending: 'در حال فرستادن…',
@@ -131,14 +131,14 @@ async function gosanSubscribe(email, kind) {
 }
 
 const SUBSCRIBE_COPY = {
-  /* the masthead's «دریافت اشتراک» — the standing subscription, every issue to come */
+  /* the issue card's button — the standing subscription, every issue to come */
   issues: {
-    title: 'دریافت اشتراک',
+    title: 'دریافت اشتراک گاهنامهٔ گوسان',
     lede: 'نشانی ایمیل خود را بنویسید تا با اشتراک گوسان، همهٔ شماره‌های آینده به‌محض انتشار دیجیتال به دست شما برسد.',
   },
-  /* the issue card's button — this first printed issue */
+  /* the masthead, beside the cover of issue one — that issue itself */
   print: {
-    title: 'دریافت اشتراک گاهنامهٔ گوسان',
+    title: 'دریافت شمارهٔ یکم',
     lede: 'نشانی ایمیل خود را بنویسید تا نخستین شماره به‌محض انتشار دیجیتال در مهرگان ۲۵۸۵ (۱۴۰۵) برای شما فرستاده شود و از چگونگی دریافت نسخهٔ چاپی آگاه شوید.',
   },
 };

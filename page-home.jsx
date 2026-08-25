@@ -10,7 +10,7 @@ const HOME_T = {
     mastName: 'گاهنامهٔ فرهنگی و هنری گوسان',
     issueR: 'سال یکم · شمارهٔ یکم', season: 'پاییز ۲۵۸۵ (۱۴۰۵)',
     tagline: 'گاهنامه‌ای در فرهنگ، هنر و میراث کهن ایران',
-    subSmall: 'ده شماره در سال · دسترسی به بایگانی', sub: 'دریافت اشتراک',
+    subSmall: 'ده شماره در سال · دسترسی به بایگانی', sub: 'دریافت شمارهٔ یکم',
     issueLine: 'شمارهٔ یکم — پاییز ۲۵۸۵',
     notes: 'یادداشت‌ها و درنگ‌ها', features: 'جستارهای این شماره', featuresMore: 'همهٔ جستارها ←',
     interviews: 'گفتگو', interviewsMore: 'همهٔ گفتگوها ←', poetry: 'شعر',
@@ -38,7 +38,7 @@ const HOME_T = {
     mastName: 'Gōsān — a magazine of culture and art',
     issueR: 'Vol. I · No. 1', season: 'Summer 2585',
     tagline: 'A review of the arts, culture & heritage of Iran',
-    subSmall: 'Ten issues a year · archive access', sub: 'Subscribe',
+    subSmall: 'Ten issues a year · archive access', sub: 'Get issue one',
     issueLine: 'No. 1 — Summer 2585',
     notes: 'Notes & Comments', features: 'Features', featuresMore: 'All essays →',
     interviews: 'Interviews', interviewsMore: 'All interviews →', poetry: 'Poetry',
@@ -272,7 +272,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
               <button
                 type="button"
                 className="nc-mast-sub"
-                onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'issues' }))}
+                onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'print' }))}
               >{T.sub}</button>
             </div>
           </div>
@@ -338,7 +338,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
           <div className="nc-aside-block nc-cover-card">
             <img src="assets/issue-cover.jpg" alt={en ? 'Gōsān, Issue No. 1' : 'جلد شمارهٔ یکم گوسان'} />
             <h4>{T.coverH}</h4>
-            <Button onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'print' }))}>{T.coverBtn}</Button>
+            <Button onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'issues' }))}>{T.coverBtn}</Button>
           </div>
 
           <NcNewsletter T={T} />

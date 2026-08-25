@@ -446,7 +446,9 @@ function SummaryAside({ post, getText, ov }) {
 }
 
 /* ---------- reader comments ---------- */
-function CommentsSection() {
+/* `post` only titles the mail — the desk should see which essay a note is about
+   without opening it */
+function CommentsSection({ post }) {
   const [sent, setSent] = React.useState(false);
   return (
     <section className="comments-section">
@@ -467,7 +469,7 @@ function CommentsSection() {
             const fields = {
               name: v('cm-name'), email: v('cm-mail'), message: v('cm-msg'),
               website: v('cm-hp'),   /* honeypot */
-              subject: 'دیدگاه تازه — گوسان' + (typeof document !== 'undefined' && document.title ? ' (' + document.title + ')' : ''),
+              subject: 'دیدگاه تازه — ' + ((post && post.title) || 'گوسان'),
               page: (typeof location !== 'undefined' ? location.href : ''),
             };
             gosanFormSubmit(fields).then(() => setSent(true)).catch(() => { gosanMailtoFallback(fields); setSent(true); });
@@ -665,7 +667,7 @@ function ArticleView({ slug }) {
 
       <AuthorBioBlock post={post} ov={ov} />
 
-      <CommentsSection />
+      <CommentsSection post={post} />
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 2rem 3rem', display: 'flex', justifyContent: 'center', borderTop: '1px solid var(--line)', paddingTop: '2rem' }}>
         <Button variant="ghost" href="#/">← بازگشت به خانه</Button>
