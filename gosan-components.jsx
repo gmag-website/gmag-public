@@ -102,30 +102,31 @@ const GOSAN_POSTS = [
   { slug: 'azarkeyvani-creation-myth', tag: 'جستار', title: 'تأویلی آذرکیوانی از اسطورۀ آفرینش زردشتی در کتاب دبستان مذاهب', excerpt: 'بررسی روایت دبستان مذاهب از اسطورۀ آفرینش زردشتی و تأویل منسوب به جاماسب حکیم؛ روایتی که سرچشمهٔ آن نه متون زردشتی، که نوشته‌های ملل‌ونحل‌نویسان اسلامی است و تأویلش از اندیشه‌های آذرکیوانی برمی‌خیزد.', date: 'تابستان ۲۵۸۵', author: 'فرزانه گشتاسب' },
 ];
 
-/* ---------- serverless form delivery ----------
-   Static site (GitHub Pages) has no backend, so form submissions are POSTed to
-   FormSubmit (a free relay) which forwards them to info@gosan.org. The very first
-   submission triggers a one-time activation email to that inbox; once confirmed,
-   every later submission is delivered. If the request fails (offline / blocked),
-   callers fall back to a mailto: compose. */
+/* ---------- form delivery ---------- */
 const GOSAN_FORM_INBOX = 'info@gosan.org';
+/* Reader notes go the same way as subscriptions: to the Worker, which mails them
+   on through Brevo (tools/subscribe-worker). One processor for both, one AVV, and
+   nothing published — the note reaches the desk and stops there. If the endpoint
+   is not set yet, or the request fails, callers fall back to a mailto: compose. */
 async function gosanFormSubmit(fields) {
-  const payload = {
-    _subject: fields.subject || 'پیام از وب‌سایت گوسان',
-    _template: 'table',
-    _captcha: 'false',
-    نام: fields.name || '',
-    رایانامه: fields.email || '',
-    صفحه: fields.page || '',
-    پیام: fields.message || '',
-  };
-  const res = await fetch('https://formsubmit.co/ajax/' + GOSAN_FORM_INBOX, {
+  const endpoint = (typeof window !== 'undefined' && window.GOSAN_SUBSCRIBE_ENDPOINT) || '';
+  if (!endpoint) throw new Error('subscribe endpoint not configured');
+  const res = await fetch(endpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      kind: 'comment',
+      name: fields.name || '',
+      email: fields.email || '',
+      message: fields.message || '',
+      page: fields.page || '',
+      subject: fields.subject || '',
+      website: fields.website || '',   /* honeypot — a person leaves this empty */
+    }),
   });
-  if (!res.ok) throw new Error('form relay status ' + res.status);
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) throw new Error('relay status ' + res.status);
+  return data;
 }
 function gosanMailtoFallback(fields) {
   const subject = encodeURIComponent(fields.subject || 'پیام از وب‌سایت گوسان');

@@ -19,6 +19,7 @@ function parseHash() {
   if (parts[0] === 'archive') return { page: 'archive', param: parts[1] || '' };
   if (parts[0] === 'about') return { page: 'about', param: '' };
   if (parts[0] === 'contact') return { page: 'contact', param: '' };
+  if (parts[0] === 'blog') return { page: 'blog', param: parts[1] || '' };
   if (parts[0] === 'shivenameh') return { page: 'shivenameh', param: '' };
   if (parts[0] === 'thinktank') return { page: 'thinktank', param: '' };
   if (parts[0] === 'impressum') return { page: 'impressum', param: '' };
@@ -44,8 +45,9 @@ const PAGE_TITLES = {
   home: 'گوسان — گاهنامهٔ فرهنگی و هنری',
   article: 'گوسان — نوشتار',
   archive: 'گوسان — بایگانی',
-  about: 'گوسان — دربارهٔ ما',
-  contact: 'گوسان — تماس با ما',
+  about: 'دربارهٔ گوسان',
+  contact: 'گوسان — تماس',
+  blog: 'گوسان — گاه‌نوشت',
   shivenameh: 'گوسان — شیوه‌نامه',
   thinktank: 'گوسان — اندیشکدهٔ فرهنگ و هنر',
   impressum: 'گوسان — اطلاعات ناشر (Impressum)',
@@ -78,7 +80,7 @@ function ThinktankRedirect({ lang }) {
   );
 }
 
-const NAV_ACTIVE = { home: 'خانه', archive: 'بایگانی', about: 'دربارهٔ ما', contact: 'تماس با ما', shivenameh: 'شیوه‌نامه', thinktank: 'اندیشکده' };
+const NAV_ACTIVE = { home: 'خانه', archive: 'بایگانی', about: 'دربارهٔ گوسان · تماس', contact: 'دربارهٔ گوسان · تماس', shivenameh: 'شیوه‌نامه', blog: 'گاه‌نوشت', thinktank: 'اندیشکده' };
 
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
@@ -134,6 +136,7 @@ function App() {
          route.page === 'archive' ? <ArchivePage tag={route.param} key={route.param} /> :
          route.page === 'about' ? <AboutPage /> :
          route.page === 'contact' ? <ContactPage /> :
+         route.page === 'blog' ? (route.param ? <BlogPostView slug={route.param} /> : <BlogPage />) :
          route.page === 'shivenameh' ? <ShivenamehPage /> :
          route.page === 'impressum' ? <ImpressumPage /> :
          route.page === 'datenschutz' ? <DatenschutzPage /> :
@@ -143,6 +146,7 @@ function App() {
       </div>
       <SiteFooter route={route.page} />
       <SearchOverlay />
+      <SubscribeOverlay />
       <BackToTop />
 
       <TweaksPanel>

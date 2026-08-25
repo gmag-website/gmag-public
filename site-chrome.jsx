@@ -2,11 +2,93 @@
 
 const NAV_ITEMS = [
   { fa: 'خانه', en: 'Home', href: '#/' },
-  { fa: 'دربارهٔ ما', en: 'About', href: '#/about' },
+  { fa: 'گاه‌نوشت', en: 'Journal', href: '#/blog' },
   { fa: 'بایگانی', en: 'Archive', href: '#/archive' },
-  { fa: 'شیوه‌نامه', en: 'Style', href: '#/shivenameh' },
-  { fa: 'تماس با ما', en: 'Contact', href: '#/contact' },
+  { fa: 'دربارهٔ گوسان · تماس', en: 'About · Contact', href: '#/about' },
+  /* شیوه‌نامه is hidden from the nav for now (editor-in-chief, 24 Aug 2026).
+     The page, its route and its title are all still in place — uncomment this
+     single line to bring it back. Direct link: #/shivenameh */
+  // { fa: 'شیوه‌نامه', en: 'Style', href: '#/shivenameh' },
 ];
+
+/* «شمارهٔ یکم» — the issue's sections, opened on hover (and on click for touch).
+   پرونده‌ها carries a nested list that opens beside it. */
+const ISSUE_MENU = {
+  fa: 'شمارهٔ یکم', en: 'Issue No. 1', href: '#/archive',
+  items: [
+    { fa: 'جستار', en: 'Essays', href: '#/archive/جستار' },
+    { fa: 'پرونده‌ها', en: 'Dossiers', children: [
+      { fa: 'پروندهٔ سیاست‌گذاری فرهنگی', en: 'Cultural policy', href: '#/archive/پروندهٔ سیاست‌گذاری فرهنگی' },
+      { fa: 'پروندهٔ اقتصاد خلاق', en: 'Creative economy', href: '#/archive/پروندهٔ اقتصاد خلاق' },
+      { fa: 'پروندهٔ آموزش', en: 'Education', href: '#/archive/پروندهٔ آموزش' },
+    ] },
+    { fa: 'دیدگاه', en: 'Viewpoint', href: '#/archive/دیدگاه' },
+    { fa: 'یادمان', en: 'Memoriam', href: '#/archive/یادمان' },
+    { fa: 'گفتگو', en: 'Interviews', href: '#/archive/گفتگو' },
+  ],
+};
+
+function NavIssueMenu({ en, isActive, as: Tag = 'li' }) {
+  const [open, setOpen] = React.useState(false);
+  const [subOpen, setSubOpen] = React.useState(false);
+  const close = () => { setOpen(false); setSubOpen(false); };
+  const anyActive = ISSUE_MENU.items.some(
+    (it) => (it.href && isActive(it.href)) || (it.children || []).some((c) => isActive(c.href))
+  );
+  return (
+    <Tag
+      className={`nav-issue-li${open ? ' is-open' : ''}`}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={close}
+    >
+      <a
+        href={ISSUE_MENU.href}
+        className={`nav-issue${anyActive ? ' is-active' : ''}`}
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={(e) => { if (!open) { e.preventDefault(); setOpen(true); } }}
+        style={{ fontWeight: anyActive ? 700 : 400, opacity: anyActive ? 1 : 0.92 }}
+      >{en ? ISSUE_MENU.en : ISSUE_MENU.fa}</a>
+      <ul className="nav-menu">
+        {ISSUE_MENU.items.map((it) => (
+          it.children ? (
+            <li
+              key={it.fa}
+              className={`nav-has-sub${subOpen ? ' is-open' : ''}`}
+              onMouseEnter={() => setSubOpen(true)}
+              onMouseLeave={() => setSubOpen(false)}
+            >
+              <span
+                className="nav-menu-link nav-sub-toggle"
+                role="button"
+                tabIndex={0}
+                aria-haspopup="true"
+                aria-expanded={subOpen}
+                onClick={() => setSubOpen((v) => !v)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSubOpen((v) => !v); } }}
+              >{en ? it.en : it.fa}</span>
+              <ul className="nav-submenu">
+                {it.children.map((c) => (
+                  <li key={c.href}>
+                    <a className={`nav-menu-link${isActive(c.href) ? ' is-active' : ''}`} href={c.href} onClick={close}>
+                      {en ? c.en : c.fa}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li key={it.href}>
+              <a className={`nav-menu-link${isActive(it.href) ? ' is-active' : ''}`} href={it.href} onClick={close}>
+                {en ? it.en : it.fa}
+              </a>
+            </li>
+          )
+        ))}
+      </ul>
+    </Tag>
+  );
+}
 
 function SiteHeader({ active, lang = 'fa', onToggleLang }) {
   const [scrolled, setScrolled] = React.useState(false);
@@ -33,13 +115,16 @@ function SiteHeader({ active, lang = 'fa', onToggleLang }) {
           ><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.05" y2="16.05"></line></svg></button>
           <ul>
             {NAV_ITEMS.map((it) => (
-              <li key={it.href}>
-                <a
-                  href={it.href}
-                  className={isActive(it.href) ? 'is-active' : ''}
-                  style={{ fontWeight: isActive(it.href) ? 700 : 400, opacity: isActive(it.href) ? 1 : 0.92 }}
-                >{en ? it.en : it.fa}</a>
-              </li>
+              <React.Fragment key={it.href}>
+                <li>
+                  <a
+                    href={it.href}
+                    className={isActive(it.href) ? 'is-active' : ''}
+                    style={{ fontWeight: isActive(it.href) ? 700 : 400, opacity: isActive(it.href) ? 1 : 0.92 }}
+                  >{en ? it.en : it.fa}</a>
+                </li>
+                {it.href === '#/' ? <NavIssueMenu en={en} isActive={isActive} /> : null}
+              </React.Fragment>
             ))}
             <li className="nav-think-li">
               <a
@@ -81,9 +166,9 @@ function SiteFooter({ route }) {
         <div>
           <h5 style={{ color: 'var(--white)', fontSize: '1rem', margin: '0 0 1rem', fontWeight: 700 }}>پیوندها</h5>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.55rem', fontSize: '0.88rem' }}>
-            <li><a href="#/about">دربارهٔ ما</a></li>
+            <li><a href="#/about">دربارهٔ گوسان</a></li>
             <li><a href="#/thinktank">اندیشکدهٔ فرهنگ و هنر</a></li>
-            <li><a href="#/contact">تماس با ما</a></li>
+            <li><a href="#/contact">تماس</a></li>
             <li><a href="#/support">حمایت از گوسان</a></li>
             <li><a href="#/impressum">اطلاعات ناشر · Impressum</a></li>
             <li><a href="#/datenschutz">حفاظت از داده‌ها · Datenschutz</a></li>
@@ -117,13 +202,13 @@ function NewsletterBand() {
     <section style={{ borderTop: '1px solid var(--line)', textAlign: 'center' }}>
       <div className="wrap" style={{ paddingTop: '4rem', paddingBottom: '4.5rem', maxWidth: '720px' }}>
         <Reveal>
-          <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>NEWSLETTER // SEASONAL</span>
-          <h2 className="gsn-display" style={{ fontSize: '1.9rem', margin: '0.8rem 0 0.5rem' }}>نامهٔ گوسان</h2>
+          <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>NEWSLETTER</span>
+          <h2 className="gsn-display" style={{ fontSize: '1.9rem', margin: '0.8rem 0 0.5rem' }}>خبرنامهٔ گوسان</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '0 0 2rem' }}>
             هر فصل یک نامه؛ گزیدهٔ جستارها و گفتگوهای شمارهٔ تازه، یک‌راست به صندوق شما.
           </p>
           {sent ? (
-            <p style={{ color: 'var(--accent-strong)', fontWeight: 500, margin: 0 }}>سپاس؛ نشانی شما ثبت شد. نامهٔ بعدی، آغاز تابستان.</p>
+            <p style={{ color: 'var(--accent-strong)', fontWeight: 500, margin: 0 }}>سپاس؛ نشانی شما ثبت شد.</p>
           ) : (
             <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
               <input type="email" required placeholder="you@example.com" aria-label="نشانی رایانامه" />

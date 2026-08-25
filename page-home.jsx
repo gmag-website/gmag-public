@@ -7,15 +7,16 @@ const GOSAN_POSTS_EN = {};
 
 const HOME_T = {
   fa: {
+    mastName: 'گاهنامهٔ فرهنگی و هنری گوسان',
     issueR: 'سال یکم · شمارهٔ یکم', season: 'پاییز ۲۵۸۵ (۱۴۰۵)',
     tagline: 'گاهنامه‌ای در فرهنگ، هنر و میراث کهن ایران',
-    subSmall: 'ده شماره در سال · دسترسی به بایگانی', sub: 'دریافت اشتراک ←',
-    issueLine: 'شمارهٔ یکم — پاییز ۲۵۸۵', by: 'به‌قلمِ',
+    subSmall: 'ده شماره در سال · دسترسی به بایگانی', sub: 'دریافت اشتراک',
+    issueLine: 'شمارهٔ یکم — پاییز ۲۵۸۵',
     notes: 'یادداشت‌ها و درنگ‌ها', features: 'جستارهای این شماره', featuresMore: 'همهٔ جستارها ←',
     interviews: 'گفتگو', interviewsMore: 'همهٔ گفتگوها ←', poetry: 'شعر',
     memoriam: 'یادمان', memoriamMore: 'همهٔ یادمان‌ها ←', popular: 'پرخواننده‌ترین‌ها',
-    coverH: 'شمارهٔ یکم در دست است', coverP: 'جستارها، گفتگوها و یادمان‌هایی در فرهنگ، هنر و میراث ایران.', coverBtn: 'دریافت نسخهٔ چاپی',
-    newsK: 'نامهٔ فصلی', newsH: 'نامهٔ فصلیِ گوسان', newsP: 'گزیدهٔ جستارها و گفتگوهای هر شماره، یک‌راست به صندوق شما.', newsBtn: 'پیوستن', newsOk: 'سپاس؛ نشانی شما ثبت شد.',
+    coverH: 'انتشار نخستین شمارهٔ گوسان در مهرگان ۲۵۸۵ (۱۴۰۵)', coverBtn: 'دریافت اشتراک گاهنامهٔ گوسان',
+    newsK: 'خبرنامه', newsH: 'خبرنامهٔ گوسان', newsP: 'نوشتارهای تازه، خبرها و رویدادهای گوسان', newsBtn: 'پیوستن', newsOk: 'سپاس؛ نشانی شما ثبت شد.',
     edK: 'پیامی از سردبیران', edH: 'در پاسداشتِ فرهنگ و هنرِ ایران با ما همراه شوید.', edP: 'یاریِ شما، روایتگریِ گوسان را پایدار نگاه می‌دارد.', edBtn: 'حمایت می‌کنم',
     slotPh: 'تصویر را اینجا رها کنید',
     latestK: 'تازه‌ترین‌ها',
@@ -34,15 +35,16 @@ const HOME_T = {
     ],
   },
   en: {
+    mastName: 'Gōsān — a magazine of culture and art',
     issueR: 'Vol. I · No. 1', season: 'Summer 2585',
     tagline: 'A review of the arts, culture & heritage of Iran',
-    subSmall: 'Ten issues a year · archive access', sub: 'Subscribe →',
-    issueLine: 'No. 1 — Summer 2585', by: 'by',
+    subSmall: 'Ten issues a year · archive access', sub: 'Subscribe',
+    issueLine: 'No. 1 — Summer 2585',
     notes: 'Notes & Comments', features: 'Features', featuresMore: 'All essays →',
     interviews: 'Interviews', interviewsMore: 'All interviews →', poetry: 'Poetry',
     memoriam: 'Memoriam', memoriamMore: 'All memorials →', popular: 'Most Popular',
-    coverH: 'Issue No. 1 is here', coverP: 'Essays, interviews, and memorials on the culture, art, and heritage of Iran.', coverBtn: 'Get the print edition',
-    newsK: 'NEWSLETTER', newsH: 'The Gōsān Letter', newsP: 'A seasonal selection of essays and interviews, straight to your inbox.', newsBtn: 'Join', newsOk: 'Thank you — your address is registered.',
+    coverH: 'The first issue of Gōsān comes out at Mehregān 2585', coverBtn: 'Subscribe to Gōsān',
+    newsK: 'NEWSLETTER', newsH: 'The Gōsān Newsletter', newsP: 'New essays, news and what is happening at Gōsān — straight to your inbox.', newsBtn: 'Join', newsOk: 'Thank you — your address is registered.',
     edK: 'A MESSAGE FROM THE EDITORS', edH: 'Join us in preserving the culture & art of Iran.', edP: 'Your support keeps Gōsān’s storytelling alive.', edBtn: 'Support us',
     slotPh: 'Drop an image',
     latestK: 'Latest',
@@ -158,8 +160,8 @@ function Slot({ slug, lang, ph }) {
   );
 }
 
-function ByLine({ post, by }) {
-  return <p className="nc-by">{by} <span className="nc-by-name">{post.author}</span></p>;
+function ByLine({ post }) {
+  return <p className="nc-by"><span className="nc-by-name">{post.author}</span></p>;
 }
 
 function HomePage({ lang = 'fa', onToggleLang }) {
@@ -250,7 +252,6 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     { key: 'dossier-policy', label: 'پروندهٔ سیاست‌گذاری فرهنگی', posts: policyDossier, layout: 'grid' },
     { key: 'essay', label: 'جستار', posts: features, layout: 'grid' },
     { key: 'dossier-economy', label: 'پروندهٔ اقتصاد خلاق', posts: economyDossier, layout: 'grid' },
-    { key: 'dossier-education', label: 'پروندهٔ آموزش', posts: [], layout: 'grid' },
     { key: 'viewpoint', label: 'دیدگاه', posts: viewpoints, layout: 'grid' },
     { key: 'memoriam', label: 'یادمان', posts: reflections, layout: 'rows' },
     { key: 'interview', label: 'گفتگو', posts: interviews, layout: 'rows' },
@@ -264,9 +265,16 @@ function HomePage({ lang = 'fa', onToggleLang }) {
       <div className="nc-masthead">
         <div className="nc-masthead-grid">
           <div className="nc-mast-side is-start">
-            <span className="nc-issueline">{T.issueR} · {T.season}</span>
-            <a className="nc-mast-sub" href="#/archive">{T.sub}</a>
             <a href="#/archive"><img className="nc-mast-cover" src="assets/issue-cover.jpg" alt={en ? 'Issue No. 1 cover' : 'جلد شمارهٔ یکم'} /></a>
+            <div className="nc-mast-meta">
+              <span className="nc-mast-name">{T.mastName}</span>
+              <span className="nc-issueline">{T.issueR} · {T.season}</span>
+              <button
+                type="button"
+                className="nc-mast-sub"
+                onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'issues' }))}
+              >{T.sub}</button>
+            </div>
           </div>
           <div className="nc-mast-center">
             <a href="#/" className="nc-logo" role="img" aria-label="گوسان"></a>
@@ -285,6 +293,12 @@ function HomePage({ lang = 'fa', onToggleLang }) {
       <NcManifesto T={T} />
 
       {/* featured 3-up strip */}
+      <div className="nc-feat-head">
+        <div className="nc-sectionhead">
+          <span className="nc-sh-label">پیشخوان</span>
+          <span className="nc-sh-mark">◆</span>
+        </div>
+      </div>
       <section className="nc-feat">
         {featured.map((p, i) => (
           <Reveal key={p.slug} delay={i * 110}>
@@ -292,7 +306,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
               <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
               <span className="nc-kicker">{p.tag}</span>
               <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h2>
-              <ByLine post={p} by={T.by} />
+              <ByLine post={p} />
               <p className="nc-dek">{p.excerpt}</p>
             </article>
           </Reveal>
@@ -324,8 +338,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
           <div className="nc-aside-block nc-cover-card">
             <img src="assets/issue-cover.jpg" alt={en ? 'Gōsān, Issue No. 1' : 'جلد شمارهٔ یکم گوسان'} />
             <h4>{T.coverH}</h4>
-            <p>{T.coverP}</p>
-            <Button>{T.coverBtn}</Button>
+            <Button onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'print' }))}>{T.coverBtn}</Button>
           </div>
 
           <NcNewsletter T={T} />
@@ -338,6 +351,30 @@ function HomePage({ lang = 'fa', onToggleLang }) {
           </div>
         </aside>
       </div>
+
+      {/* گاه‌نوشت — website-only writing, outside the printed issue */}
+      <section className="nc-blog-band"><div className="wrap">
+        <h2 className="gsn-display nc-blog-head">گاه‌نوشت</h2>
+        <p className="nc-blog-lede">تأملات روز</p>
+        <p className="nc-blog-desc">آنچه میان دو شماره می‌گذرد.</p>
+        {GOSAN_BLOG.length === 0 ? (
+          <p className="nc-blog-empty">هنوز گاه‌نوشتی منتشر نشده است.</p>
+        ) : (
+          <div className="nc-blog-grid">
+            {GOSAN_BLOG.slice(0, 3).map((b) => (
+              <article key={b.slug} className="nc-blog-card">
+                <span className="nc-blog-date">{b.date}</span>
+                <h3><a href={`#/blog/${b.slug}`}>{b.title}</a></h3>
+                {b.excerpt ? <p>{b.excerpt}</p> : null}
+              </article>
+            ))}
+          </div>
+        )}
+        <p style={{ textAlign: 'center', marginTop: '1.6rem' }}>
+          <a className="blog-more" href="#/blog">همهٔ گاه‌نوشت‌ها</a>
+        </p>
+        </div>
+      </section>
 
     </main>
   );
@@ -361,23 +398,27 @@ function NcFloatingNav({ en }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
-    <nav ref={navRef} className={`nc-topics${navStuck ? ' is-stuck' : ''}`}>
+    <nav ref={navRef} className={`nc-topics${navStuck ? ' is-stuck' : ''}${logoDocked ? ' has-logo' : ''}`}>
       <a href="#/" className={`nc-topics-logo${logoDocked ? ' is-docked' : ''}`} aria-hidden={!logoDocked} tabIndex={logoDocked ? 0 : -1}>
         <img src="assets/logo-gosan.png" alt="گوسان" />
       </a>
       <div className="nc-topics-main">
-        <a href="#/thinktank" className="nav-think">{en ? 'The Gōsān Think Tank' : 'اندیشکدهٔ فرهنگ و هنر گوسان'}</a>
-        <span className="nc-topics-sep"></span>
         {NAV_ITEMS.map((it) => (
-          <a
-            key={it.href}
-            href={it.href}
-            className={`nc-topic-link${it.href === '#/' ? ' is-active' : ''}`}
-          >{en ? it.en : it.fa}</a>
+          <React.Fragment key={it.href}>
+            <a
+              href={it.href}
+              className={`nc-topic-link${it.href === '#/' ? ' is-active' : ''}`}
+            >{en ? it.en : it.fa}</a>
+            {it.href === '#/' ? (
+              <NavIssueMenu en={en} as="div" isActive={(href) => (window.location.hash || '#/') === href} />
+            ) : null}
+          </React.Fragment>
         ))}
+        <span className="nc-topics-sep"></span>
+        <a href="#/thinktank" className="nav-think">{en ? 'The Gōsān Think Tank' : 'اندیشکدهٔ فرهنگ و هنر گوسان'}</a>
       </div>
       <div className="nc-topics-controls">
-        <a className="nc-support-btn" href="#/support">حمایت از ما</a>
+        <a className="nc-support-btn" href="#/support">یاران گوسان</a>
         <button
           className="nav-search"
           onClick={() => window.dispatchEvent(new Event('gosan:search'))}
@@ -503,7 +544,7 @@ function NcCatSection({ cat, lang, T }) {
                 <div>
                   <span className="nc-kicker">{p.tag}</span>
                   <h3 className="nc-title" style={{ marginTop: '0.35rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h3>
-                  <ByLine post={p} by={T.by} />
+                  <ByLine post={p} />
                   <p className="nc-dek">{p.excerpt}</p>
                 </div>
               </article>
@@ -516,7 +557,7 @@ function NcCatSection({ cat, lang, T }) {
                 <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
                 <span className="nc-kicker">{p.tag}</span>
                 <h3 className="nc-title" style={{ marginTop: '0.4rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h3>
-                <ByLine post={p} by={T.by} />
+                <ByLine post={p} />
                 <p className="nc-dek">{p.excerpt}</p>
               </article>
             ))}
@@ -534,19 +575,40 @@ function NcCatSection({ cat, lang, T }) {
 }
 
 function NcNewsletter({ T }) {
-  const [sent, setSent] = React.useState(false);
+  /* same path as the two subscription controls — see tools/subscribe-worker */
+  const [email, setEmail] = React.useState('');
+  const [state, setState] = React.useState({ phase: 'idle', msg: '' });
+  const submit = async (e) => {
+    e.preventDefault();
+    if (state.phase === 'sending') return;
+    setState({ phase: 'sending', msg: SUB_MSG.pending });
+    const r = await gosanSubscribe(email.trim(), 'newsletter');
+    setState({ phase: r.ok ? 'sent' : 'failed', msg: r.msg });
+  };
   return (
     <div className="nc-aside-block nc-news-mini">
       <span className="nc-kicker">{T.newsK}</span>
       <h4>{T.newsH}</h4>
       <p>{T.newsP}</p>
-      {sent ? (
-        <p style={{ color: 'var(--accent-strong)', fontWeight: 500, fontSize: '0.85rem', margin: 0 }}>{T.newsOk}</p>
+      {state.phase === 'sent' ? (
+        <p style={{ color: 'var(--accent-strong)', fontWeight: 500, fontSize: '0.85rem', margin: 0 }}>{state.msg}</p>
       ) : (
-        <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-          <input type="email" required placeholder="you@example.com" aria-label="email" />
-          <Button variant="gold" size="sm">{T.newsBtn}</Button>
-        </form>
+        <React.Fragment>
+          <form onSubmit={submit}>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              aria-label="email"
+            />
+            <button type="submit" className="gsn-btn gsn-btn--gold gsn-btn--sm" disabled={state.phase === 'sending'}>
+              {T.newsBtn}
+            </button>
+          </form>
+          {state.msg ? <p className={`sub-note${state.phase === 'failed' ? ' is-fail' : ''}`}>{state.msg}</p> : null}
+        </React.Fragment>
       )}
     </div>
   );

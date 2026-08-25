@@ -456,26 +456,33 @@ function CommentsSection() {
       </h2>
       {sent ? (
         <p style={{ color: 'var(--accent-strong)', fontWeight: 500, margin: 0 }}>
-          سپاس؛ دیدگاه شما ثبت شد و پس از بازبینی منتشر می‌شود.
+          سپاس؛ یادداشت شما به دست تحریریهٔ گوسان رسید.
         </p>
       ) : (
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const v = (id) => (document.getElementById(id) || {}).value || '';
-          const fields = {
-            name: v('cm-name'), email: v('cm-mail'), message: v('cm-msg'),
-            subject: 'دیدگاه تازه — گوسان' + (typeof document !== 'undefined' && document.title ? ' (' + document.title + ')' : ''),
-            page: (typeof location !== 'undefined' ? location.href : ''),
-          };
-          gosanFormSubmit(fields).then(() => setSent(true)).catch(() => { gosanMailtoFallback(fields); setSent(true); });
-        }}>
-          <div className="comments-row">
-            <FormField id="cm-name" placeholder="نام شما" />
-            <FormField id="cm-mail" type="email" placeholder="ایمیل شما" />
-          </div>
-          <FormField id="cm-msg" multiline placeholder="پیام خود را بنویسید…" />
-          <Button variant="gold">ارسال پیام</Button>
-        </form>
+        <React.Fragment>
+          <p className="comments-note">یادداشت شما تنها به دست تحریریه می‌رسد و بر وب‌سایت منتشر نمی‌شود.</p>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const v = (id) => (document.getElementById(id) || {}).value || '';
+            const fields = {
+              name: v('cm-name'), email: v('cm-mail'), message: v('cm-msg'),
+              website: v('cm-hp'),   /* honeypot */
+              subject: 'دیدگاه تازه — گوسان' + (typeof document !== 'undefined' && document.title ? ' (' + document.title + ')' : ''),
+              page: (typeof location !== 'undefined' ? location.href : ''),
+            };
+            gosanFormSubmit(fields).then(() => setSent(true)).catch(() => { gosanMailtoFallback(fields); setSent(true); });
+          }}>
+            <div className="comments-row">
+              <FormField id="cm-name" placeholder="نام شما" />
+              <FormField id="cm-mail" type="email" placeholder="ایمیل شما" />
+            </div>
+            <FormField id="cm-msg" multiline placeholder="پیام خود را بنویسید…" />
+            {/* the honeypot: off-screen, skipped by tab and by screen readers —
+                only a bot fills it, and the Worker drops what it fills */}
+            <input id="cm-hp" className="hp-field" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+            <Button variant="gold">ارسال پیام</Button>
+          </form>
+        </React.Fragment>
       )}
     </section>
   );

@@ -3,7 +3,10 @@
 const ARCHIVE_TAGS = ['همه', 'جستار', 'گفتگو', 'یادمان', 'یادداشت آزاد'];
 
 function ArchivePage({ tag }) {
-  const active = ARCHIVE_TAGS.includes(tag) ? tag : 'همه';
+  /* Any tag in the URL filters. An unknown or empty section shows nothing rather
+     than silently falling back to the whole archive — پروندهٔ آموزش has no essays
+     yet, and showing all twelve there would misrepresent it. */
+  const active = tag || 'همه';
   const posts = active === 'همه' ? GOSAN_POSTS : GOSAN_POSTS.filter((p) => p.tag === active);
   return (
     <main data-screen-label="بایگانی">
@@ -18,6 +21,11 @@ function ArchivePage({ tag }) {
             >{t}</a>
           ))}
         </div>
+        {posts.length === 0 ? (
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0 4rem' }}>
+            هنوز نوشتاری در این بخش منتشر نشده است.
+          </p>
+        ) : null}
         <div className="archive-grid">
           {posts.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 3) * 110}>
@@ -112,7 +120,7 @@ function Credentials() {
 function AboutPage() {
   const editorial = GOSAN_BOARD.map((m) => m.name).join('، ');
   return (
-    <main data-screen-label="دربارهٔ ما" className="about-main">
+    <main data-screen-label="دربارهٔ گوسان" className="about-main">
       <section className="about-spread">
         {/* right column (RTL first): manifesto text */}
         <Reveal className="about-text">
@@ -159,7 +167,7 @@ function AboutPage() {
           <dl className="cred-list">
             <div className="cred-row">
               <dt>صاحب امتیاز</dt>
-              <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e.V.</span></dd>
+              <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e. V. i. Gr.</span></dd>
             </div>
             <div className="cred-row">
               <dt>مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان</dt>
@@ -198,21 +206,20 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="wrap" style={{ paddingTop: '1rem', paddingBottom: '5rem', textAlign: 'center' }}>
+      <section className="wrap" id="contact" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
         <Reveal>
+          <h2 className="gsn-display" style={{ fontSize: '1.6rem', textAlign: 'center', margin: '0 0 0.6rem' }}>تماس</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '0 0 1.6rem' }}>برای همکاری با گاهنامه، با ما در گفت‌وگو باشید.</p>
-          <Button href="#/contact">تماس با ما</Button>
         </Reveal>
       </section>
+      <ContactBody />
     </main>
   );
 }
 
-function ContactPage() {
+function ContactBody() {
   const [sent, setSent] = React.useState(false);
   return (
-    <main data-screen-label="تماس با ما">
-      <PageTitle technical="CONTACT // GŌSĀN" title="تماس با ما" lede="نامه‌ها، پیشنهادها و نوشتارهای شما" />
       <div className="wrap contact-grid" style={{ paddingBottom: '5rem', maxWidth: '1100px' }}>
         <Reveal>
           <div className="contact-card">
@@ -228,6 +235,7 @@ function ContactPage() {
                 const v = (id) => (document.getElementById(id) || {}).value || '';
                 const fields = {
                   name: v('c-name'), email: v('c-mail'), message: v('c-msg'),
+                  website: v('c-hp'),   /* honeypot */
                   subject: 'تماس از وب‌سایت گوسان — ' + (v('c-name') || 'بدون نام'),
                   page: (typeof location !== 'undefined' ? location.href : ''),
                 };
@@ -236,6 +244,7 @@ function ContactPage() {
                 <FormField id="c-name" label="نام" placeholder="نام و نام خانوادگی" />
                 <FormField id="c-mail" label="رایانامه" type="email" placeholder="you@example.com" />
                 <FormField id="c-msg" label="پیام" multiline placeholder="پیام خود را بنویسید…" />
+                <input id="c-hp" className="hp-field" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                 <Button variant="gold">ارسال پیام</Button>
               </form>
             )}
@@ -255,6 +264,14 @@ function ContactPage() {
           </div>
         </Reveal>
       </div>
+  );
+}
+
+function ContactPage() {
+  return (
+    <main data-screen-label="تماس">
+      <PageTitle technical="CONTACT // GŌSĀN" title="تماس" lede="نامه‌ها، پیشنهادها و نوشتارهای شما" />
+      <ContactBody />
     </main>
   );
 }
@@ -274,7 +291,7 @@ function ImpressumPage() {
           </p>
 
           <div style={label}>ناشر · Diensteanbieter</div>
-          <p style={line}>Gōsān Institute e.V.</p>
+          <p style={line}>Gōsān Institute e. V. i. Gr.</p>
           <p style={line}>Friedrichstr. 155</p>
           <p style={line}>10117 Berlin</p>
           <p style={line}>Germany</p>
@@ -287,8 +304,8 @@ function ImpressumPage() {
           <p style={line}>Telefon: <span style={empty}>—</span></p>
 
           <div style={label}>ثبت انجمن · Registereintrag</div>
-          <p style={line}>Registergericht: <span style={empty}>—</span></p>
-          <p style={line}>Registernummer: <span style={empty}>—</span></p>
+          <p style={line}>Eintragung beim Amtsgericht Charlottenburg beantragt.</p>
+          <p style={line}>Vereinsregister-Nummer wird nachgetragen.</p>
 
           <div style={label}>شمارهٔ مالیاتی · Umsatzsteuer-Identifikationsnummer</div>
           <p style={line}><span style={empty}>—</span></p>
@@ -313,7 +330,7 @@ function ImpressumPage() {
 
           <MotifDivider style={{ margin: '2.6rem 0 1.4rem' }} />
           <p style={{ fontSize: '0.82rem', lineHeight: 1.95, color: 'var(--text-muted)', textAlign: 'justify' }}>
-            حل اختلاف مصرف‌کننده · Verbraucherstreitbeilegung: Gōsān Institute e.V. مایل یا موظف به شرکت در روش حل اختلاف در برابر هیئت داوری مصرف‌کننده نیست.
+            حل اختلاف مصرف‌کننده · Verbraucherstreitbeilegung: Gōsān Institute e. V. i. Gr. مایل یا موظف به شرکت در روش حل اختلاف در برابر هیئت داوری مصرف‌کننده نیست.
           </p>
         </Reveal>
       </div>
@@ -340,7 +357,7 @@ function DatenschutzPage() {
           </p>
 
           <div style={label}>مسئول پردازش داده‌ها · Verantwortlicher</div>
-          <p style={line}>Gōsān Institute e.V.</p>
+          <p style={line}>Gōsān Institute e. V. i. Gr.</p>
           <p style={line}>Friedrichstr. 155</p>
           <p style={line}>10117 Berlin, Germany</p>
           <p style={line}>Vertreten durch: Yalda Zamani</p>
@@ -355,7 +372,7 @@ function DatenschutzPage() {
             <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" style={ext}>docs.github.com/…/github-general-privacy-statement</a>
           </p>
 
-          <div style={label}>تماس با ما · Kontakt per E-Mail</div>
+          <div style={label}>تماس · Kontakt per E-Mail</div>
           <p style={para}>
             فرم تماس این وب‌سایت تنها برنامهٔ ایمیل خود شما را باز می‌کند (پیوند mailto:)؛ خود وب‌سایت هیچ داده‌ای دریافت یا ذخیره نمی‌کند. آنچه با ایمیل برای ما بفرستید، تنها برای پاسخ‌گویی و پیگیری همان مکاتبه پردازش می‌شود (Art. 6 Abs. 1 lit. b und f DSGVO) و به کسی واگذار نمی‌شود. پس از پایان مکاتبه، ایمیل‌ها حذف می‌شوند، مگر آنکه نگهداری آنها تکلیف قانونی باشد.
           </p>
@@ -418,17 +435,17 @@ function SupportPage() {
 
           <div style={{ border: '1px solid var(--gold)', padding: '1rem 1.3rem', margin: '1.4rem 0' }}>
             <p style={{ ...note, margin: 0 }}>
-              انجمن گوسان (Gōsān Institute e.V.) در آستانهٔ ثبت رسمی در برلین است. دریافت کمک‌های مالی پس از ثبت انجمن و گشایش حساب بانکی آغاز می‌شود؛ این صفحه راه‌های کمک را از هم‌اکنون معرفی می‌کند.
+              انجمن گوسان (Gōsān Institute e. V. i. Gr.) در آستانهٔ ثبت رسمی در برلین است. دریافت کمک‌های مالی پس از ثبت انجمن و گشایش حساب بانکی آغاز می‌شود؛ این صفحه راه‌های کمک را از هم‌اکنون معرفی می‌کند.
             </p>
           </div>
 
 
-          <div style={label}>حلقهٔ دوستان گوسان · Freundeskreis</div>
+          <div style={label}>حلقهٔ یاران گوسان · Freundeskreis</div>
           <p style={para}>
-            نهادهای فرهنگی و پژوهشی ماندگار را همیشه حلقه‌ای از دوستان برپا نگه داشته است.
+            نهادهای فرهنگی و پژوهشی ماندگار را همیشه حلقه‌ای از یاران برپا نگه داشته است.
           </p>
           <p style={para}>
-            دوستان گوسان جایگاهی ویژه نزد ما دارند و گوسان سپاسگزاری از آنان را به شیوه‌های شایسته به جا می‌آورد. محتوای گوسان برای همه آزاد می‌ماند؛ حمایت دوستان نه خریدن امتیازی برای خود، که سهم داشتن در ماندگاری نهادی است که دوستش دارند.
+            یاران گوسان جایگاهی ویژه نزد ما دارند و گوسان سپاسگزاری از آنان را به شیوه‌های شایسته به جا می‌آورد. محتوای گوسان برای همه آزاد می‌ماند؛ حمایت یاران نه خریدن امتیازی برای خود، که سهم داشتن در ماندگاری نهادی است که دوستش دارند.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
             {[
