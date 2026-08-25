@@ -1,6 +1,19 @@
 /* Gosan Weblog — archive, about, contact pages */
 
-const ARCHIVE_TAGS = ['همه', 'جستار', 'گفتگو', 'یادمان', 'یادداشت آزاد'];
+/* The issue's sections in editorial order — the same taxonomy the home page lays
+   out and the «شمارهٔ یکم» menu links to, so every one of those links lands on a
+   filter that exists here. Sections with nothing in them yet are still listed: the
+   archive says so plainly rather than hiding a section that was announced. */
+const ARCHIVE_SECTIONS = [
+  'جستار',
+  'پروندهٔ سیاست‌گذاری فرهنگی',
+  'پروندهٔ اقتصاد خلاق',
+  'پروندهٔ آموزش',
+  'دیدگاه',
+  'یادمان',
+  'گفتگو',
+  'نقد و بررسی',
+];
 
 function ArchivePage({ tag }) {
   /* Any tag in the URL filters. An unknown or empty section shows nothing rather
@@ -8,12 +21,16 @@ function ArchivePage({ tag }) {
      yet, and showing all twelve there would misrepresent it. */
   const active = tag || 'همه';
   const posts = active === 'همه' ? GOSAN_POSTS : GOSAN_POSTS.filter((p) => p.tag === active);
+  /* a tag a post carries but the list above forgot is appended rather than lost —
+     that is how دیدگاه went missing from this page while carrying two essays */
+  const strays = [...new Set(GOSAN_POSTS.map((p) => p.tag))].filter((t) => !ARCHIVE_SECTIONS.includes(t));
+  const tags = ['همه', ...ARCHIVE_SECTIONS, ...strays];
   return (
     <main data-screen-label="بایگانی">
       <PageTitle technical="ARCHIVE // ALL ENTRIES" title="بایگانی" lede="همهٔ نوشتارهای گاهنامه، از نخستین شماره تاکنون" />
       <div className="wrap" style={{ paddingBottom: '5rem' }}>
         <div className="filter-row" style={{ justifyContent: 'center', marginBottom: '3rem' }}>
-          {ARCHIVE_TAGS.map((t) => (
+          {tags.map((t) => (
             <a
               key={t}
               className={`filter-btn${t === active ? ' is-active' : ''}`}
@@ -258,9 +275,6 @@ function ContactBody() {
               یا تنها می‌خواهید سخنی با ما بگویید — گوسان شنوندهٔ روایت شماست.
             </p>
             <a href="mailto:info@gosan.org" style={{ direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 }}>info@gosan.org</a>
-            <div style={{ marginTop: '2.2rem' }}>
-              <span className="gsn-technical">REPLY — WITHIN 7 DAYS</span>
-            </div>
           </div>
         </Reveal>
       </div>
@@ -447,40 +461,43 @@ function SupportPage() {
           <p style={para}>
             یاران گوسان جایگاهی ویژه نزد ما دارند و گوسان سپاسگزاری از آنان را به شیوه‌های شایسته به جا می‌آورد. محتوای گوسان برای همه آزاد می‌ماند؛ حمایت یاران نه خریدن امتیازی برای خود، که سهم داشتن در ماندگاری نهادی است که دوستش دارند.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(178px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
             {[
               { amt: 5, what: 'با پرداخت هزینه‌های میزبانی و ابزارها، چراغ تارنما را روشن نگه می‌دارد.' },
-              { amt: 20, what: 'هر سال قلم‌بهای یک جستار گاهنامه را می‌پردازد.' },
-              { amt: 50, what: 'هر سال هزینهٔ یک مقالهٔ پژوهشی اندیشکده و بخشی از یک جستار را می‌پردازد.' },
-              { amt: 100, what: 'هر سال هزینهٔ یک مقالهٔ کامل اندیشکده و قلم‌بهای پژوهشگران آن را می‌پردازد.' },
+              { amt: 20, what: 'یک سال حمایت، قلم‌بهای یک جستار گاهنامه را می‌پردازد.' },
+              { amt: 50, what: 'یک سال حمایت، هزینهٔ یک مقالهٔ پژوهشی اندیشکده و بخشی از یک جستار را می‌پردازد.' },
+              { amt: 100, what: 'یک سال حمایت، هزینهٔ یک مقالهٔ کامل اندیشکده و قلم‌بهای پژوهشگران آن را می‌پردازد.' },
             ].map((t) => {
               const yLink = GOSAN_DONATE.yearly[t.amt];
               const mLink = GOSAN_DONATE.monthly[t.amt];
               const optStyle = (primary, active) => ({
-                display: 'block', textAlign: 'center', padding: '0.45rem 0.4rem', fontSize: '0.78rem',
+                /* one line each: the label carries the period and the sum, and a
+                   wrapped «— €60» reads as a second, smaller offer */
+                display: 'block', textAlign: 'center', whiteSpace: 'nowrap',
+                padding: '0.45rem 0.3rem', fontSize: '0.72rem',
                 fontWeight: primary ? 700 : 400, textDecoration: 'none', cursor: active ? 'pointer' : 'default',
                 border: '1px solid ' + (primary ? 'var(--ink)' : 'var(--line, #CFCCC3)'),
                 background: primary ? 'var(--ink)' : 'transparent',
                 color: primary ? 'var(--paper, #EAEAE6)' : 'var(--ink)',
               });
               return (
-                <div key={t.amt} style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--ink)' }}>{'\u20AC'}{t.amt}<span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}> در ماه</span></span>
+                <div key={t.amt} style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1rem 0.8rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--ink)' }}>{'\u20AC'}{t.amt}<span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}> به بالا</span></span>
                   <span style={{ fontSize: '0.76rem', lineHeight: 1.8, color: 'var(--text-muted)', minHeight: '3.6em' }}>{t.what}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: 'auto', borderTop: '1px dashed var(--line, #CFCCC3)', paddingTop: '0.7rem' }}>
                     {yLink
-                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت سالانه — {'\u20AC'}{t.amt * 12}</a>
-                      : <span style={optStyle(true, false)}>حمایت سالانه — {'\u20AC'}{t.amt * 12}</span>}
+                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
+                      : <span style={optStyle(true, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
                     {mLink
-                      ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت ماهانه — {'\u20AC'}{t.amt}</a>
-                      : <span style={optStyle(false, false)}>حمایت ماهانه — {'\u20AC'}{t.amt}</span>}
+                      ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</a>
+                      : <span style={optStyle(false, false)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</span>}
                   </div>
                 </div>
               );
             })}
           </div>
           <p style={note}>
-            حمایت ماهانه یا سالانه از راه PayPal یا دستور پرداخت بانکی، از زمان راه‌اندازی رسمی فعال می‌شود. پس از تأیید عام‌المنفعگی، حق عضویت حامیان برای مالیات‌دهندگان آلمان کسرپذیر است — برخلاف باشگاه‌های ورزشی، حمایت از انجمن‌های فرهنگی مشمول کسر مالیاتی است، درست به این دلیل که حامی چیزی برای خودش نمی‌خرد.
+            پرداخت از راه PayPal یا دستور پرداخت بانکی، از زمان راه‌اندازی رسمی فعال می‌شود. هر پرداخت یک‌باره است و خودبه‌خود تکرار نمی‌شود؛ هر زمان که بخواهید می‌توانید دوباره حمایت کنید.
           </p>
 
           <div style={label}>پی‌پال · PayPal</div>
@@ -496,6 +513,9 @@ function SupportPage() {
           <div style={label}>حامیان در آلمان</div>
           <p style={note}>
             پس از تأیید عام‌المنفعگی از سوی ادارهٔ دارایی (§ 60a AO)، برای کمک‌ها گواهی مالیاتی (Zuwendungsbestätigung) صادر خواهد شد. تا آن زمان کمک پذیرفته می‌شود، اما گواهی ندارد.
+          </p>
+          <p style={note}>
+            پس از تأیید عام‌المنفعگی، حق عضویت حامیان برای مالیات‌دهندگان آلمان کسرپذیر است و حمایت از انجمن‌های فرهنگی مشمول کسر مالیاتی است.
           </p>
 
           <div style={label}>حامیان در اروپا و دیگر کشورها · European &amp; International Donors</div>
