@@ -232,10 +232,23 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     setTimeout(tryScroll, 150);
   }, []);
 
-  /* real pieces of issue no. 1 — hero switcher, featured strip and popular list
-     are curated from the eleven received essays (no demo posts left up top). */
-  const latest = ['between-two-defeats', 'azarkeyvani-creation-myth', 'music-totalitarian-regimes', 'interview-farnaz-modarresifar', 'beyzaie-myth-symbolic-action'].map(P).filter(Boolean);
-  const featured = ['manichaean-music-terms', 'note-for-gosan', 'oil-to-narrative'].map(P).filter(Boolean);
+  /* The wall carries SEVEN essays, always — the seven the editor-in-chief picks,
+     in this order. Add or drop a slug here and the wall follows; the slice is the
+     guarantee that an eighth never quietly appears. */
+  const WALL_SEVEN = [
+    'between-two-defeats', 'azarkeyvani-creation-myth', 'music-totalitarian-regimes', 'crossroads-ahead',
+    'beyzaie-myth-symbolic-action',
+  ];
+  const latest = WALL_SEVEN.map(P).filter(Boolean).slice(0, 7);
+  /* پیشخوان — every essay in the issue, so a new one needs no second decision to
+     be seen: the pieces that are not on the wall stand at the front, the seven
+     follow. Three are on the counter; the arrow glides the rest into view. */
+  const onWall = new Set(WALL_SEVEN);
+  const featured = GOSAN_POSTS
+    .map((p) => p.slug)
+    .sort((a, b) => (onWall.has(a) ? 1 : 0) - (onWall.has(b) ? 1 : 0))
+    .map(P)
+    .filter(Boolean);
   const notes = [].map(P).filter(Boolean);
   const features = ['azarkeyvani-creation-myth', 'manichaean-music-terms', 'music-totalitarian-regimes'].map(P).filter(Boolean);
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
@@ -286,8 +299,8 @@ function HomePage({ lang = 'fa', onToggleLang }) {
       {/* floating nav bar */}
       <NcFloatingNav en={en} />
 
-      {/* latest-articles carousel */}
-      <NcCarousel slides={latest} lang={lang} T={T} />
+      {/* latest-articles wall */}
+      <NcLatestWall slides={latest} lang={lang} T={T} />
 
       {/* manifesto — text only */}
       <NcManifesto T={T} />
@@ -299,19 +312,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
           <span className="nc-sh-mark">◆</span>
         </div>
       </div>
-      <section className="nc-feat">
-        {featured.map((p, i) => (
-          <Reveal key={p.slug} delay={i * 110}>
-            <article>
-              <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
-              <span className="nc-kicker">{p.tag}</span>
-              <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h2>
-              <ByLine post={p} />
-              <p className="nc-dek">{p.excerpt}</p>
-            </article>
-          </Reveal>
-        ))}
-      </section>
+      <NcFeatStrip items={featured} lang={lang} T={T} />
 
       {/* issue divider */}
       <div className="nc-issue-divider"><span>{T.issueLine}</span></div>
@@ -430,58 +431,165 @@ function NcFloatingNav({ en }) {
   );
 }
 
-function NcCarousel({ slides, lang, T }) {
-  const [active, setActive] = React.useState(0);
-  const [paused, setPaused] = React.useState(false);
+function NcLatestWall({ slides, lang, T }) {
+  /* Seven plates side by side; the open one carries the essay. The wall turns
+     its own page every five seconds and stops the moment a reader is on it —
+     the same courtesy the carousel's pause-on-hover gave before it. */
+  const [open, setOpen] = React.useState(0);
+  const [held, setHeld] = React.useState(false);
+  const rowRef = React.useRef(null);
   React.useEffect(() => {
-    if (paused) return;
+    if (held) return;
     if (document.body.dataset.motion === 'off') return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!slides.length) return;
-    const id = setInterval(() => setActive((a) => (a + 1) % slides.length), 6500);
+    const id = setInterval(() => setOpen((i) => (i + 1) % slides.length), 5000);
     return () => clearInterval(id);
-  }, [paused, slides.length]);
+  }, [held, slides.length]);
+  React.useEffect(() => {
+    const onVis = () => setHeld(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+  /* narrow screens turn the wall into a swipeable rail: keep the open plate in view */
+  React.useEffect(() => {
+    const row = rowRef.current;
+    if (!row || row.scrollWidth <= row.clientWidth + 4) return;
+    const plate = row.children[open];
+    if (plate) plate.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
+  }, [open]);
   if (!slides.length) return null;   /* nothing published in this rail yet */
-  const p = slides[active % slides.length];
   return (
     <section
-      className="nc-carousel"
-      data-screen-label={lang === 'en' ? 'Latest carousel' : 'تازه‌ترین‌ها'}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      className="nc-wall"
+      data-screen-label={lang === 'en' ? 'Latest wall' : T.latestK}
+      onMouseEnter={() => setHeld(true)}
+      onMouseLeave={() => setHeld(false)}
+      onFocus={() => setHeld(true)}
+      onBlur={() => setHeld(false)}
     >
-      <div className="nc-carousel-inner">
-        <div className="nc-carousel-text">
-          <div className="nc-carousel-copy" key={active}>
-            <h2 className="nc-carousel-title"><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h2>
-            <p className="nc-carousel-by"><span>{p.author}</span></p>
-            <p className="nc-carousel-dek">{p.excerpt}</p>
+      <div className="nc-wall-row" ref={rowRef}>
+        {slides.map((p, i) => (
+          <div
+            key={p.slug}
+            className={`nc-plate${i === open ? ' is-open' : ''}`}
+            onMouseEnter={() => setOpen(i)}
+          >
+            <a
+              className="nc-plate-face"
+              href={`#/article/${p.slug}`}
+              aria-label={p.title}
+              onFocus={() => setOpen(i)}
+            >
+              {GOSAN_COVERS[p.slug]
+                ? <img className="nc-cover-img" src={GOSAN_COVERS[p.slug]} alt={GOSAN_COVER_ALTS[p.slug] || ''} />
+                : React.createElement('image-slot', { id: `slot-wall-${lang}-${p.slug}`, placeholder: T.slotPh, shape: 'rect' })}
+              <span className="nc-plate-copy" aria-hidden={i !== open}>
+                <span className="nc-plate-title"><TitleLines text={p.title} /></span>
+                <span className="nc-plate-by">{p.author}</span>
+                <span className="nc-plate-dek">{p.excerpt}</span>
+              </span>
+            </a>
+            <CoverCredit slug={p.slug} />
           </div>
-          <div className="nc-carousel-dots" role="tablist" aria-label={T.latestK}>
-            {slides.map((s, i) => (
-              <button
-                key={s.slug}
-                type="button"
-                role="tab"
-                aria-selected={i === active}
-                aria-label={`${i + 1} / ${slides.length}`}
-                className={`nc-dot ${i === active ? 'is-active' : ''}`}
-                onClick={() => setActive(i)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="nc-carousel-media">
-          {slides.map((s, i) => (
-            <div key={s.slug} className={`nc-carousel-slide-media ${i === active ? 'is-active' : ''}`} aria-hidden={i !== active}>
-              {GOSAN_COVERS[s.slug]
-                ? <React.Fragment><img className="nc-cover-img" src={GOSAN_COVERS[s.slug]} alt={GOSAN_COVER_ALTS[s.slug] || ''} /><CoverCredit slug={s.slug} /></React.Fragment>
-                : React.createElement('image-slot', { id: `slot-carousel-${lang}-${s.slug}`, placeholder: T.slotPh, shape: 'rect' })}
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
     </section>
+  );
+}
+
+function NcFeatStrip({ items, lang, T }) {
+  /* three essays stand on the counter; the rest are one hover away. Resting on
+     the arrow glides the strip open — the pointer asks, nothing jumps. */
+  const railRef = React.useRef(null);
+  const glide = React.useRef(0);
+  const [edge, setEdge] = React.useState({ start: true, end: true });
+  React.useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const read = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      const pos = Math.abs(rail.scrollLeft);
+      setEdge({ start: pos <= 2, end: max <= 2 || pos >= max - 2 });
+    };
+    read();
+    const id = setTimeout(read, 400);   /* covers must land before the ends are known */
+    rail.addEventListener('scroll', read, { passive: true });
+    window.addEventListener('resize', read);
+    return () => {
+      clearTimeout(id);
+      rail.removeEventListener('scroll', read);
+      window.removeEventListener('resize', read);
+    };
+  }, [items.length]);
+  /* RTL: the later essays lie to the left, where scrollLeft runs negative */
+  const step = (dir) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const card = rail.firstElementChild;
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+    const w = card ? card.getBoundingClientRect().width + gap : 340;
+    rail.scrollBy({ left: dir * w, behavior: 'smooth' });
+  };
+  const hold = (dir) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return step(dir);
+    if (document.body.dataset.motion === 'off') return step(dir);
+    cancelAnimationFrame(glide.current);
+    rail.classList.add('is-gliding');
+    const travel = rail.scrollWidth - rail.clientWidth;
+    const rtl = rail.scrollLeft <= 0;              /* RTL runs 0 → negative */
+    const min = rtl ? -travel : 0;
+    const max = rtl ? 0 : travel;
+    let pos = rail.scrollLeft;                     /* float accumulator: the box itself rounds */
+    const run = () => {
+      pos = Math.min(max, Math.max(min, pos + dir * 2.4));
+      rail.scrollLeft = pos;
+      if (pos > min && pos < max) glide.current = requestAnimationFrame(run);
+      else rail.classList.remove('is-gliding');
+    };
+    glide.current = requestAnimationFrame(run);
+  };
+  const release = () => {
+    cancelAnimationFrame(glide.current);
+    const rail = railRef.current;
+    if (rail) rail.classList.remove('is-gliding');   /* snap back on, strip settles on a card */
+  };
+  const arrow = (dir, off, label) => (
+    <button
+      type="button"
+      className={`nc-feat-arrow ${dir < 0 ? 'is-next' : 'is-prev'}${off ? ' is-off' : ''}`}
+      aria-label={label}
+      onMouseEnter={() => hold(dir)}
+      onMouseLeave={release}
+      onFocus={() => hold(dir)}
+      onBlur={release}
+      onClick={() => { release(); step(dir); }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points={dir < 0 ? '15 5 8 12 15 19' : '9 5 16 12 9 19'}></polyline>
+      </svg>
+    </button>
+  );
+  return (
+    <div className="nc-feat-wrap">
+      <section className="nc-feat" ref={railRef} data-screen-label={lang === 'en' ? 'Featured' : 'پیشخوان'}>
+        {items.map((p, i) => (
+          <Reveal key={p.slug} delay={i * 110}>
+            <article>
+              <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
+              <span className="nc-kicker">{p.tag}</span>
+              <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h2>
+              <ByLine post={p} />
+              <p className="nc-dek">{p.excerpt}</p>
+            </article>
+          </Reveal>
+        ))}
+      </section>
+      {arrow(-1, edge.end, lang === 'en' ? 'More features' : 'نوشتارهای بیشتر')}
+      {arrow(1, edge.start, lang === 'en' ? 'Previous features' : 'نوشتارهای پیشین')}
+    </div>
   );
 }
 
@@ -516,7 +624,7 @@ function NcManifesto({ T }) {
           ) : null}
           {T.manClose ? <p className="nc-manifesto-p nc-manifesto-close">{T.manClose}</p> : null}
           <div className="nc-man-actions">
-            <a href="#/archive" className="nc-man-archive">بایگانی ←</a>
+            <a href="#/about" className="nc-man-archive">دربارهٔ گوسان ←</a>
           </div>
         </div>
 

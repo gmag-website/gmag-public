@@ -34,11 +34,11 @@
   --font-technical: 'IRANSansX', 'Vazirmatn', 'Tahoma', sans-serif;
 }
 
-/* ---------- head composition: one shell for masthead, nav bar and carousel ----------
-   The three top blocks (turquoise masthead, floating nav bar, hero carousel) all
+/* ---------- head composition: one shell for masthead, nav bar and the wall ----------
+   The three top blocks (turquoise masthead, floating nav bar, hero wall) all
    measure from the SAME box, so the composition of the head never drifts with the
-   window: the carousel photo, the یاران گوسان pill and the masthead's issue block
-   share one inline-end edge, and the carousel text, the nav titles and the logo
+   window: the wall's far edge, the یاران گوسان pill and the masthead's issue block
+   share one inline-end edge, and the wall's near edge, the nav titles and the logo
    share the opposite one. --shell-gutter is what every one of them measures from.  */
 :root {
   --mast-logo: clamp(220px, 30vw, 340px);   /* the calligraphy's measure */
@@ -50,7 +50,7 @@
   --head-overlap: calc(var(--mast-logo) * 0.2221);
   --shell-max: 1180px;   /* the head's content width on a wide screen           */
   --shell-pad: 3.4rem;   /* smallest side gutter — also holds the search glyph  */
-  --shell-inset: 2.2rem; /* the carousel text's own inset; the nav titles copy it */
+  --shell-inset: 2.2rem; /* the head's inner inset; the nav titles measure from it */
 }
 /* the gutter as a length: percentages resolve against each block's own width,
    which is why this must be re-declared (not inherited) on full-bleed bars. */
@@ -64,6 +64,9 @@
   --video-blue: #6E94A0;
   --video-blue-dark: #547C8B;
   --video-gold: #D9B35A;
+  /* the nav bar's blue-green (rgba(133,193,197,.26) — base #85C1C5, hue 184°),
+     darkened only as far as legibility needs: the by-line's colour. */
+  --name-teal: #2E6E73;
 }
 
 html { scroll-behavior: auto; }
@@ -625,7 +628,7 @@ article:has(.essay-figure:nth-of-type(3)) .essay-figure-block { clear: both; }
 @media (max-width: 640px) { .essay-figure-pair { grid-template-columns: 1fr; gap: 1.9rem; } }
 /* two-part titles: the part after «:» or «؛» drops to the next line, lighter */
 .title-sub { display: block; font-size: 0.72em; font-weight: 500; color: var(--text-muted); margin-top: 0.25em; line-height: 1.4; }
-.nc-carousel-title .title-sub, .nc-title .title-sub { color: var(--text-muted); }
+.nc-title .title-sub { color: var(--text-muted); }
 .title-part { display: block; font-size: 0.55em; font-weight: 400; color: var(--text-muted); margin-top: 0.45em; letter-spacing: 0.03em; }
 /* compact writer / interviewee biography at the end of an article */
 .article-bio {
@@ -1434,15 +1437,15 @@ body[data-motion="off"] .tt-wave span { animation: none !important; }
 }
 .nc-topics-logo img { height: 26px; display: block; }
 .nc-topics-logo.is-docked { opacity: 1; pointer-events: auto; transform: translateY(-50%); }
-/* the titles carry the carousel text's own inset, so the first title (خانه) ends
-   exactly where the carousel headline ends, at every window width. The wider
-   inset is taken only while the calligraphy is docked in the bar — by then the
-   carousel has scrolled away, so there is nothing left to align with. */
+/* the titles carry the head's inner inset, so the first title (خانه) sits on the
+   wall's own near edge at every window width. The wider inset is taken only while
+   the calligraphy is docked in the bar — by then the wall has scrolled away, so
+   there is nothing left to align with. */
 .nc-topics-main { display: flex; align-items: center; justify-content: flex-start;
   gap: 1.3rem; flex-wrap: wrap; padding-inline-start: var(--shell-inset);
   transition: padding-inline-start var(--speed-base) var(--ease-out); }
 .nc-topics.has-logo .nc-topics-main { padding-inline-start: 4.4rem; }
-/* the pill is the group's outer edge — it lands on the carousel photo's edge;
+/* the pill is the group's outer edge — it lands on the wall's far edge;
    the search glyph hangs beside it, out in the gutter. */
 .nc-topics-controls { position: absolute; inset-inline-end: var(--shell-gutter); top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.9rem; }
 .nc-topics-controls .nav-search {
@@ -1465,64 +1468,82 @@ body[data-motion="off"] .tt-wave span { animation: none !important; }
 .nc-topic-link:hover { color: var(--gold-deep); }
 .nc-topic-link.is-active { font-weight: 700; }
 
-/* --- latest-articles carousel (hero) --- */
-/* same shell as the masthead and the bar above it: the photo's outer edge and
-   the text column's outer edge are the head's two alignment axes. */
-.nc-carousel { width: min(var(--shell-max), calc(100% - var(--shell-pad) * 2)); max-width: none; margin: 0 auto; padding-top: 2rem; }
-.nc-carousel-inner { display: grid; grid-template-columns: 0.92fr 1.08fr; }
-.nc-carousel-text {
-  position: relative; min-width: 0;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 3.6rem var(--shell-inset) 5.4rem 1.1rem;
+/* --- latest-articles wall (hero) ---
+   Seven plates standing side by side, the way prints lean against a wall. The
+   open one carries the essay in a frosted panel and drifts on the slow Ken
+   Burns defined in the reduced-motion block below; the rest hold their place
+   in grey. The wall measures from the same shell as the masthead and the bar. */
+.nc-wall { width: min(var(--shell-max), calc(100% - var(--shell-pad) * 2)); max-width: none; margin: 0 auto; padding-top: 2rem; }
+.nc-wall-row { display: flex; gap: 0.4rem; height: clamp(300px, 33vw, 458px); }
+.nc-plate {
+  position: relative; flex: 1 1 0; min-width: 0; overflow: hidden;
+  background: var(--surface-band); transition: flex-grow 0.9s var(--ease-out);
 }
-.nc-carousel-eyebrow { display: block; margin-bottom: 1.6rem; }
-.nc-carousel-copy { animation: ncCopyIn 0.6s var(--ease-out); }
-@keyframes ncCopyIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-body[data-motion="off"] .nc-carousel-copy { animation: none; }
-.nc-carousel-tag {
-  font-family: var(--font-technical); letter-spacing: 0.16em;
-  font-size: 0.68rem; color: var(--gold-deep); text-transform: uppercase;
+.nc-plate.is-open { flex-grow: 6.4; }
+.nc-plate-face { position: absolute; inset: 0; display: block; text-decoration: none; color: inherit; }
+.nc-plate-face:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.nc-plate-face > img.nc-cover-img, .nc-plate-face > image-slot {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover;
 }
-.nc-carousel-title {
-  font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(1.25rem, 2.4vw, 2rem); line-height: 1.5;
-  letter-spacing: -0.01em; white-space: normal; overflow-wrap: break-word;
-  margin: 0.7rem 0 0; color: var(--ink);
+.nc-plate-face > img.nc-cover-img {
+  filter: grayscale(1) contrast(1.05); opacity: 0.78;
+  transition: filter 0.9s var(--ease-out), opacity 0.9s var(--ease-out);
 }
-.nc-carousel-title a { color: inherit; text-decoration: none; transition: color var(--speed-fast); }
-.nc-carousel-title a:hover { color: var(--gold-deep); }
-.nc-carousel-by { font-size: 1.05rem; color: var(--accent); margin: 0.1rem 0 0; font-style: normal; }
-.nc-carousel-by span { font-weight: 400; color: var(--accent-strong); }
-.nc-carousel-dek {
-  font-size: 0.82rem; line-height: 1.85; color: var(--text-body);
-  margin: 1.1rem 0 0; max-width: 42ch; text-align: justify;
+.nc-plate.is-open .nc-plate-face > img.nc-cover-img { filter: none; opacity: 1; }
+
+/* the caption sits behind frosted glass: ground enough to read against, thin
+   enough that the photograph still carries through it */
+.nc-plate-copy {
+  position: absolute; z-index: 3; box-sizing: border-box; bottom: 1.1rem; inset-inline-start: 1.1rem;
+  max-width: min(46ch, 74%); padding: 1rem 1.2rem 1.1rem;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
+  border-top: 2px solid var(--gold-deep); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.18);
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.45s var(--ease-out) 0.2s, transform 0.55s var(--ease-out) 0.2s;
 }
-.nc-carousel-dots { position: absolute; bottom: 1rem; display: flex; gap: 0.7rem; }
-.nc-dot {
-  width: 15px; height: 15px; padding: 0; border-radius: 50%;
-  border: 1.5px solid var(--ink); background: none; cursor: pointer;
-  transition: background var(--speed-fast), transform var(--speed-fast);
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .nc-plate-copy { background: rgba(255, 255, 255, 0.88); }
 }
-.nc-dot:hover { transform: scale(1.18); }
-.nc-dot.is-active { background: var(--ink); }
-.nc-carousel-media { position: relative; overflow: hidden; background: var(--surface-band); aspect-ratio: 4 / 3; align-self: start; }
-.nc-carousel-slide-media {
-  position: absolute; inset: 0; opacity: 0; pointer-events: none;
-  transition: opacity 0.9s var(--ease-out);
+.nc-plate.is-open .nc-plate-copy { opacity: 1; transform: none; }
+.nc-plate-title {
+  display: block; font-family: var(--font-display); font-weight: 700; color: var(--ink);
+  font-size: clamp(0.98rem, 1.5vw, 1.3rem); line-height: 1.6; overflow-wrap: break-word;
 }
-.nc-carousel-slide-media.is-active { opacity: 1; pointer-events: auto; }
-.nc-carousel-slide-media image-slot { display: block; width: 100%; height: 100%; }
-.nc-carousel-slide-media img.nc-cover-img { display: block; width: 100%; height: 100%; object-fit: cover; }
-body[data-motion="off"] .nc-carousel-slide-media { transition: none; }
+.nc-plate-title .title-sub { color: inherit; }   /* both halves of a two-part title read as one */
+.nc-plate-by { display: block; font-size: 0.84rem; color: var(--name-teal); margin-top: 0.3rem; }
+.nc-plate-dek {
+  display: block; font-size: 0.78rem; line-height: 1.9; color: var(--text-body);
+  margin-top: 0.6rem; text-align: justify;
+}
+/* the credit dot belongs to the open plate only, and reads light against the
+   photograph — the article page's dark disc disappears into these covers */
+.nc-plate .cover-credit { opacity: 0; bottom: 11px; left: 11px; transition: opacity 0.5s var(--ease-out) 0.25s; }
+.nc-plate.is-open .cover-credit { opacity: 1; }
+.nc-plate .cover-credit-btn {
+  width: 21px; height: 21px; opacity: 1; font-size: 11.5px;
+  background: rgba(255, 255, 255, 0.72); color: var(--ink);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.nc-plate .cover-credit:hover .cover-credit-btn,
+.nc-plate .cover-credit-btn:focus-visible { background: #fff; }
+.nc-plate .cover-credit-tip { bottom: 28px; }
 @media (max-width: 820px) {
   /* the head stacks here — photo over text — so there are no two axes left to
      hold: the gutter narrows again and the search glyph rejoins the pill. */
   :root { --shell-pad: 1.6rem; --shell-inset: 1.6rem; --head-overlap: 0px; }
   .nc-mast-cover { top: 0; }   /* stacked: nothing to line up with */
   .nc-mast-center { margin-inline-start: 0; }
-  .nc-carousel-inner { grid-template-columns: 1fr; }
-  .nc-carousel-media { min-height: 0; aspect-ratio: 4 / 3; order: -1; }
-  .nc-carousel-text { padding: 2.4rem var(--shell-inset) 4.2rem; }
+  .nc-wall-row { height: auto; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .nc-wall-row::-webkit-scrollbar { display: none; }
+  .nc-plate { flex: 0 0 78%; height: 62vw; scroll-snap-align: start; }
+  .nc-plate.is-open { flex-grow: 0; }
+  /* on a phone the caption becomes a band across the foot of the plate — a
+     narrow floating box cannot hold a Persian headline without clipping it */
+  .nc-plate-copy { inset-inline-start: 0; bottom: 0; width: 100%; max-width: 100%; padding: 0.85rem 1rem 1rem; }
+  .nc-plate-title { font-size: 0.92rem; }
+  .nc-plate-dek { display: none; }   /* on a phone the band would swallow the photograph */
   .nc-topics-controls .nav-search { position: static; margin: 0; }
 }
 
@@ -1637,12 +1658,51 @@ body[data-motion="off"] .nc-carousel-slide-media { transition: none; }
 .nc-lead-aside .nc-title { font-size: 1.35rem; }
 
 /* featured 3-up strip */
-.nc-feat { max-width: 1180px; margin: 0 auto; padding: 2.4rem 2rem 1.4rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem; }
+/* --- پیشخوان: three on the counter, the rest one hover away ---
+   the strip is a rail of thirds; the arrow at the far edge glides it open. */
+.nc-feat-wrap {
+  position: relative; max-width: 1180px; margin: 0 auto; padding: 0 2rem;
+  /* container units, so the arrows' height can be read off the strip's WIDTH:
+     one card is a third of the inner width, and its photograph is 4:3 of that.
+     (A percentage here would resolve against height and collapse the arrows.) */
+  container-type: inline-size;
+  --feat-gap: 2.6rem;
+  --feat-card: calc((100cqw - var(--feat-gap) * 2) / 3);
+  --feat-band: calc(var(--feat-card) * 0.75);
+}
+.nc-feat {
+  display: flex; gap: var(--feat-gap); padding: 2.4rem 0 1.4rem;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+}
+.nc-feat::-webkit-scrollbar { display: none; }
+.nc-feat.is-gliding { scroll-snap-type: none; }   /* snapping would pull every step back */
+.nc-feat > .rv { flex: 0 0 calc((100% - var(--feat-gap) * 2) / 3); min-width: 0; scroll-snap-align: start; }
 .nc-feat .nc-img-wrap { aspect-ratio: 4 / 3; margin-bottom: 0.9rem; }
 .nc-feat .nc-title { font-size: clamp(1.4rem, 2vw, 1.7rem); }
 .nc-feat article { display: flex; flex-direction: column; }
 image-slot { display: block; width: 100%; height: 100%; }
-@media (max-width: 820px) { .nc-feat { grid-template-columns: 1fr; gap: 2rem; } }
+
+.nc-feat-arrow {
+  position: absolute; top: 2.4rem; height: var(--feat-band); width: 4.6rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; padding: 0; cursor: pointer; color: var(--ink); z-index: 4;
+  transition: opacity var(--speed-base) var(--ease-out), color var(--speed-fast);
+}
+.nc-feat-arrow.is-next { left: 2rem;  background: linear-gradient(to left,  rgba(255,255,255,0), rgba(255,255,255,0.94) 62%); }
+.nc-feat-arrow.is-prev { right: 2rem; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.94) 62%); }
+.nc-feat-arrow:hover { color: var(--gold-deep); }
+.nc-feat-arrow svg { transition: transform var(--speed-base) var(--ease-out); }
+.nc-feat-arrow.is-next:hover svg { transform: translateX(-3px); }
+.nc-feat-arrow.is-prev:hover svg { transform: translateX(3px); }
+.nc-feat-arrow.is-off { opacity: 0; pointer-events: none; }
+.nc-feat-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+@media (max-width: 820px) {
+  /* on a phone the counter simply stacks — nothing to glide, nothing to hide */
+  .nc-feat { flex-direction: column; gap: 2rem; overflow: visible; }
+  .nc-feat > .rv { flex: 0 0 auto; }
+  .nc-feat-arrow { display: none; }
+}
 
 .nav-lang {
   font-family: var(--font-technical); font-size: 0.72rem; letter-spacing: 0.08em;
@@ -1819,13 +1879,14 @@ image-slot { display: block; width: 100%; height: 100%; }
   .nc-home .nc-aside-block { opacity: 0; }
   .nc-home .nc-aside-block.is-in { animation: gsnRise 0.8s var(--ease-out) both; }
 
-  /* ---- carousel: slow Ken Burns on the active image ---- */
-  .nc-carousel-slide-media image-slot,
-  .nc-carousel-slide-media img {
-    transition: transform 7.5s linear; transform: scale(1.001);
+  /* ---- hero wall: slow Ken Burns on the open plate ---- */
+  .nc-plate-face > image-slot,
+  .nc-plate-face > img.nc-cover-img {
+    transition: filter 0.9s var(--ease-out), opacity 0.9s var(--ease-out), transform 7.5s linear;
+    transform: scale(1.001);
   }
-  .nc-carousel-slide-media.is-active image-slot,
-  .nc-carousel-slide-media.is-active img { transform: scale(1.06); }
+  .nc-plate.is-open .nc-plate-face > image-slot,
+  .nc-plate.is-open .nc-plate-face > img.nc-cover-img { transform: scale(1.06); }
 }
 
 /* motion-off / reduced-motion safety: force everything visible & still */
@@ -1838,21 +1899,21 @@ body[data-motion="off"] .nc-manifesto .nc-man-text,
 body[data-motion="off"] .nc-manifesto .nc-man-brand,
 body[data-motion="off"] .nc-issue-divider { opacity: 1 !important; animation: none !important; }
 body[data-motion="off"] .nc-man-divider { transform: scaleY(1) !important; animation: none !important; }
-body[data-motion="off"] .nc-carousel-slide-media image-slot,
-body[data-motion="off"] .nc-carousel-slide-media img { transition: none !important; transform: none !important; }
+body[data-motion="off"] .nc-plate-face > image-slot,
+body[data-motion="off"] .nc-plate-face > img.nc-cover-img { transition: none !important; transform: none !important; }
 
 @keyframes gsnRise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 @keyframes gsnFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes gsnDrawY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
 /* ---- refined hover micro-interactions ---- */
-.nc-title a, .nc-carousel-title a {
+.nc-title a {
   background-image: linear-gradient(var(--gold-deep), var(--gold-deep));
   background-size: 0% 1px; background-position: right 0.02em;
   background-repeat: no-repeat;
   transition: background-size 0.45s var(--ease-out), color var(--speed-fast);
 }
-.nc-title a:hover, .nc-carousel-title a:hover { background-size: 100% 1px; }
+.nc-title a:hover { background-size: 100% 1px; }
 
 .nc-row { transition: transform 0.4s var(--ease-out); }
 .nc-row:hover { transform: translateX(5px); }
@@ -1886,7 +1947,7 @@ body[data-motion="off"] .nc-carousel-slide-media img { transition: none !importa
 /* --- cover credit badge: tiny info circle on cover images (3 Aug 2026) --- */
 .nc-img-wrap { position: relative; }
 .cover-credit { position: absolute; bottom: 8px; left: 8px; z-index: 3; direction: ltr; }
-.cover-credit-btn { width: 17px; height: 17px; border-radius: 50%; border: none; cursor: help;
+.cover-credit-btn { width: 17px; height: 17px; border-radius: 50%; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center; padding: 0;
   background: rgba(24,23,20,0.28); color: rgba(255,255,255,0.85);
   font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 10.5px; line-height: 1;
@@ -1991,4 +2052,5 @@ body[data-motion="off"] .nc-carousel-slide-media img { transition: none !importa
 
 /* heading line above the featured 3-up strip, aligned to its container */
 .nc-feat-head { max-width: 1180px; margin: 0 auto; padding: 2.4rem 2rem 0; }
-.nc-feat-head + .nc-feat { padding-top: 1.2rem; }
+.nc-feat-head + .nc-feat-wrap .nc-feat { padding-top: 1.2rem; }
+.nc-feat-head + .nc-feat-wrap .nc-feat-arrow { top: 1.2rem; }
