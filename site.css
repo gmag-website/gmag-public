@@ -2518,12 +2518,12 @@ body[data-page="about"] .header-logo { display: none; }
    inside a 375px viewport, which pushed the whole document sideways.
    -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
-  /* the drafting rules hang 6rem past their box on both sides — on a 375px
-     screen that is 96px of horizontal overflow, which scrolls the whole
-     document sideways and leaves a blank column where the article should be.
-     Their insets are inline styles, so pulling them back needs !important. */
-  .gsn-draft-h { right: 0 !important; left: 0 !important; }
-  .gsn-draft-v { display: none !important; }
+  /* The drafting rules hang 6rem past their box on both sides — on a 375px
+     screen that is 96px of horizontal overflow, which scrolled the whole
+     document sideways. Pulled inside the screen they lose their point (a
+     margin device with no margin) and read as a stray divider, so on a phone
+     they go. Their insets are inline styles, hence !important. */
+  .gsn-draft-h, .gsn-draft-v { display: none !important; }
 
   .article-head { padding: 2.2rem 1.2rem 1.4rem; }
   .article-head .gsn-display { font-size: 1.72rem; margin: 0.5rem 0 0.8rem; }
