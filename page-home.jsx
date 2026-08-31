@@ -455,13 +455,37 @@ function NcLatestWall({ slides, lang, T }) {
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
   }, []);
-  /* narrow screens turn the wall into a swipeable rail: keep the open plate in view */
+  /* Narrow screens turn the wall into a swipeable rail: keep the open plate in
+     view. scrollIntoView cannot be used for this — even with block:'nearest' it
+     walks every scrollable ancestor up to the document, so each turn of the wall
+     dragged the page itself: measured here, one turn moved the window 321px
+     while the rail moved. Scrolling the rail by the measured offset moves the
+     rail exactly as far and leaves the window where the reader put it. */
   React.useEffect(() => {
     const row = rowRef.current;
     if (!row || row.scrollWidth <= row.clientWidth + 4) return;
     const plate = row.children[open];
-    if (plate) plate.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' });
+    if (!plate) return;
+    const rr = row.getBoundingClientRect();
+    const pr = plate.getBoundingClientRect();
+    const rtl = getComputedStyle(row).direction === 'rtl';
+    const delta = rtl ? pr.right - rr.right : pr.left - rr.left;
+    if (Math.abs(delta) < 1) return;
+    const quiet = document.body.dataset.motion === 'off'
+      || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    row.scrollBy({ left: delta, behavior: quiet ? 'auto' : 'smooth' });
   }, [open]);
+
+  /* a finger on the rail is the touch equivalent of the cursor resting on the
+     wall: hold the turn while it is there, and for a while after it lifts, so a
+     reader's own swipe is not yanked back by the timer */
+  const resume = React.useRef(null);
+  const touchHold = () => { clearTimeout(resume.current); setHeld(true); };
+  const touchRelease = () => {
+    clearTimeout(resume.current);
+    resume.current = setTimeout(() => setHeld(false), 6000);
+  };
+  React.useEffect(() => () => clearTimeout(resume.current), []);
   if (!slides.length) return null;   /* nothing published in this rail yet */
   return (
     <section
@@ -471,6 +495,9 @@ function NcLatestWall({ slides, lang, T }) {
       onMouseLeave={() => setHeld(false)}
       onFocus={() => setHeld(true)}
       onBlur={() => setHeld(false)}
+      onTouchStart={touchHold}
+      onTouchEnd={touchRelease}
+      onTouchCancel={touchRelease}
     >
       <div className="nc-wall-row" ref={rowRef}>
         {slides.map((p, i) => (
