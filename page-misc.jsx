@@ -97,15 +97,17 @@ function EditorialBoard() {
               <span className="board-card-name">{b.name}</span>
               <span className="board-card-role">{b.craft}</span>
             </figcaption>
-            {i === open ? (
-              <div className="board-pop" role="dialog">
-                <span className="board-pop-craft">{b.craft}</span>
-                <p>{b.bio}</p>
-              </div>
-            ) : null}
           </button>
         ))}
       </div>
+      {/* the bio opens as a plain block below the row, not over the portrait —
+          which also gets it out of the <button>, where a role="dialog" was
+          never valid markup */}
+      {open !== null ? (
+        <div className="board-bio" role="region" aria-live="polite">
+          <p>{GOSAN_BOARD[open].bio}</p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -134,22 +136,94 @@ function Credentials() {
   );
 }
 
+/* The magazine's statement. Moved here from the home page on 2026-08-31 so it
+   opens the About page; Persian only, like the rest of this page. The «دربارهٔ گوسان ←»
+   action the home version carried is dropped — on this page it pointed at itself. */
+const ABOUT_MANIFESTO = {
+  lead: 'گوسان ریشه در روزگاران کهن دارد.',
+  body: [
+    'در ایران باستان، گوسان به رامشگران و نغمه‌خوانانی گفته می‌شد که حافظ تاریخ و افسانه‌های کهن بودند. گوسان‌ها روایتگر بودند؛ روایتگر شادی و اندوه مردمان، روایتگر رزم و بزم شاهان، روایتگر پیروزی و شکست قهرمانان. و این همه را به دیبای وزن و قافیه می‌آراستند تا سینه به سینه بازگفته و بازخوانده شود. گوسان‌ها می‌سرودند و می‌نواختند تا تاریخ و افسانه را در جامهٔ زربفتِ چامه و موسیقی از گزند فراموشی در امان بدارند. از پس آنان خدای‌نامه‌نویسانِ ساسانی آمدند و پسان‌تر سرایندگانِ پارسی‌گوی، از توس و بخارا تا تبریز و گنجه، از شیراز و کرمان تا غزنه و دهلی.',
+    'امروز نیز ما در گاهنامهٔ «گوسان» گردآمده‌ایم تا روایتگر باشیم؛ روایتگرِ فرهنگ و هنر و میراثِ کهنِ ایران، در روزگاری که فرهنگ و هنر به کنج انزوا گرفتار آمده و ستیز با تاریخ و میراثِ کهنِ ایران فزونی گرفته است؛ چنان‌که حکیم توس در شرح روزگارِ چیرگی ضحاکِ تازی گفته است:',
+  ],
+  verse: { a: 'هنر خوار شد جادویی ارجمند', b: 'نهان راستی، آشکارا گزند' },
+  close: 'گاهنامهٔ «گوسان» در پی آن است که غبار فراموشی را از صفحهٔ فرهنگ و هنر و میراثِ ایران بزداید؛ گوشه‌های ناشناختهٔ تاریخ و فرهنگ و هنرِ ایران را به ابزارِ پژوهش و نقد بکاود، بشناسد و روایت کند.',
+};
+
+const ENGRAVING_CREDIT = 'جزئی از نگارهٔ بشقاب سیمین ساسانی؛ نوازنده‌ای سوار بر جانور بالدار افسانه‌ای. اصل اثر در موزهٔ ارمیتاژ، سن‌پترزبورگ.';
+
+function AboutManifesto() {
+  const M = ABOUT_MANIFESTO;
+  return (
+    <Reveal>
+      <section className="nc-manifesto about-manifesto">
+        <div className="nc-manifesto-grid">
+          <div className="nc-man-text">
+            <p className="nc-manifesto-p nc-man-first"><strong>{M.lead}</strong> {M.body[0]}</p>
+            {M.body.slice(1).map((para, i) => <p key={i} className="nc-manifesto-p">{para}</p>)}
+            <div className="nc-manifesto-verse">
+              <span>{M.verse.a}</span>
+              <span>{M.verse.b}</span>
+            </div>
+            <p className="nc-manifesto-p nc-manifesto-close">{M.close}</p>
+          </div>
+          <figure className="about-figure man-figure">
+            <img src="assets/shahnameh-engraving.jpg" alt={ENGRAVING_CREDIT} />
+            <span className="cover-credit">
+              <button type="button" className="cover-credit-btn" aria-label={'اعتبار تصویر: ' + ENGRAVING_CREDIT}>i</button>
+              <span className="cover-credit-tip" role="tooltip">{ENGRAVING_CREDIT}</span>
+            </span>
+          </figure>
+          <div className="about-cred man-cred">
+            <img className="man-cred-mark" src="assets/logo-gosan.png" alt="گوسان" />
+            <dl className="cred-list">
+              <div className="cred-row">
+                <dt>صاحب امتیاز</dt>
+                <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e. V. i. Gr.</span></dd>
+              </div>
+              <div className="cred-row">
+                <dt>مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان<br />سردبیر گاهنامهٔ گوسان</dt>
+                <dd>یلدا زمانی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>مدیر بخش پژوهش</dt>
+                <dd>احسان شواربی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>هیئت تحریریه</dt>
+                <dd>
+                  حافظ باباشاهی، امین نایب‌پور،<br />
+                  یلدا زمانی، احسان شواربی،<br />
+                  سهراب لبیب
+                </dd>
+              </div>
+              <div className="cred-row">
+                <dt>طراحی و هویت بصری</dt>
+                <dd>یلدا زمانی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>خوشنویسی نشان</dt>
+                <dd>احسان شواربی</dd>
+              </div>
+            </dl>
+            <span className="about-spine">گوسان، سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵</span>
+          </div>
+        </div>
+      </section>
+    </Reveal>
+  );
+}
+
 function AboutPage() {
   const editorial = GOSAN_BOARD.map((m) => m.name).join('، ');
   return (
     <main data-screen-label="دربارهٔ گوسان" className="about-main">
+      <AboutManifesto />
       <section className="about-spread">
         {/* right column (RTL first): manifesto text */}
         <Reveal className="about-text">
           <PullQuote style={{ margin: '0 0 1.8rem' }}>
-            از روزگاران کهن در ایران باستان، رامشگران و نغمه‌خوانانی در کار پاسداری از تاریخ و افسانه‌های این سرزمین بودند.
+            فرهنگ و هنر، ستون‌های تاب‌آوری، بازسازی و بازشناسی هویت یک ملت در تندبادهای تاریخ‌اند.
           </PullQuote>
-          <p>
-            «گوسان»‌ها، آن‌طور که در زبان پهلوی خوانده می‌شدند، روایتگر بودند. روایتگر شادی و اندوه مردمان، روایتگر رزم و بزم شاهان،
-            روایتگر پیروزی و شکست قهرمانان. آنها، این همه را به دیبای وزن و قافیه می‌آراستند و به نوای سازهای خوش‌آهنگ خویش می‌آمیختند
-            تا بر دل‌ها بنشیند و در یادها بماند، تا سینه به سینه باز گفته و باز خوانده شود. گوسان‌ها می‌سرودند و می‌نواختند تا تاریخ و افسانه را
-            در جامهٔ زربفت چامه و موسیقی از گزند فراموشی در امان بدارند.
-          </p>
           <p>
             امروز که غبار «وحشتی بزرگ» بر شئون زندگانی ایرانیان سایه افکنده، و نشانه‌های بحران از فرهنگ و هنر تا اقتصاد و اقلیم این کهن‌دیار را
             فرا گرفته‌اند، ما فرزندان این بوم و بر بیش از هر زمان دیگری از خود می‌پرسیم در کجای این شب تاریک و گرداب هایل ایستاده‌ایم.
@@ -170,74 +244,52 @@ function AboutPage() {
             ما فرزندان ایران در گاهنامهٔ «گوسان» می‌کوشیم در مسیر این هدف گام برداشته، پلی باشیم میان میراث کهن پدران و چشم‌انداز فردا،
             و نیز همراهی برای همهٔ آنان که در گرگ و میش شب، نور مهر ایران را در دل دارند.
           </p>
-          <MotifDivider style={{ marginTop: '2.2rem', marginBottom: 0 }} />
+          <MotifDivider style={{ marginTop: '2.8rem', marginBottom: '2.4rem' }} />
+          <section className="board-section board-inline">
+            <div className="wrap" style={{ maxWidth: '100%', padding: 0, position: 'relative', zIndex: 1 }}>
+              <Reveal>
+                <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>TEAM // ISSUE 01 — SUMMER 2585</span>
+                <SectionHead title="هیئت تحریریه" />
+                <p className="board-hint">
+                  دست‌اندرکاران این شماره؛ سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵.
+                </p>
+              </Reveal>
+              <Reveal delay={120}>
+                <div style={{ marginTop: '2rem' }}>
+                  <EditorialBoard />
+                </div>
+              </Reveal>
+            </div>
+          </section>
         </Reveal>
 
-        {/* center column: engraving */}
-        <Reveal className="about-figure" delay={80}>
-          <img src="assets/shahnameh-engraving.jpg" alt="نگارهٔ کهن ایرانی" />
-        </Reveal>
 
-        {/* left column: credentials masthead */}
-        <Reveal className="about-cred" delay={140}>
-          <GoldDots width={120} height={140} style={{ opacity: 0.7, marginBottom: '2rem' }} />
-          <dl className="cred-list">
-            <div className="cred-row">
-              <dt>صاحب امتیاز</dt>
-              <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e. V. i. Gr.</span></dd>
-            </div>
-            <div className="cred-row">
-              <dt>مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان</dt>
-              <dd>یلدا زمانی</dd>
-            </div>
-            <div className="cred-row">
-              <dt>مدیر بخش پژوهش</dt>
-              <dd>احسان شواربی</dd>
-            </div>
-            <div className="cred-row">
-              <dt>هیئت تحریریه</dt>
-              <dd>
-                حافظ باباشاهی، امین نایب‌پور<br />
-                یلدا زمانی، احسان شواربی، سهراب لبیب
-              </dd>
-            </div>
-          </dl>
-          <span className="about-spine">گوسان، سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵</span>
-        </Reveal>
       </section>
 
-      <section className="board-section">
-        <div className="wrap" style={{ maxWidth: '1100px', paddingTop: '4.5rem', paddingBottom: '4.5rem', position: 'relative', zIndex: 1 }}>
-          <Reveal>
-            <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>TEAM // ISSUE 01 — SUMMER 2585</span>
-            <SectionHead title="هیئت تحریریه" />
-            <p className="board-hint">
-              دست‌اندرکاران این شماره؛ سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵.
-            </p>
-          </Reveal>
-          <Reveal delay={120}>
-            <div style={{ marginTop: '2.6rem' }}>
-              <EditorialBoard />
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
-      <section className="wrap" id="contact" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
+      <section className="about-contact" id="contact">
         <Reveal>
-          <h2 className="gsn-display" style={{ fontSize: '1.6rem', textAlign: 'center', margin: '0 0 0.6rem' }}>تماس</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '0 0 1.6rem' }}>برای همکاری با گاهنامه، با ما در گفت‌وگو باشید.</p>
+          <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>CONTACT // GŌSĀN</span>
+          <SectionHead title="تماس" />
+          <p className="board-hint">برای همکاری با گاهنامه، با ما در گفت‌وگو باشید.</p>
+        </Reveal>
+        <Reveal delay={110}>
+          <div style={{ marginTop: '2.4rem' }}>
+            <ContactBody bare />
+          </div>
         </Reveal>
       </section>
-      <ContactBody />
     </main>
   );
 }
 
-function ContactBody() {
+function ContactBody({ bare = false }) {
   const [sent, setSent] = React.useState(false);
   return (
-      <div className="wrap contact-grid" style={{ paddingBottom: '5rem', maxWidth: '1100px' }}>
+      <div
+        className={bare ? 'contact-grid' : 'wrap contact-grid'}
+        style={bare ? { paddingBottom: 0 } : { paddingBottom: '5rem', maxWidth: '1100px' }}
+      >
         <Reveal>
           <div className="contact-card">
             {sent ? (
@@ -269,10 +321,10 @@ function ContactBody() {
         </Reveal>
         <Reveal delay={130}>
           <div style={{ position: 'relative', paddingTop: '0.5rem' }}>
-            <GoldDots width={90} height={80} style={{ opacity: 0.55, marginBottom: '1.6rem' }} />
+            <GoldDots width={120} height={140} style={{ opacity: 0.7, marginBottom: '1.6rem' }} />
             <p style={{ fontSize: '0.95rem', lineHeight: 2.2, color: 'var(--text-muted)', textAlign: 'justify', margin: '0 0 1.8rem' }}>
               اگر جستاری در فرهنگ و هنر ایران دارید، اگر یادمانی از بزرگان این سرزمین در سینه نگاه داشته‌اید،
-              یا تنها می‌خواهید سخنی با ما بگویید — گوسان شنوندهٔ روایت شماست.
+              یا تنها می‌خواهید سخنی با ما بگویید، گوسان شنوندهٔ روایت شماست.
             </p>
             <a href="mailto:info@gosan.org" style={{ direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 }}>info@gosan.org</a>
           </div>
@@ -315,10 +367,9 @@ function ImpressumPage() {
 
           <div style={label}>تماس · Kontakt</div>
           <p style={line}>E-Mail: <a href="mailto:info@gosan.org" style={mail}>info@gosan.org</a></p>
-          <p style={line}>Telefon: <span style={empty}>—</span></p>
 
           <div style={label}>ثبت انجمن · Registereintrag</div>
-          <p style={line}>Eintragung beim Amtsgericht Charlottenburg beantragt.</p>
+          <p style={line}>Eintragung beim Amtsgericht beantragt.</p>
           <p style={line}>Vereinsregister-Nummer wird nachgetragen.</p>
 
           <div style={label}>شمارهٔ مالیاتی · Umsatzsteuer-Identifikationsnummer</div>

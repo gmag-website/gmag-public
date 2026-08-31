@@ -220,3 +220,281 @@ Object.assign(window, {
   ScrollProgress, SearchOverlay, SubscribeOverlay, BackToTop,
   gosanSubscribe, SUB_MSG, GOSAN_SUBSCRIBE_ENDPOINT,
 });
+
+
+/* ============================================================
+   یاد فرزندان ایران — the remembrance ribbon
+   A fixed Lion-and-Sun ribbon in one bottom corner of the LANDING PAGE only.
+   Click: a drawer slides out of the flag, the flag rises level with the name,
+   and one person is drawn at random from the roll. Hover while open: another name.
+   Draft — entries are unverified and the mark is not on the public site.
+   ============================================================ */
+const FARZANDAN = [
+  {
+    "n": "پویا فراگردی",
+    "r": "نوازنده و مدرس ویولن — ۴۴ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "پاسداران، تهران"
+  },
+  {
+    "n": "صنم پوربابایی",
+    "r": "مدرس و نوازندهٔ ویولن — ۲۶ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "لاهیجان"
+  },
+  {
+    "n": "ستاره رفیعی",
+    "r": "موسیقی‌دان — ۱۹ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "آریا هنرمند",
+    "r": "رپر و آهنگساز — ۲۵ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "نازی‌آباد، تهران"
+  },
+  {
+    "n": "حسین تهرانچی",
+    "r": "نوازندهٔ پیانو",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "نارمک، تهران"
+  },
+  {
+    "n": "امیرحسین ملکشاهی",
+    "r": "گیتاریست و خواننده — ۲۸ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "تهران"
+  },
+  {
+    "n": "ملیکا دستیاب",
+    "r": "نوازندهٔ تنبور و دانشجوی اقتصاد — ۲۱ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "کرمانشاه"
+  },
+  {
+    "n": "شبنم فردوسی",
+    "r": "عروسک‌ساز و طراح گرافیک — ۳۷ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "میدان انقلاب، تهران"
+  },
+  {
+    "n": "شکوفه عبدی",
+    "r": "عکاس — ۳۶ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "اراک"
+  },
+  {
+    "n": "جواد گنجی",
+    "r": "فیلمساز، دستیار کارگردان و دستیار برنامه‌ریز سینما و تلویزیون — ۳۹ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "فواد صفایی",
+    "r": "خواننده و نوازندهٔ پیانو — ۲۴ ساله",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "کرج"
+  },
+  {
+    "n": "امیرحسین احمدوند",
+    "r": "بازیگر تئاتر، قهرمان موی‌تای و بوکس",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "احمد عباسی",
+    "r": "بازیگر و طراح صحنهٔ تئاتر",
+    "d": "۱۸ دی ۱۴۰۴",
+    "pl": "تهران"
+  },
+  {
+    "n": "سیما موسوی",
+    "r": "فیلمساز و عکاس",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "پارکینگ منزلش"
+  },
+  {
+    "n": "ندا محمدی",
+    "r": "نقاش و هنرمند تجسمی",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "رضا کرمی",
+    "r": "نقاش و طراح",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "ابوالفضل یغموری",
+    "r": "خوانندهٔ رپ و ترانه‌سرا — ۱۷ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "فردیس، کرج"
+  },
+  {
+    "n": "حمیدرضا مجیدی",
+    "r": "هنرجوی بازیگری — ۳۰ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "نارمک، تهران"
+  },
+  {
+    "n": "ستایش سوسن‌آبادی",
+    "r": "طراح لباس — ۳۷ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "رشت"
+  },
+  {
+    "n": "ریحانه یوسفی",
+    "r": "بازیگر تئاتر — ۲۸ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "تهران"
+  },
+  {
+    "n": "صهبا رشتیان",
+    "r": "هنرمند انیمیشن و داور فوتسال — ۲۳ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "اصفهان"
+  },
+  {
+    "n": "سورنا گلگون",
+    "r": "نوازندهٔ پیانو — ۱۸ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "یاسر مدیرروستا",
+    "r": "مدرس و نوازندهٔ تار و سه‌تار — ۴۲ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "کرج"
+  },
+  {
+    "n": "مهدی سلحشور",
+    "r": "مجسمه‌ساز — ۴۸ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "مشهد"
+  },
+  {
+    "n": "زهره شماعی‌زاده",
+    "r": "کارگردان، دوبلور و دستیار کارگردان — ۳۳ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "محمد شیرازی (شاهو)",
+    "r": "خواننده و نوازنده — ۳۸ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "امیرعلی زارعی",
+    "r": "نوازندهٔ هنگ‌درام و مربی موسیقی کودکان — ۳۵ ساله",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": "مجیدیه، تهران"
+  },
+  {
+    "n": "مصطفی رابطی",
+    "r": "فارغ‌التحصیل سینما و طراح ویدئوآرت",
+    "d": "۱۹ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "یعقوب دلیر",
+    "r": "خواننده، نوازندهٔ گیتار و موسیقی‌دان",
+    "d": "۲ بهمن ۱۴۰۴",
+    "pl": "آستانهٔ اشرفیه، گیلان"
+  },
+  {
+    "n": "داریوش انصاری بختیاروند",
+    "r": "خواننده و موزیسین",
+    "d": "۱۰ دی ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "مرتضی نعمت‌الهی",
+    "r": "مجسمه‌ساز و هنرمند",
+    "d": "۲۲ خرداد ۱۴۰۴",
+    "pl": ""
+  },
+  {
+    "n": "رضا سمیع‌پور",
+    "r": "فیلمساز و دستیار کارگردان — ۵۰ ساله",
+    "d": "تاریخ در دست تأیید",
+    "pl": ""
+  }
+];
+
+function RemembranceRibbon() {
+  const [open, setOpen] = React.useState(false);
+  const [person, setPerson] = React.useState(FARZANDAN[0]);
+  const [swap, setSwap] = React.useState(false);
+  const bag = React.useRef([]);
+  const wrapRef = React.useRef(null);
+  const ribRef = React.useRef(null);
+  const cardRef = React.useRef(null);
+  const nameRef = React.useRef(null);
+
+  const draw = React.useCallback(() => {
+    if (!bag.current.length) {
+      const b = FARZANDAN.slice();
+      for (let i = b.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [b[i], b[j]] = [b[j], b[i]];
+      }
+      bag.current = b;
+    }
+    setPerson(bag.current.pop());
+  }, []);
+
+  /* the flag glides up until it stands level with the name */
+  React.useLayoutEffect(() => {
+    const rib = ribRef.current, card = cardRef.current, name = nameRef.current;
+    if (!rib) return;
+    if (!open || !card || !name) { rib.style.transform = ''; return; }
+    const shift = card.offsetHeight - (name.offsetTop + name.offsetHeight / 2) - rib.offsetHeight / 2;
+    rib.style.transform = 'translateY(' + (-Math.max(0, shift)) + 'px)';
+  }, [open, person]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('click', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('click', onDoc); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+
+  /* the name changes ONLY on a click of the flag; the drawer closes by
+     clicking anywhere else, or with Escape. */
+  const onRibbon = (e) => {
+    e.stopPropagation();
+    if (!open) { draw(); setOpen(true); return; }
+    if (swap) return;
+    setSwap(true);
+    setTimeout(() => { draw(); setSwap(false); }, 300);
+  };
+
+  /* Rendered straight into <body> through a portal: nothing in the page tree
+     can then create a containing block for it, so `position: fixed` always
+     resolves against the viewport. */
+  return ReactDOM.createPortal(
+    <div className={`fz-wrap${open ? ' is-on' : ''}`} ref={wrapRef} data-fz="remembrance">
+      <div className={`fz-card${swap ? ' is-swap' : ''}`} ref={cardRef} aria-hidden={!open}>
+        <p className="fz-kicker">فرزند ایران و جان‌فدای میهن</p>
+        <p className="fz-name" ref={nameRef}>{person.n}</p>
+        <p className="fz-role">{person.r}</p>
+        <p className="fz-when"><b>{person.d}</b>{person.pl ? <span>{person.pl}</span> : null}</p>
+      </div>
+      <button
+        className="fz-rib"
+        ref={ribRef}
+        onClick={onRibbon}
+        aria-expanded={open}
+        aria-label="یاد فرزندان ایران"
+      >
+        <img src="assets/memorial/lion-and-sun-soft.svg" alt="" />
+      </button>
+    </div>,
+    document.body
+  );
+}

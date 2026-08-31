@@ -135,7 +135,7 @@ function SiteHeader({ active, lang = 'fa', onToggleLang }) {
           </ul>
         </nav>
         <a href="#/" style={{ flexShrink: 0 }}>
-          <img src="assets/logo-gosan.png" alt="گوسان" className="header-logo" style={{ height: '40px', display: 'block' }} />
+          <img src="assets/logo-gosan.png" alt="گوسان" className="header-logo" style={{ height: '40px' }} />
         </a>
       </div>
     </header>

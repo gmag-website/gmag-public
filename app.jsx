@@ -148,6 +148,7 @@ function App() {
       <SearchOverlay />
       <SubscribeOverlay />
       <BackToTop />
+      {route.page === 'home' ? <RemembranceRibbon /> : null}
 
       <TweaksPanel>
         <TweakSection label="رنگ و حروف" />

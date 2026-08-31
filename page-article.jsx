@@ -282,15 +282,29 @@ function ListenBar({ getText }) {
 }
 
 /* ---------- article meta chips (reading time + word count) ---------- */
-function ArticleMeta({ articleRef }) {
+function ArticleMeta({ articleRef, slug }) {
   const [stats, setStats] = React.useState(null);
+  /* Counts what is actually on screen. The body arrives in stages — the JSX
+     placeholder first, then the approved web-edit from content-overrides, then
+     the table of contents — so a plain effect measured whichever stage happened
+     to be mounted when it ran and kept that number. An observer re-counts on
+     every change, which is why a پاره no longer reports the whole essay. */
   React.useEffect(() => {
-    if (!articleRef.current) return;
-    const text = (articleRef.current.textContent || '').trim();
-    const words = (text.match(/[^\s]+/g) || []).length;
-    const minutes = Math.max(1, Math.round(words / 200));
-    setStats({ words, minutes });
-  }, [articleRef]);
+    const el = articleRef.current;
+    if (!el) return;
+    let t = null;
+    const count = () => {
+      const text = (el.textContent || '').trim();
+      const words = (text.match(/[^\s]+/g) || []).length;
+      if (!words) return;
+      setStats({ words, minutes: Math.max(1, Math.round(words / 200)) });
+    };
+    const schedule = () => { clearTimeout(t); t = setTimeout(count, 120); };
+    count();
+    const mo = new MutationObserver(schedule);
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
+    return () => { clearTimeout(t); mo.disconnect(); };
+  }, [articleRef, slug]);
   if (!stats) return null;
   return (
     <div className="article-chips">
@@ -353,6 +367,7 @@ function ShareIcon({ kind }) {
   const common = { width: 17, height: 17, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' };
   const paths = {
     link: <React.Fragment><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></React.Fragment>,
+    mail: <React.Fragment><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2 6 12 13 22 6" /></React.Fragment>,
     facebook: <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />,
     telegram: <polygon points="22 2 15 22 11 13 2 9 22 2" />,
     whatsapp: <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
@@ -381,11 +396,13 @@ function ShareRow({ post }) {
   const fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + enc(shareUrl);
   const tgUrl = 'https://t.me/share/url?url=' + enc(shareUrl) + '&text=' + enc(text);
   const waUrl = 'https://wa.me/?text=' + enc(text + ' ' + shareUrl);
+  const mailUrl = 'mailto:?subject=' + enc(text) + '&body=' + enc(text + '\n\n' + shareUrl);
   return (
     <div className="share-row">
       <span className="share-label">{copied ? 'نشانی رونوشت شد ✓' : 'این متن را به اشتراک بگذارید'}</span>
       <div className="share-icons">
         <a href="#" onClick={copy} aria-label="رونوشت پیوند" title="رونوشت پیوند"><ShareIcon kind="link" /></a>
+        <a href={mailUrl} aria-label="ارسال با رایانامه" title="رایانامه"><ShareIcon kind="mail" /></a>
         <a href={xUrl} onClick={pop(xUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در ایکس" title="ایکس (X)"><ShareIcon kind="x" /></a>
         <a href={fbUrl} onClick={pop(fbUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در فیسبوک" title="فیسبوک"><ShareIcon kind="facebook" /></a>
         <a href={tgUrl} onClick={pop(tgUrl)} target="_blank" rel="noopener noreferrer" aria-label="اشتراک در تلگرام" title="تلگرام"><ShareIcon kind="telegram" /></a>
@@ -587,6 +604,40 @@ function TemplateEssayBody({ post }) {
   );
 }
 
+/* foot-of-article link to the next پاره of the same essay */
+function SeriesNav({ post }) {
+  const series = (window.GOSAN_SERIES || []).find((g) => g.indexOf(post.slug) !== -1);
+  if (!series) return null;
+  const i = series.indexOf(post.slug);
+  const at = (n) => (window.GOSAN_POSTS || []).find((p) => p.slug === series[n]);
+  const prev = i > 0 ? at(i - 1) : null;
+  const next = i < series.length - 1 ? at(i + 1) : null;
+  if (!prev && !next) return null;
+  const part = (p) => {
+    const m = p.title.match(/\(([^)]+)\)\s*$/);
+    return m ? m[1] : p.title;
+  };
+  return (
+    <nav className="series-nav" aria-label="پاره‌های این جستار">
+      <span className="series-nav-count">پارهٔ {toFa(i + 1)} از {toFa(series.length)}</span>
+      <div className="series-nav-links">
+        {prev ? (
+          <a className="series-nav-link is-prev" href={'#/article/' + prev.slug}>
+            <span className="series-nav-dir">→ پارهٔ پیشین</span>
+            <span className="series-nav-title">{part(prev)}</span>
+          </a>
+        ) : <span />}
+        {next ? (
+          <a className="series-nav-link is-next" href={'#/article/' + next.slug}>
+            <span className="series-nav-dir">پارهٔ بعدی ←</span>
+            <span className="series-nav-title">{part(next)}</span>
+          </a>
+        ) : <span />}
+      </div>
+    </nav>
+  );
+}
+
 function ArticleView({ slug }) {
   const post = (deskPayload(slug) || {}).post || GOSAN_POSTS.find((p) => p.slug === slug) || GOSAN_POSTS[0];
   const articleRef = React.useRef(null);
@@ -646,7 +697,7 @@ function ArticleView({ slug }) {
           </span>
           <span className="byline-date" style={{ color: 'var(--accent)' }}>{(ov && ov.date) || post.date}</span>
         </div>
-        <ArticleMeta articleRef={articleRef} />
+        <ArticleMeta articleRef={articleRef} slug={post.slug + (ov && ov.body ? '-ov' : '')} />
       </div>
 
       <div className="article-layout">
@@ -664,6 +715,8 @@ function ArticleView({ slug }) {
         </article>
         <SummaryAside post={post} getText={getText} ov={ov} />
       </div>
+
+      <SeriesNav post={post} />
 
       <AuthorBioBlock post={post} ov={ov} />
 

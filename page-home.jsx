@@ -244,9 +244,13 @@ function HomePage({ lang = 'fa', onToggleLang }) {
      be seen: the pieces that are not on the wall stand at the front, the seven
      follow. Three are on the counter; the arrow glides the rest into view. */
   const onWall = new Set(WALL_SEVEN);
+  /* Slugs the editor-in-chief wants opening the پیشخوان, in this order. Anything
+     not pinned keeps the old behaviour: off-wall essays first, then the seven. */
+  const FEATURED_LEAD = [];
+  const rank = (s) => (FEATURED_LEAD.indexOf(s) !== -1 ? FEATURED_LEAD.indexOf(s) - FEATURED_LEAD.length : (onWall.has(s) ? 1 : 0));
   const featured = GOSAN_POSTS
     .map((p) => p.slug)
-    .sort((a, b) => (onWall.has(a) ? 1 : 0) - (onWall.has(b) ? 1 : 0))
+    .sort((a, b) => rank(a) - rank(b))
     .map(P)
     .filter(Boolean);
   const notes = [].map(P).filter(Boolean);
@@ -302,9 +306,6 @@ function HomePage({ lang = 'fa', onToggleLang }) {
       {/* latest-articles wall */}
       <NcLatestWall slides={latest} lang={lang} T={T} />
 
-      {/* manifesto — text only */}
-      <NcManifesto T={T} />
-
       {/* featured 3-up strip */}
       <div className="nc-feat-head">
         <div className="nc-sectionhead">
@@ -313,9 +314,6 @@ function HomePage({ lang = 'fa', onToggleLang }) {
         </div>
       </div>
       <NcFeatStrip items={featured} lang={lang} T={T} />
-
-      {/* issue divider */}
-      <div className="nc-issue-divider"><span>{T.issueLine}</span></div>
 
       {/* body */}
       <div className="nc-body">
@@ -567,7 +565,7 @@ function NcFeatStrip({ items, lang, T }) {
       onBlur={release}
       onClick={() => { release(); step(dir); }}
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <polyline points={dir < 0 ? '15 5 8 12 15 19' : '9 5 16 12 9 19'}></polyline>
       </svg>
     </button>
@@ -593,45 +591,9 @@ function NcFeatStrip({ items, lang, T }) {
   );
 }
 
-function NcManifesto({ T }) {
-  return (
-    <section className="nc-manifesto" data-screen-label={T.manK}>
-      <div className="nc-manifesto-grid">
-
-        {/* branding column (right in RTL) */}
-        <div className="nc-man-brand">
-          <div className="nc-man-brand-foot">
-            <img className="nc-man-logo" src="assets/logo-gosan.png" alt="گوسان" />
-            <p className="nc-man-sub">گاهنامهٔ فرهنگی و هنری گوسان</p>
-            <p className="nc-man-issue">سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵ (۱۴۰۵)</p>
-          </div>
-        </div>
-
-        {/* gold divider */}
-        <div className="nc-man-divider"></div>
-
-        {/* statement column (left in RTL) */}
-        <div className="nc-man-text">
-          <p className="nc-manifesto-p nc-man-first">
-            <strong>{T.manLead}</strong> {T.manBody[0]}
-          </p>
-          {T.manBody.slice(1).map((para, i) => <p key={i} className="nc-manifesto-p">{para}</p>)}
-          {T.manVerse ? (
-            <div className="nc-manifesto-verse">
-              <span>{T.manVerse.a}</span>
-              <span>{T.manVerse.b}</span>
-            </div>
-          ) : null}
-          {T.manClose ? <p className="nc-manifesto-p nc-manifesto-close">{T.manClose}</p> : null}
-          <div className="nc-man-actions">
-            <a href="#/about" className="nc-man-archive">دربارهٔ گوسان ←</a>
-          </div>
-        </div>
-
-      </div>
-    </section>
-  );
-}
+/* The manifesto moved to the About page on 2026-08-31 (AboutManifesto in
+   page-misc.jsx). The bilingual copy stays in T.man* above, unused for now,
+   so a future bilingual About needs no retranslation. */
 
 function NcCatSection({ cat, lang, T }) {
   const { key, label, posts, layout } = cat;
