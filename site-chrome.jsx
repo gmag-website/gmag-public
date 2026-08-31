@@ -90,6 +90,127 @@ function NavIssueMenu({ en, isActive, as: Tag = 'li' }) {
   );
 }
 
+
+/* ---- mobile ----------------------------------------------------------------
+   The desktop nav is a single row that wraps into four lines on a phone, and
+   its issue menu opens on hover, which a touch screen cannot do. Below 760px
+   it is replaced by a slim bar — mark on the right, search and menu on the
+   left — and a drawer that opens from the right with the sections expanded in
+   place. Two separate components rather than one restyled: they behave
+   differently, not merely at different sizes. The drawer itself is portalled to
+   <body>: both bars are stacking contexts (sticky + z-index), and a fixed panel
+   inside one of them would be painted under the calligraphy that sits above it. */
+function MobileNav({ en, isActive }) {
+  const [open, setOpen] = React.useState(false);
+  const [issueOpen, setIssueOpen] = React.useState(false);
+  const [dossiersOpen, setDossiersOpen] = React.useState(false);
+  const panel = React.useRef(null);
+
+  React.useEffect(() => {
+    const shut = () => setOpen(false);
+    window.addEventListener('hashchange', shut);
+    return () => window.removeEventListener('hashchange', shut);
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    /* the page behind must not scroll while the drawer is over it */
+    const y = window.scrollY;
+    document.body.classList.add('nav-locked');
+    document.body.style.top = `-${y}px`;
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    if (panel.current) panel.current.focus();
+    return () => {
+      document.body.classList.remove('nav-locked');
+      document.body.style.top = '';
+      window.scrollTo(0, y);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const link = (href, label, extra = '') => (
+    <a href={href} className={`mnav-link${isActive(href) ? ' is-active' : ''}${extra ? ' ' + extra : ''}`}
+       onClick={() => setOpen(false)}>{label}</a>
+  );
+
+  return (
+    <React.Fragment>
+      <div className="mnav-controls">
+        <button className="mnav-icon" aria-label="جستجو"
+                onClick={() => window.dispatchEvent(new Event('gosan:search'))}>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.05" y2="16.05"></line></svg>
+        </button>
+        <button className={`mnav-icon mnav-burger${open ? ' is-open' : ''}`}
+                aria-label={open ? 'بستن منو' : 'منو'} aria-expanded={open}
+                onClick={() => setOpen((v) => !v)}>
+          <i></i><i></i><i></i>
+        </button>
+      </div>
+
+      {ReactDOM.createPortal(
+      <React.Fragment>
+      <div className={`mnav-scrim${open ? ' is-open' : ''}`} onClick={() => setOpen(false)} />
+      <div className={`mnav-panel${open ? ' is-open' : ''}`} ref={panel} tabIndex={-1}
+           role="dialog" aria-modal="true" aria-label={en ? 'Menu' : 'منو'}>
+        <div className="mnav-head">
+          <div>
+            <img src="assets/logo-gosan.png" alt="گوسان" />
+            <span>{en ? 'Year 1 · No. 1 · Autumn 2585' : 'سال یکم · شمارهٔ یکم · پاییز ۲۵۸۵'}</span>
+          </div>
+          <button className="mnav-close" aria-label={en ? 'Close' : 'بستن'}
+                  onClick={() => setOpen(false)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+          </button>
+        </div>
+
+        <nav className="mnav-body">
+          {link('#/', en ? 'Home' : 'خانه')}
+
+          <button className={`mnav-link mnav-toggle${issueOpen ? ' is-open' : ''}`}
+                  aria-expanded={issueOpen} onClick={() => setIssueOpen((v) => !v)}>
+            {en ? ISSUE_MENU.en : ISSUE_MENU.fa}<i aria-hidden="true"></i>
+          </button>
+          <div className={`mnav-sub${issueOpen ? ' is-open' : ''}`}><div>
+            {ISSUE_MENU.items.map((it) => (
+              it.children ? (
+                <React.Fragment key={it.fa}>
+                  <button className={`mnav-link mnav-toggle is-deep${dossiersOpen ? ' is-open' : ''}`}
+                          aria-expanded={dossiersOpen} onClick={() => setDossiersOpen((v) => !v)}>
+                    {en ? it.en : it.fa}<i aria-hidden="true"></i>
+                  </button>
+                  <div className={`mnav-sub is-deep${dossiersOpen ? ' is-open' : ''}`}><div>
+                    {it.children.map((c) => (
+                      <React.Fragment key={c.href}>{link(c.href, en ? c.en : c.fa, 'is-deep')}</React.Fragment>
+                    ))}
+                  </div></div>
+                </React.Fragment>
+              ) : (
+                <React.Fragment key={it.href}>{link(it.href, en ? it.en : it.fa, 'is-deep')}</React.Fragment>
+              )
+            ))}
+          </div></div>
+
+          {NAV_ITEMS.filter((it) => it.href !== '#/').map((it) => (
+            <React.Fragment key={it.href}>{link(it.href, en ? it.en : it.fa)}</React.Fragment>
+          ))}
+        </nav>
+
+        <div className="mnav-foot">
+          <a className="mnav-support" href="#/support" onClick={() => setOpen(false)}>
+            {en ? 'Friends of Gōsān' : 'یاران گوسان'}
+          </a>
+          <a className="mnav-think" href="#/thinktank">
+            {en ? 'The Gōsān Think Tank' : 'اندیشکدهٔ فرهنگ و هنر گوسان'}
+          </a>
+          <a className="mnav-mail" href="mailto:info@gosan.org">info@gosan.org</a>
+        </div>
+      </div>
+      </React.Fragment>, document.body)}
+    </React.Fragment>
+  );
+}
+
 function SiteHeader({ active, lang = 'fa', onToggleLang }) {
   const [scrolled, setScrolled] = React.useState(false);
   const [hash, setHash] = React.useState(() => window.location.hash || '#/');
@@ -106,7 +227,7 @@ function SiteHeader({ active, lang = 'fa', onToggleLang }) {
   return (
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
       <div className="wrap">
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.4rem' }}>
+        <nav className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '1.4rem' }}>
           <button
             className="nav-search"
             onClick={() => window.dispatchEvent(new Event('gosan:search'))}
@@ -134,9 +255,10 @@ function SiteHeader({ active, lang = 'fa', onToggleLang }) {
             </li>
           </ul>
         </nav>
-        <a href="#/" style={{ flexShrink: 0 }}>
+        <a href="#/" className="header-mark" style={{ flexShrink: 0 }}>
           <img src="assets/logo-gosan.png" alt="گوسان" className="header-logo" style={{ height: '40px' }} />
         </a>
+        <MobileNav en={en} isActive={isActive} />
       </div>
     </header>
   );
@@ -221,4 +343,4 @@ function NewsletterBand() {
   );
 }
 
-Object.assign(window, { NAV_ITEMS, SiteHeader, SiteFooter, PageTitle, NewsletterBand });
+Object.assign(window, { NAV_ITEMS, MobileNav, SiteHeader, SiteFooter, PageTitle, NewsletterBand });

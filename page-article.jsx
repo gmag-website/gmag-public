@@ -206,7 +206,7 @@ function ReadingIndicator() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
-    <div style={{ position: 'fixed', top: '90px', left: '2.2rem', bottom: '2.2rem', width: '3px', zIndex: 40 }}>
+    <div className="reading-rail" style={{ position: 'fixed', top: '90px', left: '2.2rem', bottom: '2.2rem', width: '3px', zIndex: 40 }}>
       <div style={{ position: 'absolute', inset: 0, width: '1px', right: 'auto', background: 'var(--line-draft)' }}></div>
       <div style={{ position: 'absolute', top: 0, width: '3px', height: `${progress * 100}%`, background: 'var(--ink)', transition: 'height 0.1s linear' }}></div>
       <span className="gsn-technical" style={{ position: 'absolute', bottom: '-1.4rem', left: '-0.4rem', fontSize: '0.6rem' }}>

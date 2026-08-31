@@ -79,6 +79,8 @@ const GOSAN_COVERS = {
   "music-totalitarian-regimes": "uploads/covers/music-totalitarian-regimes.jpg",
   "beyzaie-myth-symbolic-action": "uploads/covers/beyzaie-myth-symbolic-action.jpg",
   "between-two-defeats": "uploads/covers/between-two-defeats.jpg",
+  "between-two-defeats-2": "uploads/covers/between-two-defeats-2.jpg",
+  "between-two-defeats-3": "uploads/covers/between-two-defeats-3.jpg",
   "azarkeyvani-creation-myth": "uploads/covers/azarkeyvani-creation-myth.jpg",
   "note-for-gosan": "uploads/covers/note-for-gosan.jpg",
   "crossroads-ahead": "uploads/covers/crossroads-ahead.jpg"
@@ -91,6 +93,8 @@ const GOSAN_COVER_ALTS = {
   "music-totalitarian-regimes": "ویلهلم فورتونگلر در کنسرت کارخانهٔ آ.ا.گ، برلین — Bundesarchiv Bild 183-L0607-504, CC BY-SA 3.0 DE",
   "beyzaie-myth-symbolic-action": "پوستر چریکه تارا (۱۳۵۸)، ساختهٔ بهرام بیضایی",
   "between-two-defeats": "خیابان چراغ‌گاز، تهران، حدود ۱۲۶۰ خورشیدی — عکس آنتوان سوریوگین",
+  "between-two-defeats-2": "برش عرضی تالار اپرای پاریس (پاله گارنیه) — از نقشه‌های شارل گارنیه، ۱۸۸۰؛ مالکیت عمومی",
+  "between-two-defeats-3": "گراند هتل تهران در لاله‌زار، حدود دههٔ ۱۹۰۰ میلادی — تالاری که کنسرت قمرالملوک وزیری به سود ساخت آرامگاه فردوسی در آن برگزار شد؛ مالکیت عمومی",
   "azarkeyvani-creation-myth": "برگ نخست دست‌نویس وندیداد — CC0",
   "note-for-gosan": "سرلوحهٔ شمارهٔ نخست مجلهٔ کاوه، برلین، ۱۹۱۶",
   "crossroads-ahead": "دستهٔ موسیقی در اصفهان، دورهٔ قاجار — عکس آنتوان سوریوگین، موزهٔ ریتبرگ"
@@ -258,7 +262,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
   const interviews = ['interview-farnaz-modarresifar'].map(P).filter(Boolean);
   const reviews = [].map(P).filter(Boolean);
-  const policyDossier = ['between-two-defeats'].map(P).filter(Boolean);
+  const policyDossier = ['between-two-defeats', 'between-two-defeats-2', 'between-two-defeats-3'].map(P).filter(Boolean);
   const economyDossier = ['oil-to-narrative'].map(P).filter(Boolean);
   const reflections = ['beyzaie-myth-symbolic-action'].map(P).filter(Boolean);
   const popular = ['music-totalitarian-regimes', 'interview-farnaz-modarresifar', 'note-for-gosan', 'between-two-defeats', 'crossroads-ahead'].map(P).filter(Boolean);
@@ -425,6 +429,8 @@ function NcFloatingNav({ en }) {
           title={en ? 'Search ( / )' : 'جستجو ( / )'}
         ><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.05" y2="16.05"></line></svg></button>
       </div>
+      {/* below 760px .nc-topics-main and -controls are retired and this takes over */}
+      <MobileNav en={en} isActive={(href) => (window.location.hash || '#/') === href} />
     </nav>
   );
 }
