@@ -514,13 +514,16 @@ function SupportPage() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(178px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
             {[
-              /* what ONE MONTH at each level covers, taken from finance/RATES.md:
-                 technical run rate €15.16/mo, Band A €20/h, magazine essay €250,
-                 think-tank paper contribution €400. */
+              /* What ONE MONTH at each level covers, against finance/RATES.md
+                 (technical run rate €15.16/mo, Band A €20/h). The two upper
+                 cards name where the money goes and stop short of a fraction:
+                 a fraction is a price list — the reader multiplies it back and
+                 judges the fee, and the arithmetic was wrong besides, since B1
+                 is €400 per CONTRIBUTOR and a paper carries three of them. */
               { amt: 5, what: 'بخشی از هزینهٔ میزبانی و ابزارها را می‌پوشاند و چراغ تارنما را روشن نگه می‌دارد.' },
               { amt: 20, what: 'یک ساعت کار ویراستاری و آماده‌سازی متن را می‌پوشاند.' },
-              { amt: 50, what: 'یک‌پنجم قلم‌بهای یک جستار گاهنامه را فراهم می‌کند.' },
-              { amt: 100, what: 'یک‌چهارم قلم‌بهای یک مقالهٔ پژوهشی اندیشکده را فراهم می‌کند.' },
+              { amt: 50, what: 'سهمی از قلم‌بهای یک جستار گاهنامه است.' },
+              { amt: 100, what: 'سهمی از قلم‌بهای پژوهشگران اندیشکده است.' },
             ].map((t) => {
               const yLink = GOSAN_DONATE.yearly[t.amt];
               const mLink = GOSAN_DONATE.monthly[t.amt];
