@@ -547,6 +547,9 @@ function SupportPage() {
               );
             })}
           </div>
+          <p style={note}>
+            هر پرداخت یک‌باره است و خودبه‌خود تکرار نمی‌شود.
+          </p>
 
           <div style={label}>پی‌پال · PayPal</div>
           {GOSAN_DONATE.paypal
