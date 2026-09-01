@@ -332,6 +332,11 @@ function TableOfContents({ articleRef, slug }) {
       if (!h.id) h.id = 'sec-' + slug + '-' + i;
       return { id: h.id, text: (h.textContent || '').trim() };
     });
+    /* An essay whose sections are numbered rather than titled («۱», «۲», «۳»)
+       gives a contents list of bare numerals, which tells the reader nothing.
+       A contents list is worth having only when the headings are words. */
+    const worded = list.filter((it) => /[^\s\d\u06F0-\u06F9\u0660-\u0669.\u060C،-]/.test(it.text));
+    if (worded.length <= 3) { setItems([]); return; }
     setItems(list);
   }, [articleRef, slug]);
   if (items.length <= 3) return null;
@@ -695,7 +700,15 @@ function ArticleView({ slug }) {
             <AuthorAvatar name={post.author} bioHtml={GUEST_BY_SLUG[post.slug] ? null : ((ov && ov.bio) || null)} />
             <span style={{ color: 'var(--text-body)', fontWeight: 500 }}>{post.author}</span>
           </span>
-          <span className="byline-date" style={{ color: 'var(--accent)' }}>{(ov && ov.date) || post.date}</span>
+          {/* two dates: when the piece reached the تحریریه, and when it went out.
+              GOSAN_ISSUE_PUBLISHED is the issue's own publication date — every
+              essay in an issue is published on the same day. */}
+          <span className="byline-date" style={{ color: 'var(--accent)' }}>
+            دریافت: {(ov && ov.date) || post.date}
+          </span>
+          <span className="byline-date" style={{ color: 'var(--accent)' }}>
+            انتشار: {(post.published || GOSAN_ISSUE_PUBLISHED)}
+          </span>
         </div>
         <ArticleMeta articleRef={articleRef} slug={post.slug + (ov && ov.body ? '-ov' : '')} />
       </div>

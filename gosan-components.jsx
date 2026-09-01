@@ -109,6 +109,11 @@ const GOSAN_POSTS = [
 /* Essays published in ordered پاره. A reader reaching the foot of one is offered
    the next, so a long piece can be read straight through. Slugs in reading order;
    the article page derives «پیشین/بعدی» from the position. */
+/* When شمارهٔ ۱ goes out. Every essay in an issue carries the same publication
+   date; a post may override it with its own `published` field. 15 Sept 2026 =
+   ۲۴ شهریور ۱۴۰۵ = شهریور ۲۵۸۵. */
+const GOSAN_ISSUE_PUBLISHED = 'شهریور ۲۵۸۵';
+
 const GOSAN_SERIES = [
   ['between-two-defeats', 'between-two-defeats-2', 'between-two-defeats-3'],
 ];
@@ -166,7 +171,8 @@ const GOSAN_SUMMARIES = {
 
 Object.assign(window, {
   Button, Tag, SectionHead, ArticleCard, Verse, PullQuote, GoldDots, DraftFrame, FormField,
-  DraftLineH, DraftLineV, Reveal, useParallax, GOSAN_POSTS, GOSAN_SUMMARIES, GOSAN_SERIES, ClockIcon,
+  DraftLineH, DraftLineV, Reveal, useParallax, GOSAN_POSTS, GOSAN_SUMMARIES, GOSAN_SERIES,
+  GOSAN_ISSUE_PUBLISHED, ClockIcon,
   gosanFormSubmit, gosanMailtoFallback,
 });
 

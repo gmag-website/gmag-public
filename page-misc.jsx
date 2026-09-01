@@ -205,7 +205,7 @@ function AboutManifesto() {
                 <dd>یلدا زمانی</dd>
               </div>
             </dl>
-            <span className="about-spine">گوسان، سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵</span>
+            <span className="about-spine">گوسان · سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵)</span>
           </div>
         </div>
       </section>
@@ -251,7 +251,7 @@ function AboutPage() {
                 <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>TEAM // ISSUE 01 — SUMMER 2585</span>
                 <SectionHead title="هیئت تحریریه" />
                 <p className="board-hint">
-                  دست‌اندرکاران این شماره؛ سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵.
+                  دست‌اندرکاران این شماره؛ سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵).
                 </p>
               </Reveal>
               <Reveal delay={120}>
@@ -345,7 +345,6 @@ function ContactPage() {
 function ImpressumPage() {
   const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '1.9rem 0 0.55rem' };
   const line = { fontSize: '0.98rem', lineHeight: 2, color: 'var(--ink)', margin: '0 0 0.3rem', direction: 'ltr', textAlign: 'right' };
-  const empty = { color: 'var(--text-muted)', fontStyle: 'italic' };
   const mail = { direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 };
   return (
     <main data-screen-label="Impressum">
@@ -373,7 +372,7 @@ function ImpressumPage() {
           <p style={line}>Vereinsregister-Nummer wird nachgetragen.</p>
 
           <div style={label}>شمارهٔ مالیاتی · Umsatzsteuer-Identifikationsnummer</div>
-          <p style={line}><span style={empty}>—</span></p>
+          <p style={line}>Nicht vorhanden; wird nachgetragen, sofern erteilt.</p>
 
           <div style={label}>مسئول محتوا · Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</div>
           <p style={line}>Yalda Zamani</p>

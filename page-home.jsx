@@ -8,10 +8,10 @@ const GOSAN_POSTS_EN = {};
 const HOME_T = {
   fa: {
     mastName: 'گاهنامهٔ فرهنگی و هنری گوسان',
-    issueR: 'سال یکم · شمارهٔ یکم', season: 'پاییز ۲۵۸۵ (۱۴۰۵)',
+    issueR: 'سال ۱ · شمارهٔ ۱', season: 'پاییز ۲۵۸۵ (۱۴۰۵)',
     tagline: 'گاهنامه‌ای در فرهنگ، هنر و میراث کهن ایران',
     subSmall: 'ده شماره در سال · دسترسی به بایگانی', sub: 'دریافت این شماره',
-    issueLine: 'شمارهٔ یکم — پاییز ۲۵۸۵',
+    issueLine: 'سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵)',
     notes: 'یادداشت‌ها و درنگ‌ها', features: 'جستارهای این شماره', featuresMore: 'همهٔ جستارها ←',
     interviews: 'گفتگو', interviewsMore: 'همهٔ گفتگوها ←', poetry: 'شعر',
     memoriam: 'یادمان', memoriamMore: 'همهٔ یادمان‌ها ←', popular: 'پرخواننده‌ترین‌ها',
@@ -286,7 +286,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
       <div className="nc-masthead">
         <div className="nc-masthead-grid">
           <div className="nc-mast-side is-start">
-            <a href="#/archive"><img className="nc-mast-cover" src="assets/issue-cover.jpg" alt={en ? 'Issue No. 1 cover' : 'جلد شمارهٔ یکم'} /></a>
+            <a href="#/archive"><img className="nc-mast-cover" src="assets/issue-cover.jpg" alt={en ? 'Issue No. 1 cover' : 'جلد شمارهٔ ۱'} /></a>
             <div className="nc-mast-meta">
               <span className="nc-mast-name">{T.mastName}</span>
               <span className="nc-issueline">{T.issueR} · {T.season}</span>
@@ -339,7 +339,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
           </div>
 
           <div className="nc-aside-block nc-cover-card">
-            <img src="assets/issue-cover.jpg" alt={en ? 'Gōsān, Issue No. 1' : 'جلد شمارهٔ یکم گوسان'} />
+            <img src="assets/issue-cover.jpg" alt={en ? 'Gōsān, Issue No. 1' : 'جلد شمارهٔ ۱ گوسان'} />
             <h4>{T.coverH}</h4>
             <Button onClick={() => window.dispatchEvent(new CustomEvent('gosan:subscribe', { detail: 'issues' }))}>{T.coverBtn}</Button>
           </div>

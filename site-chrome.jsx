@@ -11,10 +11,10 @@ const NAV_ITEMS = [
   // { fa: 'شیوه‌نامه', en: 'Style', href: '#/shivenameh' },
 ];
 
-/* «شمارهٔ یکم» — the issue's sections, opened on hover (and on click for touch).
+/* «شمارهٔ نخست» — the issue's sections, opened on hover (and on click for touch).
    پرونده‌ها carries a nested list that opens beside it. */
 const ISSUE_MENU = {
-  fa: 'شمارهٔ یکم', en: 'Issue No. 1', href: '#/archive',
+  fa: 'شمارهٔ نخست', en: 'Issue No. 1', href: '#/archive',
   items: [
     { fa: 'جستار', en: 'Essays', href: '#/archive/جستار' },
     { fa: 'پرونده‌ها', en: 'Dossiers', children: [
@@ -156,7 +156,7 @@ function MobileNav({ en, isActive }) {
         <div className="mnav-head">
           <div>
             <img src="assets/logo-gosan.png" alt="گوسان" />
-            <span>{en ? 'Year 1 · No. 1 · Autumn 2585' : 'سال یکم · شمارهٔ یکم · پاییز ۲۵۸۵'}</span>
+            <span>{en ? 'Year 1 · No. 1 · Autumn 2585' : 'سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵)'}</span>
           </div>
           <button className="mnav-close" aria-label={en ? 'Close' : 'بستن'}
                   onClick={() => setOpen(false)}>
@@ -299,7 +299,7 @@ function SiteFooter({ route }) {
         </div>
       </div>
       <div style={{ borderTop: '1px solid var(--line-dark)', textAlign: 'center', padding: '1.2rem', fontSize: '0.78rem', color: '#9A9A9A' }}>
-        گاهنامهٔ گوسان <span style={{ color: 'var(--gold)' }}>●</span> سال یکم، شمارهٔ یکم، پاییز ۲۵۸۵ <span style={{ color: 'var(--gold)' }}>●</span> همهٔ حقوق محفوظ است
+        گاهنامهٔ گوسان <span style={{ color: 'var(--gold)' }}>●</span> سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵) <span style={{ color: 'var(--gold)' }}>●</span> همهٔ حقوق محفوظ است
       </div>
     </footer>
   );
