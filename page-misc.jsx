@@ -483,7 +483,6 @@ function SupportPage() {
   const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '2rem 0 0.6rem' };
   const para = { fontSize: '0.95rem', lineHeight: 2.05, color: 'var(--ink)', margin: '0 0 1rem', textAlign: 'justify' };
   const note = { fontSize: '0.85rem', lineHeight: 2, color: 'var(--text-muted)', margin: '0 0 1rem', textAlign: 'justify' };
-  const lead = { fontFamily: 'var(--font-display)', fontSize: '1.32rem', lineHeight: 1.85, fontWeight: 700, color: 'var(--ink)', margin: '0 0 1.5rem', textWrap: 'balance' };
   const payBtn = {
     display: 'inline-block', padding: '0.7rem 2.2rem', border: '1px solid var(--ink)',
     background: GOSAN_DONATE.paypal ? 'var(--ink)' : 'var(--surface-band)',
@@ -495,13 +494,8 @@ function SupportPage() {
       <PageTitle technical="SUPPORT // GŌSĀN" title="حمایت از گوسان" />
       <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
         <Reveal>
-          {/* the page opens on its own statement rather than carrying it as a
-              subtitle under the title */}
-          <p style={lead}>
-            گاهنامه و اندیشکده تنها با پشتیبانی خوانندگان سر پا می‌مانند.
-          </p>
           <p style={para}>
-            گوسان بر کمک خوانندگان خود استوار است. قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی گاهنامه و اندیشکده، همه از همین راه تأمین می‌شود. آگهی و بودجهٔ نهادی در کار نیست؛ حامیان در محتوا دستی ندارند و یافته‌های گوسان را همراه با همگان، پس از انتشار می‌خوانند.
+            گاهنامه و اندیشکده تنها با پشتیبانی خوانندگان سر پا می‌مانند. قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی، همه از همین راه تأمین می‌شود. آگهی و بودجهٔ نهادی در کار نیست؛ حامیان در محتوا دستی ندارند و یافته‌های گوسان را همراه با همگان، پس از انتشار می‌خوانند.
           </p>
 
           <div style={{ border: '1px solid var(--gold)', padding: '1rem 1.3rem', margin: '1.4rem 0' }}>
@@ -520,10 +514,13 @@ function SupportPage() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(178px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
             {[
-              { amt: 5, what: 'با پرداخت هزینه‌های میزبانی و ابزارها، چراغ تارنما را روشن نگه می‌دارد.' },
-              { amt: 20, what: 'یک سال حمایت، قلم‌بهای یک جستار گاهنامه را می‌پردازد.' },
-              { amt: 50, what: 'یک سال حمایت، هزینهٔ یک مقالهٔ پژوهشی اندیشکده و بخشی از یک جستار را می‌پردازد.' },
-              { amt: 100, what: 'یک سال حمایت، هزینهٔ یک مقالهٔ کامل اندیشکده و قلم‌بهای پژوهشگران آن را می‌پردازد.' },
+              /* what ONE MONTH at each level covers, taken from finance/RATES.md:
+                 technical run rate €15.16/mo, Band A €20/h, magazine essay €250,
+                 think-tank paper contribution €400. */
+              { amt: 5, what: 'بخشی از هزینهٔ میزبانی و ابزارها را می‌پوشاند و چراغ تارنما را روشن نگه می‌دارد.' },
+              { amt: 20, what: 'یک ساعت کار ویراستاری و تولید را می‌پوشاند.' },
+              { amt: 50, what: 'یک‌پنجم قلم‌بهای یک جستار گاهنامه را فراهم می‌کند.' },
+              { amt: 100, what: 'یک‌چهارم قلم‌بهای یک مقالهٔ پژوهشی اندیشکده را فراهم می‌کند.' },
             ].map((t) => {
               const yLink = GOSAN_DONATE.yearly[t.amt];
               const mLink = GOSAN_DONATE.monthly[t.amt];
@@ -543,11 +540,11 @@ function SupportPage() {
                   <span style={{ fontSize: '0.76rem', lineHeight: 1.8, color: 'var(--text-muted)', minHeight: '3.6em' }}>{t.what}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: 'auto', borderTop: '1px dashed var(--line, #CFCCC3)', paddingTop: '0.7rem' }}>
                     {mLink
-                      ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</a>
-                      : <span style={optStyle(false, false)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</span>}
+                      ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</a>
+                      : <span style={optStyle(true, false)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</span>}
                     {yLink
-                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
-                      : <span style={optStyle(true, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
+                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
+                      : <span style={optStyle(false, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
                   </div>
                 </div>
               );
