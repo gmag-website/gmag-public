@@ -120,7 +120,7 @@ function Credentials() {
       <h2 className="gsn-display cred-title">شناسنامهٔ شماره</h2>
       <dl className="cred-list">
         <div className="cred-row">
-          <dt>مدیر مسئول و سردبیر</dt>
+          <dt>مدیرمسئول و سردبیر</dt>
           <dd>یلدا زمانی</dd>
         </div>
         <div className="cred-row">
@@ -181,7 +181,7 @@ function AboutManifesto() {
                 <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e. V. i. Gr.</span></dd>
               </div>
               <div className="cred-row">
-                <dt>مدیر مسئول و سردبیر</dt>
+                <dt>مدیرمسئول و سردبیر</dt>
                 <dd>یلدا زمانی</dd>
               </div>
               <div className="cred-row">
