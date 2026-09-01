@@ -495,7 +495,7 @@ function SupportPage() {
       <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
         <Reveal>
           <p style={para}>
-            گوسان نه آگهی و نه بودجه‌ای از جایی می‌پذیرد. هزینهٔ گاهنامه و اندیشکده (قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی)، یکسره از کمک‌های مردمی تأمین می‌شود. هیچ حامی‌ای بر محتوا اثر نمی‌گذارد و هیچ یافته‌ای را پیش از انتشار نمی‌بیند.
+            گوسان بر کمک خوانندگان خود استوار است. قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی گاهنامه و اندیشکده، همه از همین راه تأمین می‌شود. آگهی و بودجهٔ نهادی در کار نیست؛ حامیان در محتوا دستی ندارند و یافته‌های گوسان را همراه با همگان، پس از انتشار می‌خوانند.
           </p>
 
           <div style={{ border: '1px solid var(--gold)', padding: '1rem 1.3rem', margin: '1.4rem 0' }}>
@@ -533,15 +533,15 @@ function SupportPage() {
               });
               return (
                 <div key={t.amt} style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1rem 0.8rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--ink)' }}>{'\u20AC'}{t.amt}<span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}> به بالا</span></span>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--ink)' }}>{'\u20AC'}{t.amt}</span>
                   <span style={{ fontSize: '0.76rem', lineHeight: 1.8, color: 'var(--text-muted)', minHeight: '3.6em' }}>{t.what}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: 'auto', borderTop: '1px dashed var(--line, #CFCCC3)', paddingTop: '0.7rem' }}>
-                    {yLink
-                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
-                      : <span style={optStyle(true, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
                     {mLink
                       ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</a>
                       : <span style={optStyle(false, false)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</span>}
+                    {yLink
+                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
+                      : <span style={optStyle(true, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
                   </div>
                 </div>
               );
