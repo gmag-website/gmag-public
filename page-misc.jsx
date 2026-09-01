@@ -563,10 +563,7 @@ function SupportPage() {
 
           <div style={label}>حامیان در آلمان</div>
           <p style={note}>
-            پس از تأیید عام‌المنفعگی از سوی ادارهٔ دارایی (§ 60a AO)، برای کمک‌ها گواهی مالیاتی (Zuwendungsbestätigung) صادر خواهد شد. تا آن زمان کمک پذیرفته می‌شود، اما گواهی ندارد.
-          </p>
-          <p style={note}>
-            پس از تأیید عام‌المنفعگی، حق عضویت حامیان برای مالیات‌دهندگان آلمان کسرپذیر است و حمایت از انجمن‌های فرهنگی مشمول کسر مالیاتی است.
+            پس از آنکه ادارهٔ دارایی عام‌المنفعگی گوسان را تأیید کند (§ 60a AO)، برای کمک‌ها و حق عضویت گواهی مالیاتی (Zuwendungsbestätigung) صادر می‌شود و مالیات‌دهندگان آلمان می‌توانند آن را در اظهارنامهٔ مالیاتی خود به حساب آورند؛ کمک به انجمن‌های فرهنگی از همین معافیت برخوردار است. تا آن هنگام کمک‌ها پذیرفته می‌شود، ولی گواهی مالیاتی همراه ندارد.
           </p>
 
           <div style={label}>حامیان در اروپا و دیگر کشورها · European &amp; International Donors</div>
@@ -586,7 +583,7 @@ function SupportPage() {
 
           <MotifDivider style={{ margin: '2.4rem 0 1.2rem' }} />
           <div style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1.3rem 1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--ink)' }}>پرسش دربارهٔ حمایت، کمک نهادی یا همکاری؟</p>
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--ink)' }}>برای پرسش دربارهٔ حمایت، کمک نهادی یا همکاری با ما در تماس باشید.</p>
             <a href="mailto:info@gosan.org" style={{ display: 'inline-block', padding: '0.55rem 1.7rem', border: '1px solid var(--ink)', background: 'var(--ink)', color: 'var(--paper, #EAEAE6)', fontWeight: 600, fontSize: '0.88rem', textDecoration: 'none', direction: 'ltr' }}>info@gosan.org</a>
           </div>
         </Reveal>
