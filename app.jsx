@@ -55,7 +55,7 @@ const PAGE_TITLES = {
   support: 'گوسان — حمایت از گوسان',
 };
 
-// The think tank is its own multi-page site (institute-v3*), but the link is
+// The think tank is its own multi-page site (gosan-institute*), but the link is
 // DISCONNECTED for now (editor-in-chief, 2 Aug 2026): the button stays visible,
 // visitors land on this placeholder until the pages are ready to show.
 function ThinktankRedirect({ lang }) {

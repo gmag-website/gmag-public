@@ -880,7 +880,6 @@ body[data-motion="off"] .summary-collapse { transition: none; }
    column would finish level with the engraving, and the engraving has since
    moved up into the opening block. 5 × 148 + 4 × 1rem = 804 inside an 898
    column, so they still hold one line. */
-.board-inline .board-card-role { line-height: 1.5; }
 
 /* nowrap holds the five faces on one line only while the column is wide
    enough for them; below that it would push the row past the column edge */
@@ -924,12 +923,11 @@ body[data-motion="off"] .summary-collapse { transition: none; }
 }
 .board-card figcaption { text-align: center; margin-top: 0.9rem; }
 .board-card-name {
-  display: block; font-family: var(--font-display); font-weight: 800;
+  display: block; font-family: var(--font-display); font-weight: 400;
   font-size: 1.02rem; color: var(--ink); transition: color var(--speed-fast);
 }
 .board-card:hover .board-card-name { color: var(--gold-deep); }
 .board-card.is-open .board-card-name { color: var(--accent-strong); }
-.board-card-role { display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
 
 /* turquoise bio popover — opens centered OVER the clicked circle (overlays, no layout shift) */
 /* the bio opens in the space that appears between the portraits and the
