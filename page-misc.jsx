@@ -483,6 +483,7 @@ function SupportPage() {
   const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '2rem 0 0.6rem' };
   const para = { fontSize: '0.95rem', lineHeight: 2.05, color: 'var(--ink)', margin: '0 0 1rem', textAlign: 'justify' };
   const note = { fontSize: '0.85rem', lineHeight: 2, color: 'var(--text-muted)', margin: '0 0 1rem', textAlign: 'justify' };
+  const lead = { fontFamily: 'var(--font-display)', fontSize: '1.32rem', lineHeight: 1.85, fontWeight: 700, color: 'var(--ink)', margin: '0 0 1.5rem', textWrap: 'balance' };
   const payBtn = {
     display: 'inline-block', padding: '0.7rem 2.2rem', border: '1px solid var(--ink)',
     background: GOSAN_DONATE.paypal ? 'var(--ink)' : 'var(--surface-band)',
@@ -491,9 +492,14 @@ function SupportPage() {
   };
   return (
     <main data-screen-label="حمایت از گوسان">
-      <PageTitle technical="SUPPORT // GŌSĀN" title="حمایت از گوسان" lede="گاهنامه و اندیشکده تنها با پشتیبانی خوانندگان سر پا می‌مانند" />
+      <PageTitle technical="SUPPORT // GŌSĀN" title="حمایت از گوسان" />
       <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
         <Reveal>
+          {/* the page opens on its own statement rather than carrying it as a
+              subtitle under the title */}
+          <p style={lead}>
+            گاهنامه و اندیشکده تنها با پشتیبانی خوانندگان سر پا می‌مانند.
+          </p>
           <p style={para}>
             گوسان بر کمک خوانندگان خود استوار است. قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی گاهنامه و اندیشکده، همه از همین راه تأمین می‌شود. آگهی و بودجهٔ نهادی در کار نیست؛ حامیان در محتوا دستی ندارند و یافته‌های گوسان را همراه با همگان، پس از انتشار می‌خوانند.
           </p>
