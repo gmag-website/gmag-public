@@ -73,7 +73,6 @@ function postFor(slug, lang) {
 /* Home-page cover photos use a black-and-white halftone treatment (separate
    files); the same photos appear inside the articles in their original form. */
 const GOSAN_COVERS = {
-  "manichaean-music-terms": "uploads/covers/manichaean-music-terms.jpg",
   "oil-to-narrative": "uploads/covers/oil-to-narrative.jpg",
   "interview-farnaz-modarresifar": "uploads/covers/interview-farnaz-modarresifar.jpg",
   "music-totalitarian-regimes": "uploads/covers/music-totalitarian-regimes.jpg",
@@ -87,7 +86,6 @@ const GOSAN_COVERS = {
 };
 
 const GOSAN_COVER_ALTS = {
-  "manichaean-music-terms": "برگ مصور مانوی-اویغوری، تورفان (MIK III 4959) — موزهٔ هنر آسیایی برلین، CC0",
   "oil-to-narrative": "چاه نفت در ایران، حدود دههٔ ۱۹۱۰ — عکس A. P. Godber",
   "interview-farnaz-modarresifar": "فرناز مدرسی‌فر در ویلای مدیچی، ۲۰۲۵ — عکس: فرید مدرسی‌فر",
   "music-totalitarian-regimes": "ویلهلم فورتونگلر در کنسرت کارخانهٔ آ.ا.گ، برلین — Bundesarchiv Bild 183-L0607-504, CC BY-SA 3.0 DE",
@@ -258,7 +256,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     .map(P)
     .filter(Boolean);
   const notes = [].map(P).filter(Boolean);
-  const features = ['azarkeyvani-creation-myth', 'manichaean-music-terms', 'music-totalitarian-regimes'].map(P).filter(Boolean);
+  const features = ['azarkeyvani-creation-myth', 'music-totalitarian-regimes'].map(P).filter(Boolean);
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
   const interviews = ['interview-farnaz-modarresifar'].map(P).filter(Boolean);
   const reviews = [].map(P).filter(Boolean);
