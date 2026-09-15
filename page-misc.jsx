@@ -59,11 +59,11 @@ const GOSAN_BOARD = [
   { key: 'hafez', name: 'حافظ باباشاهی', role: 'هیئت تحریریه', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-hafez.png',
     bio: 'موسیقیدان و دانش‌آموختهٔ دانشگاه موسیقی وین، بنیان‌گذار جشنوارهٔ آواز کلاسیک «وینر لیدر هربست»، مدیر هنری مسابقهٔ پیانوی ماکان، مدرس پیانو در کنسرواتوار ریشارد واگنر وین و از بنیان‌گذاران گاهنامهٔ «گوسان» است.' },
   { key: 'yalda', name: 'یلدا زمانی', role: 'مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان', craft: 'رهبر ارکستر، آهنگساز', img: 'assets/board-yalda.png',
-    bio: 'رهبر ارکستر ایرانی–آلمانی مقیم برلین و متخصص موسیقی معاصر؛ دستیار رهبر ارکستر آنسامبل اینترکنتمپورن در فیلارمونی پاریس و بنیان‌گذار ارکستر مجلسی اِلبه در هامبورگ. مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان.' },
+    bio: 'رهبر ارکستر و آهنگساز؛ مدرس پیشین و دانشجوی دکتری موسیقی و فناوری در دانشگاه موسیقی و تئاتر هامبورگ، دستیار پیشین رهبر آنسامبل اینترکنتمپورن پاریس، بنیان‌گذار و مدیر هنری ارکستر مجلسی معاصر البه، مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان و سردبیر گاهنامهٔ گوسان، و پژوهشگر و مشاور سیاست‌گذاری فرهنگی.' },
   { key: 'ehsan', name: 'احسان شواربی', role: 'مدیر بخش پژوهش', craft: 'باستان‌شناس، سکه‌شناس', img: 'assets/board-ehsan.png',
     bio: 'باستان‌شناس و سکه‌شناس؛ متصدی سکه‌های سدهٔ میانه و شرق در موزهٔ تاریخ هنر وین و پژوهشگر سکه‌شناسی ساسانی و زبان‌ها و کتیبه‌های ایران باستان.' },
   { key: 'sohrab', name: 'سهراب لبیب', role: 'هیئت تحریریه', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-sohrab.png',
-    bio: 'پیانیست و مدرس موسیقی؛ علاقه‌مند به پیوند شعر و نغمه و بازخوانی سنت موسیقایی ایران برای نسل امروز.' },
+    bio: 'پیانیست و مدرس موسیقی؛ دانش‌آموختهٔ هنرستان موسیقی تهران و مدرسهٔ عالی آلفرد کورتو در پاریس با بالاترین درجه در نوازندگی پیانو، فعال فرهنگی و اجتماعی در پیوند با ایران از ۱۳۸۸.' },
   { key: 'amin', name: 'امین نایب‌پور', role: 'هیئت تحریریه', craft: 'محقق اندیشهٔ سیاسی', img: 'assets/board-amin.png',
     bio: 'پژوهشگر اندیشهٔ سیاسی؛ نویسندهٔ جستارهایی در نسبت فرهنگ، جامعه و قدرت در ایران معاصر و دیروز.' },
 ]
@@ -104,7 +104,7 @@ function EditorialBoard() {
           never valid markup */}
       {open !== null ? (
         <div className="board-bio" role="region" aria-live="polite">
-          <p>{GOSAN_BOARD[open].bio}</p>
+          {GOSAN_BOARD[open].bio.split('\n').map((para, i) => <p key={i} style={i ? { marginTop: '0.8em' } : null}>{para}</p>)}
         </div>
       ) : null}
     </div>
@@ -202,6 +202,13 @@ function AboutManifesto() {
               <div className="cred-row">
                 <dt>طراحی و هویت بصری</dt>
                 <dd>یلدا زمانی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>شاپا · ISSN</dt>
+                <dd>
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>ISSN 3056-2201</span> (چاپی)<br />
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>ISSN 3056-221X</span> (برخط)
+                </dd>
               </div>
             </dl>
             <span className="about-spine">گوسان · سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵)</span>
@@ -369,6 +376,13 @@ function ImpressumPage() {
           <div style={label}>ثبت انجمن · Registereintrag</div>
           <p style={line}>Eintragung beim Amtsgericht beantragt.</p>
           <p style={line}>Vereinsregister-Nummer wird nachgetragen.</p>
+
+          <div style={label}>شاپا · ISSN</div>
+          <p style={line}>ISSN 3056-221X (Online-Ausgabe)</p>
+          <p style={line}>ISSN 3056-2201 (Druckausgabe)</p>
+          <p style={{ ...line, direction: 'rtl', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            زیر عنوان <span style={{ direction: 'ltr', display: 'inline-block' }}>Gāhnāme-ye Gōsān</span>، از سوی مرکز ملی شاپای آلمان (کتابخانهٔ ملی آلمان).
+          </p>
 
           <div style={label}>شمارهٔ مالیاتی · Umsatzsteuer-Identifikationsnummer</div>
           <p style={line}>Nicht vorhanden; wird nachgetragen, sofern erteilt.</p>

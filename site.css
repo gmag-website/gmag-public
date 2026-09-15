@@ -1428,6 +1428,10 @@ body[data-motion="off"] .tt-wave span { animation: none !important; }
 .nc-mast-cover { position: relative;
   top: calc(var(--mast-logo) * 0.20304 + var(--mast-drop) - 57.55px);
   display: block; width: 78px; height: auto; box-shadow: 0 6px 20px -10px rgba(0,0,0,0.4); margin-top: 0.3rem; }
+/* the print ISSN, set as a second issue line under the first: same technical
+   register, always left-to-right so the number never reorders in the RTL column. */
+.nc-mast-issn { direction: ltr; unicode-bidi: isolate; font-size: 0.55rem; opacity: 0.85; }
+.nc-mast-meta .nc-mast-issn { margin-top: -0.2rem; }
 .nc-mast-sub {
   font-size: 0.82rem; color: var(--ink); text-decoration: none;
   background: none; border: 0; padding: 0; font-family: inherit; cursor: pointer;

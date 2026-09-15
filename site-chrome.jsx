@@ -299,7 +299,11 @@ function SiteFooter({ route }) {
         </div>
       </div>
       <div style={{ borderTop: '1px solid var(--line-dark)', textAlign: 'center', padding: '1.2rem', fontSize: '0.78rem', color: '#9A9A9A' }}>
-        گاهنامهٔ گوسان <span style={{ color: 'var(--gold)' }}>●</span> سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵) <span style={{ color: 'var(--gold)' }}>●</span> همهٔ حقوق محفوظ است
+        گاهنامهٔ گوسان <span style={{ color: 'var(--gold)' }}>●</span> سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵) <span style={{ color: 'var(--gold)' }}>●</span>{' '}
+        {/* online ISSN, assigned by the Nationales ISSN-Zentrum 3 Sep 2026; the print
+            number 3056-2201 sits on the homepage masthead beside the cover.
+            legal/issn/04_ISSN-Zuteilung.md */}
+        <span style={{ direction: 'ltr', unicodeBidi: 'isolate', display: 'inline-block' }}>ISSN 3056-221X</span> <span style={{ color: 'var(--gold)' }}>●</span> همهٔ حقوق محفوظ است
       </div>
     </footer>
   );
@@ -308,7 +312,7 @@ function SiteFooter({ route }) {
 /* shared title block for inner pages */
 function PageTitle({ technical, title, lede }) {
   return (
-    <div style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem 2.5rem', textAlign: 'center', position: 'relative' }}>
+    <div className="page-title" style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem 2.5rem', textAlign: 'center', position: 'relative' }}>
       <DraftLineH top="2.4rem" right="-6rem" left="-6rem" />
       <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>{technical}</span>
       <h1 className="gsn-display" style={{ fontSize: 'var(--text-display)', margin: '1rem 0 0.6rem' }}>{title}</h1>

@@ -290,6 +290,10 @@ function HomePage({ lang = 'fa', onToggleLang }) {
             <div className="nc-mast-meta">
               <span className="nc-mast-name">{T.mastName}</span>
               <span className="nc-issueline">{T.issueR} · {T.season}</span>
+              {/* print ISSN, assigned by the Nationales ISSN-Zentrum 3 Sep 2026 —
+                  it belongs beside the printed cover; the online number 3056-221X
+                  is carried in the Impressum. legal/issn/04_ISSN-Zuteilung.md */}
+              <span className="nc-issueline nc-mast-issn">ISSN 3056-2201</span>
               <button
                 type="button"
                 className="nc-mast-sub"

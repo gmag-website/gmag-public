@@ -522,7 +522,7 @@ function RemembranceRibbon() {
         aria-expanded={open}
         aria-label="یاد فرزندان ایران"
       >
-        <img src="assets/memorial/lion-and-sun-soft.svg" alt="" />
+        <img src="assets/emblem-lion-and-sun.svg" alt="" />
       </button>
     </div>,
     document.body
