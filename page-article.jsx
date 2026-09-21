@@ -30,8 +30,10 @@ const AUTHOR_PHOTOS = {
   "حافظ باباشاهی": "assets/board-hafez.png",
   "یلدا زمانی": "assets/board-yalda.png",
   "مصطفی بوشهری": "assets/author-mostafa-bushehri.png",
-  "مهرداد غلامی": "assets/author-mehrdad-gholami.png",
-  "حامد امان‌پور قرایی": "assets/author-hamed-amanpour-gharaei.png"
+  "مهرداد غلامی": "assets/author-mehrdad-gholami.png?v=2",
+  "حامد امان‌پور قرایی": "assets/author-hamed-amanpour-gharaei.png",
+  "فرزانه گشتاسب": "assets/author-farzaneh-goshtasb.png?v=2",
+  "سام گیوراد": "assets/author-sam-givrad.png"
 };
 
 /* interview guests — the bio block shows the interviewee, not the interviewer */
@@ -43,10 +45,21 @@ const AUTHOR_BIOS = {
   "مصطفی بوشهری": "پژوهشگر حوزهٔ اقتصاد، مالی و انرژی است. او پیش‌تر به‌عنوان پژوهشگر انرژی جهانی در مرکز سیاست‌گذاری انرژی جهانی دانشگاه کلمبیا فعالیت داشته و دارای مدرک کارشناسی ارشد مدیریت و امور مالی از دانشگاه کلمبیا است.",
   "یلدا زمانی": "رهبر ارکستر و آهنگساز؛ مدرس پیشین اجرای موسیقی معاصر در دانشگاه موسیقی و تئاتر هامبورگ (۲۰۲۲–۲۰۲۴) و دانشجوی دکتری موسیقی و فناوری در همین دانشگاه، دستیار پیشین رهبر آنسامبل اینترکنتمپورن پاریس (۲۰۲۴–۲۰۲۶)، مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان و سردبیر گاهنامهٔ گوسان.\nدانش‌آموختهٔ کارشناسی رهبری ارکستر از دانشگاه خصوصی موسیقی و هنر شهر وین (MUK) و کارشناسی ارشد رهبری با گرایش اجرای موسیقی کلاسیک معاصر از دانشگاه موسیقی و تئاتر فرانکفورت است. بنیان‌گذار و مدیر هنری ارکستر مجلسی معاصر البه است و از تازه‌ترین اجراهایش می‌توان به نخستین کنسرت‌هایش با ارکستر سمفونیک WDR در جشنوارهٔ «موسیقی زمانه» و با آنسامبل اینترکنتمپورن در فیلارمونی پاریس و تئاتر شاتله اشاره کرد.\nپژوهشگر و مشاور سیاست‌گذاری فرهنگی نیز هست و بر چارچوب‌های حکمرانی هنر و صنایع خلاق تمرکز دارد؛ با تکیه بر دوازده سال کار حرفه‌ای در میدان هنر، دانش عملی این عرصه را در طراحی سیاست‌های فرهنگی بر پایهٔ شواهد به کار می‌گیرد. هم‌اکنون دوره‌های تخصصی تحلیل سیاست عمومی در مدرسهٔ اقتصاد و علوم سیاسی لندن (LSE) و اقتصاد سیاست عمومی در مدرسهٔ حکمرانی بلاواتنیک دانشگاه آکسفورد را به پایان می‌برد.",
   "حافظ باباشاهی": "موسیقیدان و دانش‌آموختهٔ دانشگاه موسیقی وین، بنیان‌گذار جشنوارهٔ آواز کلاسیک «وینر لیدر هربست»، مدیر هنری مسابقهٔ پیانوی ماکان، مدرس پیانو در کنسرواتوار ریشارد واگنر وین و از بنیان‌گذاران گاهنامهٔ «گوسان» است.",
-  "مهرداد غلامی": "فلوتیست و استاد دانشگاه Western Washington University در ایالت واشنگتن است.",
-  "سام گیوراد": "نویسندهٔ حوزهٔ تاریخ و فرهنگ ایران است.",
+  "مهرداد غلامی": "فلوتیست، پژوهشگر و استاد فلوت در دانشگاه واشنگتن غربی (Western Washington University) است. وی آموزش موسیقی را در تهران آغاز کرد و با کسب رتبهٔ نخست کنکور سراسری هنر و بورس بنیاد ملی نخبگان به دانشگاه تهران راه یافت؛ سپس کارشناسی ارشد و دکتری نوازندگی فلوت را در دانشگاه تگزاس کریستین و نزد شانا تامپسون به پایان رساند. رسالهٔ دکتری وی، دربارهٔ موسیقی معاصر ایرانی برای فلوت و تاریخ موسیقی کلاسیک غربی در ایران، در ۲۰۲۳ برگزیدهٔ مسابقهٔ پژوهش تحصیلات تکمیلی انجمن ملی فلوت آمریکا شد. مهرداد غلامی با ارکستر سمفونیک تهران (در ۲۰۱۵ به عنوان فلوت اول میهمان و به رهبری علی رهبری) و با ارکسترهای سمفونیک فورت‌ورث، دالاس و نیووُرلد همکاری داشته و در ۲۰۱۷ تا ۲۰۱۹ فلوتیست آنسامبل معاصر آسپن بوده است. بیش از یک دهه است که در چارچوب «پروژهٔ فلوت ایران» به سفارش، نخستین اجرا، ضبط، تنظیم و انتشار آثار ایرانی برای فلوت می‌پردازد؛ از جمله آلبوم‌های Iranity و This Vast Sky و مجموعهٔ ۱۴ ترانهٔ فولکلور ایرانی (ALRY، ۲۰۲۴). از وی همچنین مقالاتی در زمینهٔ آموزش فلوت، رپرتوار معاصر و موسیقی ایرانی در The Flutist Quarterly منتشر شده است.",
+  "سام گیوراد": "معمار، مرمت‌گر بناهای تاریخی، پژوهشگر و شاعر؛ زادهٔ ۱۳۵۴ در تهران و دانش‌آموختهٔ کارشناسی ارشد معماری است. کار او پژوهش، مرمت و حفاظت بافت‌ها و بناهای تاریخی است و شعرهایی از او، از جمله در مجموعهٔ خط خاموش و در وزن دنیا، منتشر شده است. سخنرانی‌ها و نوشته‌هایش بر حافظهٔ شهری، معماری معاصر ایران (از جمله آثار هوشنگ سیحون و جهانگیر درویش) و نقد دگرگونی‌های شهری متمرکز است.",
   "فرناز مدرسی‌فر": "آهنگساز، نوازندهٔ سنتور و شاعر ایرانی-فرانسوی، متولد ۱۳۶۸ (۱۹۸۹) در تهران است. او پس از تحصیل در هنرستان موسیقی دختران و دانشکدهٔ هنرهای زیبای دانشگاه تهران، در رشتهٔ نوازندگی سنتور و کارشناسی موسیقی فارغ‌التحصیل شد و رتبهٔ نخست نوازندگی را کسب کرد.\nاو پس از اقامت در پاریس، تحصیلات خود را ادامه داد و موفق به دریافت چندین دیپلم و مدرک کارشناسی ارشد در رشته‌های آهنگسازی، بداهه‌نوازی و موسیقی‌شناسی شد.\nمدرسی‌فر به‌عنوان آهنگساز، پژوهشگر و هنرمند مقیم (پانسیونر) آکادمی فرانسه در رم (ویلا مدیچی)، برای سال‌های ۲۰۲۵ و ۲۰۲۶ برگزیده شده است. او همچنین از برگزیدگان کارگاه آهنگسازی ژرژ آپرگیس و برندهٔ چندین جایزهٔ ملی و بین‌المللی از جمله جایزهٔ آهنگسازی آلان لوویه، بیست‌وچهارمین جایزهٔ سوپرفونیک (۲۰۲۳)، جایزهٔ آهنگسازی کلود آریو از ساسم (SACEM) (۲۰۲۴) و جایزهٔ بنیاد سینیاتور (Fondation Signature) و انجمن آهنگسازان و نویسندگان هنرهای دراماتیک فرانسه (SACD) در سال ۲۰۲۶ است.\nاو به‌عنوان آهنگساز، نوازنده و هنرمند مدعو با آنسامبل‌ها، مجموعه‌ها و جشنواره‌های معتبر متعددی همکاری داشته است؛ از جمله آنسامبل اینترکنتمپورن، کور-سیرکویی، آرس نوا، رشرش، سیاژ و خانهٔ موسیقی معاصر پاریس.\nاو همچنین به‌عنوان مدرس آهنگسازی، مدعو بنیاد روایومون در آکادمی «صداهای نو» (۲۰۲۶) است و به‌عنوان آهنگساز و نوازنده با هنرمندان برجسته‌ای چون بارتاباس، لارس وگت، ونسان اووگِه و همایون شجریان همکاری کرده است. آثار و اجراهای او از رادیو France Musique پخش شده و در تئاتر شهر پاریس و بسیاری از جشنواره‌های معتبر اروپایی به روی صحنه رفته‌اند.\nفرناز مدرسی‌فر همچنین از برگزیدگان آکادمی آهنگسازان جوان ارکستر مجلسی پاریس است. آثار او در مراکز و سالن‌های مهمی همچون فیلارمونی پاریس، تئاتر شاتله، اپرای رنس، بوزار بروکسل، اپرای نانت و آنژه، اودیتوریوم پواتیه و بنیاد گولبنکیان لیسبون به اجرا درآمده‌اند."
 };
+
+/* Honorifics a writer asked us to carry. They appear where the biography names
+   the writer — the essay-end block and the avatar popover — and never in the
+   byline, which stays as the writer signed the proof. */
+const BIO_NAMES = {
+  'فرزانه گشتاسب': 'دکتر فرزانه گشتاسب',
+  'امین نایب‌پور': 'دکتر امین نایب‌پور',
+  'سهیل دلشاد': 'دکتر سهیل دلشاد',
+  'مهرداد غلامی': 'دکتر مهرداد غلامی',
+};
+const bioName = (n) => BIO_NAMES[n] || n;
 
 /* render a bio string: newlines become paragraph breaks, bare URLs become links */
 function bioWithLinks(text) {
@@ -152,7 +165,7 @@ function AuthorAvatar({ name, bioHtml }) {
       </button>
       {open ? (
         <div className="author-bio-card" role="dialog">
-          <span className="author-bio-name">{name}</span>
+          <span className="author-bio-name">{bioName(name)}</span>
           {bioHtml
             ? <p className="author-bio-text" dangerouslySetInnerHTML={{ __html: bioHtml }} />
             : <p className="author-bio-text">{bio}</p>}
@@ -177,8 +190,8 @@ function AuthorBioBlock({ post, ov }) {
   const site = AUTHOR_SITES[person];
   const nameStyle = { color: 'var(--accent)', fontWeight: 700 };
   const nameEl = site
-    ? <a href={site} target="_blank" rel="noopener noreferrer" style={{ ...nameStyle, textDecoration: 'underline', textUnderlineOffset: '3px' }}>{person}</a>
-    : <span style={nameStyle}>{person}</span>;
+    ? <a href={site} target="_blank" rel="noopener noreferrer" style={{ ...nameStyle, textDecoration: 'underline', textUnderlineOffset: '3px' }}>{bioName(person)}</a>
+    : <span style={nameStyle}>{bioName(person)}</span>;
   const bioEl = ov && ov.bio
     ? <span className="article-bio-editable" dangerouslySetInnerHTML={{ __html: ov.bio }} />
     : <span className="article-bio-editable">{bio ? bioWithLinks(bio) : ('معرفی کوتاه ' + kind + ' در دست تکمیل است.')}</span>;
@@ -608,6 +621,52 @@ function TemplateEssayBody({ post }) {
   );
 }
 
+/* Top-of-page marker for a پاره that continues an earlier one. Parts two and
+   three open in the middle of an argument, so the page says so above the title
+   and links back to the part before it. Part one has no predecessor and shows
+   nothing, so nothing changes for a one-part essay. (EIC, 2026-09-19) */
+function SeriesLead({ post }) {
+  const series = (window.GOSAN_SERIES || []).find((g) => g.indexOf(post.slug) !== -1);
+  if (!series) return null;
+  const i = series.indexOf(post.slug);
+  if (i <= 0) return null;
+  const prev = (window.GOSAN_POSTS || []).find((p) => p.slug === series[i - 1]);
+  if (!prev) return null;
+  const part = (p) => {
+    const m = p.title.match(/\(([^)]+)\)\s*$/);
+    return m ? m[1] : p.title;
+  };
+  return (
+    <p className="series-lead">
+      <span className="series-lead-count">پارهٔ {toFa(i + 1)} از {toFa(series.length)}</span>
+      <span className="series-lead-sep" aria-hidden="true">·</span>
+      <span>دنبالهٔ <a className="series-lead-link" href={'#/article/' + prev.slug}>{part(prev)}</a></span>
+    </p>
+  );
+}
+
+/* Where the reference apparatus begins inside a rendered article body.
+   The series nav belongs after the essay text but BEFORE the apparatus (EIC,
+   2026-09-19), and the apparatus is not shaped the same way in every piece:
+   parts one and two of «میان دو شکست» end in a <section class="fn-list-sec">,
+   part three has no such section and opens its references with <h2>منابع</h2>.
+   So look for either, and take whichever comes first in document order. */
+const REF_HEADINGS = /^(منابع|مآخذ|کتابنامه|کتاب‌نامه|پانویس‌ها|یادداشت‌ها)$/;
+function referenceAnchor(root) {
+  if (!root) return null;
+  const notes = root.querySelector('.fn-list-sec');
+  let heading = null;
+  const hs = root.querySelectorAll('h2, h3');
+  for (let i = 0; i < hs.length; i += 1) {
+    if (REF_HEADINGS.test((hs[i].textContent || '').trim())) { heading = hs[i]; break; }
+  }
+  if (notes && heading) {
+    /* DOCUMENT_POSITION_PRECEDING === 2 */
+    return (notes.compareDocumentPosition(heading) & 2) ? heading : notes;
+  }
+  return notes || heading || null;
+}
+
 /* foot-of-article link to the next پاره of the same essay */
 function SeriesNav({ post }) {
   const series = (window.GOSAN_SERIES || []).find((g) => g.indexOf(post.slug) !== -1);
@@ -687,12 +746,59 @@ function ArticleView({ slug }) {
     clone.querySelectorAll('.fn-card, .fn-list-sec, .gsn-technical').forEach((n) => n.remove());
     return clone.textContent || '';
   }, []);
+
+  /* Put the پاره navigation immediately after the essay text rather than at the
+     very foot of the page, where it sat below the notes and the کتابنامه. The
+     apparatus lives inside the body HTML, so the nav cannot simply be reordered
+     in JSX — instead an empty host node is placed before the apparatus and the
+     nav is rendered into it through a portal. React owns only the portal's
+     contents, so the body HTML is never mutated.
+     undefined = not measured yet · null = no apparatus, render in place. */
+  const [navSlot, setNavSlot] = React.useState(undefined);
+  /* and the same for the «دنبالهٔ …» line, which belongs at the very top of the
+     essay text — above its first heading, not above the article title. */
+  const [leadSlot, setLeadSlot] = React.useState(undefined);
+  React.useEffect(() => {
+    const root = articleRef.current;
+    if (!root) { setNavSlot(null); setLeadSlot(null); return undefined; }
+    const made = [];
+
+    const ref = referenceAnchor(root);
+    if (ref && ref.parentNode) {
+      const s1 = document.createElement('div');
+      s1.className = 'series-nav-slot';
+      ref.parentNode.insertBefore(s1, ref);
+      made.push(s1);
+      setNavSlot(s1);
+    } else { setNavSlot(null); }
+
+    /* first element of the body — the table of contents is website chrome, so
+       it is skipped and the slot lands just above the essay's opening block. */
+    let first = root.firstElementChild;
+    while (first && first.matches && first.matches('nav.article-toc')) first = first.nextElementSibling;
+    if (first && first.classList && first.classList.contains('series-nav-slot')) first = first.nextElementSibling;
+    /* an override body is wrapped in a plain <div>; step inside it */
+    if (first && first.tagName === 'DIV' && !first.className && first.firstElementChild) first = first.firstElementChild;
+    if (first && first.parentNode) {
+      const s2 = document.createElement('div');
+      s2.className = 'series-lead-slot';
+      first.parentNode.insertBefore(s2, first);
+      made.push(s2);
+      setLeadSlot(s2);
+    } else { setLeadSlot(null); }
+
+    return () => {
+      setNavSlot(undefined); setLeadSlot(undefined);
+      made.forEach((n) => { if (n.parentNode) n.parentNode.removeChild(n); });
+    };
+  }, [post.slug, ov && ov.body]);
   return (
     <main data-screen-label={`نوشتار — ${post.title}`}>
       <ReadingIndicator />
 
       <div className="article-head">
         <DraftLineH top="2.4rem" right="-6rem" left="-6rem" />
+        {leadSlot === null ? <SeriesLead post={post} /> : null}
         <h1 className="gsn-display" style={{ fontSize: '2.4rem', margin: '0.6rem 0 1rem' }}><TitleLines text={post.title} /></h1>
         <div className="article-byline">
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -728,7 +834,12 @@ function ArticleView({ slug }) {
         <SummaryAside post={post} getText={getText} ov={ov} />
       </div>
 
-      <SeriesNav post={post} />
+      {leadSlot ? ReactDOM.createPortal(<SeriesLead post={post} />, leadSlot) : null}
+      {navSlot === undefined
+        ? null
+        : navSlot
+          ? ReactDOM.createPortal(<SeriesNav post={post} />, navSlot)
+          : <SeriesNav post={post} />}
 
       <AuthorBioBlock post={post} ov={ov} />
 

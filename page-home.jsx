@@ -72,6 +72,26 @@ function postFor(slug, lang) {
    to fillable <image-slot> placeholders. */
 /* Home-page cover photos use a black-and-white halftone treatment (separate
    files); the same photos appear inside the articles in their original form. */
+/* Essays announced on the landing page whose text has not arrived yet. The card
+   stays exactly as it is — cover, kicker, title, byline — but nothing on it is
+   clickable, so a reader is never dropped onto a «به‌زودی» placeholder. Add a
+   slug here and every link to it on this page goes inert; remove it and the
+   links come back. Nothing else about the card changes. */
+const NO_LINK = new Set([
+  /* «گوسان کیست؟» — احسان شواربی; awaiting the text (EIC, 2026-09-19) */
+]);
+
+/* A link to an article that goes inert for a NO_LINK slug. Same className and
+   children either way, so the card's typography and layout are untouched; the
+   <a> simply becomes a <span> with no href — which also takes it out of the tab
+   order and drops the :hover and :focus-visible affordances. */
+function ALink({ slug, children, ...rest }) {
+  if (NO_LINK.has(slug)) {
+    return <span {...rest} aria-disabled="true">{children}</span>;
+  }
+  return <a {...rest} href={`#/article/${slug}`}>{children}</a>;
+}
+
 const GOSAN_COVERS = {
   "oil-to-narrative": "uploads/covers/oil-to-narrative.jpg",
   "interview-farnaz-modarresifar": "uploads/covers/interview-farnaz-modarresifar.jpg",
@@ -95,7 +115,7 @@ const GOSAN_COVER_ALTS = {
   "between-two-defeats-3": "گراند هتل تهران در لاله‌زار، حدود دههٔ ۱۹۰۰ میلادی — تالاری که کنسرت قمرالملوک وزیری به سود ساخت آرامگاه فردوسی در آن برگزار شد؛ مالکیت عمومی",
   "azarkeyvani-creation-myth": "برگ نخست دست‌نویس وندیداد — CC0",
   "note-for-gosan": "سرلوحهٔ شمارهٔ نخست مجلهٔ کاوه، برلین، ۱۹۱۶",
-  "crossroads-ahead": "دستهٔ موسیقی در اصفهان، دورهٔ قاجار — عکس آنتوان سوریوگین، موزهٔ ریتبرگ"
+  "crossroads-ahead": "تالار رودکی تهران، حدود ۱۳۴۹ — آرشیو باله‌های ایرانی (Les Ballets Persans)؛ ویکی‌انبار، مالکیت عمومی"
 };
 
 /* split a two-part title at «:» or «؛» and drop the second part to a new line.
@@ -238,8 +258,13 @@ function HomePage({ lang = 'fa', onToggleLang }) {
      in this order. Add or drop a slug here and the wall follows; the slice is the
      guarantee that an eighth never quietly appears. */
   const WALL_SEVEN = [
-    'between-two-defeats', 'azarkeyvani-creation-myth', 'music-totalitarian-regimes', 'crossroads-ahead',
-    'beyzaie-myth-symbolic-action',
+    /* ۱ */
+    'music-totalitarian-regimes',   /* ۲ — حافظ باباشاهی (EIC, 2026-09-19) */
+    /* ۳ */
+    'azarkeyvani-creation-myth',    /* ۴ */
+    'between-two-defeats',          /* ۵ — یلدا زمانی (EIC, 2026-09-19) */
+    'crossroads-ahead',             /* ۶ */
+    'beyzaie-myth-symbolic-action', /* ۷ */
   ];
   const latest = WALL_SEVEN.map(P).filter(Boolean).slice(0, 7);
   /* پیشخوان — every essay in the issue, so a new one needs no second decision to
@@ -256,6 +281,8 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     .map(P)
     .filter(Boolean);
   const notes = [].map(P).filter(Boolean);
+  /* manichaean-music-terms برداشته شد (سردبیر، ۲۰۲۶-۰۹-۱۹ — «بعداً منتشر می‌شود»)؛
+     جلد و کردیت آن پایین‌تر دست‌نخورده مانده تا بازگرداندنش یک واژه بیشتر نباشد. */
   const features = ['azarkeyvani-creation-myth', 'music-totalitarian-regimes'].map(P).filter(Boolean);
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
   const interviews = ['interview-farnaz-modarresifar'].map(P).filter(Boolean);
@@ -263,7 +290,16 @@ function HomePage({ lang = 'fa', onToggleLang }) {
   const policyDossier = ['between-two-defeats', 'between-two-defeats-2', 'between-two-defeats-3'].map(P).filter(Boolean);
   const economyDossier = ['oil-to-narrative'].map(P).filter(Boolean);
   const reflections = ['beyzaie-myth-symbolic-action'].map(P).filter(Boolean);
-  const popular = ['music-totalitarian-regimes', 'interview-farnaz-modarresifar', 'note-for-gosan', 'between-two-defeats', 'crossroads-ahead'].map(P).filter(Boolean);
+  /* پرخواننده‌ترین‌ها — the editor-in-chief's order (2026-09-19). «میانِ دو شکست»
+     stands for the essay by its first پاره, the same way it does on the wall
+     and wherever else the three-part piece is named once. */
+  const popular = [
+    'music-totalitarian-regimes',   /* ۱ — حافظ باباشاهی */
+    'crossroads-ahead',             /* ۲ — مهرداد غلامی */
+    'azarkeyvani-creation-myth',    /* ۳ — فرزانه گشتاسب */
+    'between-two-defeats',          /* ۴ — یلدا زمانی، بخش نخست، پارهٔ یکم */
+    /* ۵ — سهراب لبیب */
+  ].map(P).filter(Boolean);
 
   /* the magazine's section taxonomy. populated categories reuse the sample
      articles; the rest are fillable placeholder structures (image-slots). */
@@ -334,7 +370,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
             <ol className="nc-popular">
               {popular.map((p) => (
                 <li key={p.slug}>
-                  <a href={`#/article/${p.slug}`}>{p.title}<span className="nc-pop-by">{p.author}</span></a>
+                  <ALink slug={p.slug}>{p.title}<span className="nc-pop-by">{p.author}</span></ALink>
                 </li>
               ))}
             </ol>
@@ -508,9 +544,9 @@ function NcLatestWall({ slides, lang, T }) {
             className={`nc-plate${i === open ? ' is-open' : ''}`}
             onMouseEnter={() => setOpen(i)}
           >
-            <a
+            <ALink
+              slug={p.slug}
               className="nc-plate-face"
-              href={`#/article/${p.slug}`}
               aria-label={p.title}
               onFocus={() => setOpen(i)}
             >
@@ -522,7 +558,7 @@ function NcLatestWall({ slides, lang, T }) {
                 <span className="nc-plate-by">{p.author}</span>
                 <span className="nc-plate-dek">{p.excerpt}</span>
               </span>
-            </a>
+            </ALink>
             <CoverCredit slug={p.slug} />
           </div>
         ))}
@@ -613,7 +649,7 @@ function NcFeatStrip({ items, lang, T }) {
             <article>
               <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
               <span className="nc-kicker">{p.tag}</span>
-              <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h2>
+              <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h2>
               <ByLine post={p} />
               <p className="nc-dek">{p.excerpt}</p>
             </article>
@@ -648,7 +684,7 @@ function NcCatSection({ cat, lang, T }) {
                 <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
                 <div>
                   <span className="nc-kicker">{p.tag}</span>
-                  <h3 className="nc-title" style={{ marginTop: '0.35rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h3>
+                  <h3 className="nc-title" style={{ marginTop: '0.35rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h3>
                   <ByLine post={p} />
                   <p className="nc-dek">{p.excerpt}</p>
                 </div>
@@ -661,7 +697,7 @@ function NcCatSection({ cat, lang, T }) {
               <article key={p.slug}>
                 <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
                 <span className="nc-kicker">{p.tag}</span>
-                <h3 className="nc-title" style={{ marginTop: '0.4rem' }}><a href={`#/article/${p.slug}`}><TitleLines text={p.title} /></a></h3>
+                <h3 className="nc-title" style={{ marginTop: '0.4rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h3>
                 <ByLine post={p} />
                 <p className="nc-dek">{p.excerpt}</p>
               </article>
