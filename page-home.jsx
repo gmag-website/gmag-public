@@ -313,8 +313,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     .map(P)
     .filter(Boolean);
   const notes = [].map(P).filter(Boolean);
-  /* manichaean-music-terms برداشته شد (سردبیر، ۲۰۲۶-۰۹-۱۹ — «بعداً منتشر می‌شود»)؛
-     جلد و کردیت آن پایین‌تر دست‌نخورده مانده تا بازگرداندنش یک واژه بیشتر نباشد. */
+  
   const features = ['ethos-of-survival', 'azarkeyvani-creation-myth', 'herzfeld-german-archives', 'music-totalitarian-regimes', 'who-is-the-gosan', 'farabi-music-politics'].map(P).filter(Boolean);
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
   const interviews = ['interview-farnaz-modarresifar'].map(P).filter(Boolean);
