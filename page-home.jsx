@@ -78,7 +78,7 @@ function postFor(slug, lang) {
    slug here and every link to it on this page goes inert; remove it and the
    links come back. Nothing else about the card changes. */
 const NO_LINK = new Set([
-  /* «گوسان کیست؟» — احسان شواربی; awaiting the text (EIC, 2026-09-19) */
+  'who-is-the-gosan',   /* «گوسان کیست؟» — احسان شواربی; awaiting the text (EIC, 2026-09-19) */
 ]);
 
 /* A link to an article that goes inert for a NO_LINK slug. Same className and
@@ -93,6 +93,8 @@ function ALink({ slug, children, ...rest }) {
 }
 
 const GOSAN_COVERS = {
+  "ethos-of-survival": "uploads/covers/ethos-of-survival.jpg",
+  "herzfeld-german-archives": "uploads/covers/herzfeld-german-archives.jpg",
   "oil-to-narrative": "uploads/covers/oil-to-narrative.jpg",
   "interview-farnaz-modarresifar": "uploads/covers/interview-farnaz-modarresifar.jpg",
   "music-totalitarian-regimes": "uploads/covers/music-totalitarian-regimes.jpg",
@@ -101,11 +103,15 @@ const GOSAN_COVERS = {
   "between-two-defeats-2": "uploads/covers/between-two-defeats-2.jpg",
   "between-two-defeats-3": "uploads/covers/between-two-defeats-3.jpg",
   "azarkeyvani-creation-myth": "uploads/covers/azarkeyvani-creation-myth.jpg",
+  "who-is-the-gosan": "uploads/covers/who-is-the-gosan.jpg",
+  "farabi-music-politics": "uploads/covers/farabi-music-politics.jpg",
   "note-for-gosan": "uploads/covers/note-for-gosan.jpg",
   "crossroads-ahead": "uploads/covers/crossroads-ahead.jpg"
 };
 
 const GOSAN_COVER_ALTS = {
+  "ethos-of-survival": "سه نوازندهٔ بزم: دف، کمانچه و سازی زهی؛ نگاره‌ای از خمسهٔ نظامی («خسرو و شیرین»)، دههٔ ۱۵۷۰ میلادی — کتابخانهٔ ملی روسیه، دست‌نویس Dorn 341، برگ ۷۰پ؛ ویکی‌انبار، مالکیت عمومی",
+  "herzfeld-german-archives": "پاسارگاد، کاخ P پیش از کاوش — عکس ارنست هرتسفلد، آرشیو فریر-سکلر",
   "oil-to-narrative": "چاه نفت در ایران، حدود دههٔ ۱۹۱۰ — عکس A. P. Godber",
   "interview-farnaz-modarresifar": "فرناز مدرسی‌فر در ویلای مدیچی، ۲۰۲۵ — عکس: فرید مدرسی‌فر",
   "music-totalitarian-regimes": "ویلهلم فورتونگلر در کنسرت کارخانهٔ آ.ا.گ، برلین — Bundesarchiv Bild 183-L0607-504, CC BY-SA 3.0 DE",
@@ -114,6 +120,8 @@ const GOSAN_COVER_ALTS = {
   "between-two-defeats-2": "برش عرضی تالار اپرای پاریس (پاله گارنیه) — از نقشه‌های شارل گارنیه، ۱۸۸۰؛ مالکیت عمومی",
   "between-two-defeats-3": "گراند هتل تهران در لاله‌زار، حدود دههٔ ۱۹۰۰ میلادی — تالاری که کنسرت قمرالملوک وزیری به سود ساخت آرامگاه فردوسی در آن برگزار شد؛ مالکیت عمومی",
   "azarkeyvani-creation-myth": "برگ نخست دست‌نویس وندیداد — CC0",
+  "who-is-the-gosan": "بشقاب سیمین ساسانی: شاه بر تخت در میان نوازندگان — ارمیتاژ؛ عکس: Darafsh، CC BY-SA 4.0",
+  "farabi-music-politics": "نگارهٔ ساز شاهرود از دست‌نویس کتاب الموسیقی الکبیر فارابی",
   "note-for-gosan": "سرلوحهٔ شمارهٔ نخست مجلهٔ کاوه، برلین، ۱۹۱۶",
   "crossroads-ahead": "تالار رودکی تهران، حدود ۱۳۴۹ — آرشیو باله‌های ایرانی (Les Ballets Persans)؛ ویکی‌انبار، مالکیت عمومی"
 };
@@ -184,6 +192,30 @@ function Slot({ slug, lang, ph }) {
 
 function ByLine({ post }) {
   return <p className="nc-by"><span className="nc-by-name">{post.author}</span></p>;
+}
+
+/* The line above a card's title. It carries the section tag, and — for a piece
+   that came out of the اندیشکده rather than the گاهنامه's own desk — a second,
+   quieter mark in the institute's teal, so a reader can tell at a glance where
+   the writing originates. Cards only; the tag row wraps rather than pushing the
+   title out of line. */
+function Kicker({ post }) {
+  const tt = typeof isThinkTank === 'function' && isThinkTank(post.slug);
+  return (
+    <span className="nc-kicker-row">
+      <span className="nc-kicker">{post.tag}</span>
+      {tt ? (
+        <a
+          className="nc-origin"
+          href="#/thinktank"
+          title={GOSAN_THINKTANK_NOTE}
+          aria-label={GOSAN_THINKTANK_NOTE}
+        >
+          {GOSAN_THINKTANK_LABEL}
+        </a>
+      ) : null}
+    </span>
+  );
 }
 
 function HomePage({ lang = 'fa', onToggleLang }) {
@@ -258,9 +290,9 @@ function HomePage({ lang = 'fa', onToggleLang }) {
      in this order. Add or drop a slug here and the wall follows; the slice is the
      guarantee that an eighth never quietly appears. */
   const WALL_SEVEN = [
-    /* ۱ */
+    'who-is-the-gosan',             /* ۱ */
     'music-totalitarian-regimes',   /* ۲ — حافظ باباشاهی (EIC, 2026-09-19) */
-    /* ۳ */
+    'herzfeld-german-archives',     /* ۳ */
     'azarkeyvani-creation-myth',    /* ۴ */
     'between-two-defeats',          /* ۵ — یلدا زمانی (EIC, 2026-09-19) */
     'crossroads-ahead',             /* ۶ */
@@ -273,7 +305,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
   const onWall = new Set(WALL_SEVEN);
   /* Slugs the editor-in-chief wants opening the پیشخوان, in this order. Anything
      not pinned keeps the old behaviour: off-wall essays first, then the seven. */
-  const FEATURED_LEAD = [];
+  const FEATURED_LEAD = ['ethos-of-survival', 'farabi-music-politics'];
   const rank = (s) => (FEATURED_LEAD.indexOf(s) !== -1 ? FEATURED_LEAD.indexOf(s) - FEATURED_LEAD.length : (onWall.has(s) ? 1 : 0));
   const featured = GOSAN_POSTS
     .map((p) => p.slug)
@@ -283,7 +315,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
   const notes = [].map(P).filter(Boolean);
   /* manichaean-music-terms برداشته شد (سردبیر، ۲۰۲۶-۰۹-۱۹ — «بعداً منتشر می‌شود»)؛
      جلد و کردیت آن پایین‌تر دست‌نخورده مانده تا بازگرداندنش یک واژه بیشتر نباشد. */
-  const features = ['azarkeyvani-creation-myth', 'music-totalitarian-regimes'].map(P).filter(Boolean);
+  const features = ['ethos-of-survival', 'azarkeyvani-creation-myth', 'herzfeld-german-archives', 'music-totalitarian-regimes', 'who-is-the-gosan', 'farabi-music-politics'].map(P).filter(Boolean);
   const viewpoints = ['note-for-gosan', 'crossroads-ahead'].map(P).filter(Boolean);
   const interviews = ['interview-farnaz-modarresifar'].map(P).filter(Boolean);
   const reviews = [].map(P).filter(Boolean);
@@ -298,7 +330,7 @@ function HomePage({ lang = 'fa', onToggleLang }) {
     'crossroads-ahead',             /* ۲ — مهرداد غلامی */
     'azarkeyvani-creation-myth',    /* ۳ — فرزانه گشتاسب */
     'between-two-defeats',          /* ۴ — یلدا زمانی، بخش نخست، پارهٔ یکم */
-    /* ۵ — سهراب لبیب */
+    'ethos-of-survival',            /* ۵ — سهراب لبیب */
   ].map(P).filter(Boolean);
 
   /* the magazine's section taxonomy. populated categories reuse the sample
@@ -648,7 +680,7 @@ function NcFeatStrip({ items, lang, T }) {
           <Reveal key={p.slug} delay={i * 110}>
             <article>
               <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
-              <span className="nc-kicker">{p.tag}</span>
+              <Kicker post={p} />
               <h2 className="nc-title" style={{ marginTop: '0.5rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h2>
               <ByLine post={p} />
               <p className="nc-dek">{p.excerpt}</p>
@@ -683,7 +715,7 @@ function NcCatSection({ cat, lang, T }) {
               <article key={p.slug} className="nc-row">
                 <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
                 <div>
-                  <span className="nc-kicker">{p.tag}</span>
+                  <Kicker post={p} />
                   <h3 className="nc-title" style={{ marginTop: '0.35rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h3>
                   <ByLine post={p} />
                   <p className="nc-dek">{p.excerpt}</p>
@@ -696,7 +728,7 @@ function NcCatSection({ cat, lang, T }) {
             {posts.map((p) => (
               <article key={p.slug}>
                 <Slot slug={p.slug} lang={lang} ph={T.slotPh} />
-                <span className="nc-kicker">{p.tag}</span>
+                <Kicker post={p} />
                 <h3 className="nc-title" style={{ marginTop: '0.4rem' }}><ALink slug={p.slug}><TitleLines text={p.title} /></ALink></h3>
                 <ByLine post={p} />
                 <p className="nc-dek">{p.excerpt}</p>

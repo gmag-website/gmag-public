@@ -124,7 +124,7 @@ function ShivenamehPage() {
             <ShivenamehList items={[
               <React.Fragment>مقاله به صورت فایل <span className="sv-mono">docx.</span> به نشانی <a className="sv-mail" href="mailto:info@gosan.org">info@gosan.org</a> فرستاده شود.</React.Fragment>,
               'متن مقاله با یک قلم (فونت) سادهٔ متعارف و اندازهٔ ۱۲ تنظیم شود.',
-              'پذیرش مقاله برای انتشار در گوسان، پس از بررسی و ارزیابی محتوا و به تصمیم نهایی هیئت تحریریه انجام می‌شود.',
+              'پذیرش مقاله برای انتشار در گوسان، پس از بررسی و ارزیابی محتوا و به تصمیم نهایی تیم نویسندگان گاهنامهٔ گوسان انجام می‌شود.',
               'گوسان از پذیرش مقاله‌ای که پیش‌تر در جای دیگری منتشر شده باشد، پرهیز می‌کند.',
               'نسخهٔ ویراسته و تأییدشدهٔ مقاله، پیش از انتشار برای نویسنده فرستاده می‌شود.',
               'مسئولیت محتوای مقاله بر عهدهٔ نویسنده است.',
@@ -180,7 +180,7 @@ function ShivenamehPage() {
               <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>SUBMIT // info@gosan.org</span>
               <h3 className="gsn-display" style={{ fontSize: '1.6rem', margin: '0.7rem 0 0.4rem' }}>نوشتارتان را برای ما بفرستید</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '0 0 1.6rem' }}>
-                فایل <span className="sv-mono">docx.</span> خود را به نشانی زیر ارسال کنید؛ هیئت تحریریه آن را بررسی می‌کند.
+                فایل <span className="sv-mono">docx.</span> خود را به نشانی زیر ارسال کنید؛ تیم نویسندگان گاهنامهٔ گوسان آن را بررسی می‌کند.
               </p>
               <Button variant="gold" href="mailto:info@gosan.org">ارسال نوشتار</Button>
             </div>

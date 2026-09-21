@@ -852,7 +852,7 @@ body[data-motion="off"] .summary-collapse { transition: none; }
    Was three different measures: the heading on .wrap (2rem padding), the grid
    on its own 1100px cap, and the sections above on 1200px / 3.5rem. All three
    now share the page's measure, so the block's edges line up with .about-spread
-   and the manifesto above it. The head follows the same pattern as هیئت تحریریه
+   and the manifesto above it. The head follows the same pattern as تیم نویسندگان گاهنامهٔ گوسان
    — label, rule, muted line, all ranged right — instead of a centred h2 over a
    right-ranged paragraph. */
 .about-contact {
@@ -1775,6 +1775,36 @@ body[data-motion="off"] .tt-wave span { animation: none !important; }
   font-family: var(--font-technical); letter-spacing: 0.16em;
   font-size: 0.66rem; color: var(--gold-deep); text-transform: uppercase;
 }
+
+/* --- provenance mark: written by the اندیشکده, not the گاهنامه's own desk ---
+   The گاهنامه carries two kinds of writing, and a reader is entitled to know
+   which is which. Same pill the اندیشکده wears in the nav bar, but filled
+   rather than outlined: a light wash of the institute's own blue-green
+   (--name-teal) instead of the house gold, so the mark reads as a different
+   voice on the card without ever competing with the headline. Kept transparent
+   — a tint over the paper, not a solid label. */
+.nc-kicker-row {
+  /* the section tag on its own line, the provenance mark tucked under it —
+     never beside it, so the kicker line keeps the rhythm it has on every
+     other card */
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 0.28rem; line-height: 1.5;
+}
+.nc-origin {
+  display: inline-flex; align-items: center;
+  font-size: 0.51rem; font-weight: 700; letter-spacing: 0;
+  color: var(--name-teal); text-decoration: none; white-space: nowrap;
+  background: rgba(46, 110, 115, 0.10);
+  border: 0; border-radius: 999px;
+  /* optically centred, not metrically: the Persian face sits high in its own
+     line box, so equal padding leaves the label ~2px above the pill's middle.
+     The extra top padding puts the ink's mass on the pill's centre line. */
+  padding: 0.18rem 0.55rem 0.11rem;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nc-origin::after { display: none !important; }
+.nc-origin:hover { background: rgba(46, 110, 115, 0.2); color: var(--name-teal); }
+
 .nc-title { color: var(--ink); font-weight: 800; line-height: 1.4; margin: 0; }
 .nc-title a { color: inherit; text-decoration: none; transition: color var(--speed-fast); }
 .nc-title a:hover { color: var(--gold-deep); }
@@ -2578,10 +2608,9 @@ body[data-page="about"] .header-logo { display: none; }
   max-width: none; margin: 2.6rem 0 0; padding: 1.6rem 0 0;
 }
 
-/* «دنبالهٔ …» — the line that opens a پاره continuing an earlier one. Same
-   technical kicker treatment as .series-nav-count at the foot, so the two ends
-   of the piece speak in the same voice. It sits at the top of the essay text,
-   above its first heading, so it needs room beneath it. */
+/* «دنبالهٔ …» — the line above the title on a پاره that continues an earlier
+   one. Same technical kicker treatment as .series-nav-count at the foot, so
+   the two ends of the piece speak in the same voice. */
 .series-lead {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
   font-family: var(--font-technical); font-size: 0.68rem; letter-spacing: 0.12em;
@@ -2590,6 +2619,9 @@ body[data-page="about"] .header-logo { display: none; }
 .series-lead-sep { opacity: 0.55; }
 .series-lead-link { color: var(--gold-deep); text-decoration: none; border-bottom: 1px solid var(--line); }
 .series-lead-link:hover { color: var(--ink); border-color: var(--gold); }
+
+/* «دنبالهٔ …» sits at the top of the essay text, above its first heading, so it
+   needs room beneath it rather than the tight spacing it had under the title. */
 .series-lead-slot .series-lead { margin: 0 0 1.4rem; }
 
 /* A wide document scan — a manuscript opening, a two-page spread — read at 430px

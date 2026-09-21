@@ -56,17 +56,36 @@ function ArchivePage({ tag }) {
 }
 
 const GOSAN_BOARD = [
-  { key: 'hafez', name: 'حافظ باباشاهی', role: 'هیئت تحریریه', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-hafez.png',
+  { key: 'hafez', name: 'حافظ باباشاهی', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-hafez.png',
     bio: 'موسیقیدان و دانش‌آموختهٔ دانشگاه موسیقی وین، بنیان‌گذار جشنوارهٔ آواز کلاسیک «وینر لیدر هربست»، مدیر هنری مسابقهٔ پیانوی ماکان، مدرس پیانو در کنسرواتوار ریشارد واگنر وین و از بنیان‌گذاران گاهنامهٔ «گوسان» است.' },
   { key: 'yalda', name: 'یلدا زمانی', role: 'مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان', craft: 'رهبر ارکستر، آهنگساز', img: 'assets/board-yalda.png',
     bio: 'رهبر ارکستر و آهنگساز؛ مدرس پیشین و دانشجوی دکتری موسیقی و فناوری در دانشگاه موسیقی و تئاتر هامبورگ، دستیار پیشین رهبر آنسامبل اینترکنتمپورن پاریس، بنیان‌گذار و مدیر هنری ارکستر مجلسی معاصر البه، مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان و سردبیر گاهنامهٔ گوسان، و پژوهشگر و مشاور سیاست‌گذاری فرهنگی.' },
   { key: 'ehsan', name: 'احسان شواربی', role: 'مدیر بخش پژوهش', craft: 'باستان‌شناس، سکه‌شناس', img: 'assets/board-ehsan.png',
     bio: 'باستان‌شناس و سکه‌شناس؛ متصدی سکه‌های سدهٔ میانه و شرق در موزهٔ تاریخ هنر وین و پژوهشگر سکه‌شناسی ساسانی و زبان‌ها و کتیبه‌های ایران باستان.' },
-  { key: 'sohrab', name: 'سهراب لبیب', role: 'هیئت تحریریه', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-sohrab.png',
+  { key: 'sohrab', name: 'سهراب لبیب', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-sohrab.png',
     bio: 'پیانیست و مدرس موسیقی؛ دانش‌آموختهٔ هنرستان موسیقی تهران و مدرسهٔ عالی آلفرد کورتو در پاریس با بالاترین درجه در نوازندگی پیانو، فعال فرهنگی و اجتماعی در پیوند با ایران از ۱۳۸۸.' },
-  { key: 'amin', name: 'امین نایب‌پور', role: 'هیئت تحریریه', craft: 'محقق اندیشهٔ سیاسی', img: 'assets/board-amin.png',
+  { key: 'amin', name: 'امین نایب‌پور', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'محقق اندیشهٔ سیاسی', img: 'assets/board-amin.png',
     bio: 'پژوهشگر اندیشهٔ سیاسی؛ نویسندهٔ جستارهایی در نسبت فرهنگ، جامعه و قدرت در ایران معاصر و دیروز.' },
 ]
+
+/* The team is listed به ترتیب حروف الفبا — by family name (باباشاهی، زمانی،
+   شواربی، لبیب، نایب‌پور), which is the order GOSAN_BOARD itself is kept in.
+   Both mastheads read the names from here rather than repeating them, so
+   adding or reordering a member updates every place the list appears. */
+const boardNames = () => GOSAN_BOARD.map((m) => m.name);
+/* the same names broken into rows of `per`, each row but the last ending in a
+   Persian comma, so the masthead keeps its stacked shape */
+function BoardNameLines({ per = 2 }) {
+  const names = boardNames();
+  const rows = [];
+  for (let i = 0; i < names.length; i += per) rows.push(names.slice(i, i + per));
+  return rows.map((row, i) => (
+    <React.Fragment key={i}>
+      {row.join('، ')}{i < rows.length - 1 ? '،' : ''}
+      {i < rows.length - 1 ? <br /> : null}
+    </React.Fragment>
+  ));
+}
 
 function EditorialBoard() {
   const [open, setOpen] = React.useState(null);
@@ -112,7 +131,7 @@ function EditorialBoard() {
 }
 
 function Credentials() {
-  const editorial = GOSAN_BOARD.map((m) => m.name).join('، ');
+  const editorial = boardNames().join('، ');
   return (
     <div className="cred-float">
       <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>MASTHEAD // ISSUE 01</span>
@@ -127,7 +146,7 @@ function Credentials() {
           <dd>احسان شواربی</dd>
         </div>
         <div className="cred-row">
-          <dt>هیئت تحریریه</dt>
+          <dt>تیم نویسندگان گاهنامهٔ گوسان</dt>
           <dd>{editorial}</dd>
         </div>
       </dl>
@@ -188,12 +207,8 @@ function AboutManifesto() {
                 <dd>احسان شواربی</dd>
               </div>
               <div className="cred-row">
-                <dt>هیئت تحریریه</dt>
-                <dd>
-                  حافظ باباشاهی، امین نایب‌پور،<br />
-                  یلدا زمانی، احسان شواربی،<br />
-                  سهراب لبیب
-                </dd>
+                <dt>تیم نویسندگان گاهنامهٔ گوسان</dt>
+                <dd><BoardNameLines per={2} /></dd>
               </div>
               <div className="cred-row">
                 <dt>خوشنویسی نشان</dt>
@@ -220,7 +235,7 @@ function AboutManifesto() {
 }
 
 function AboutPage() {
-  const editorial = GOSAN_BOARD.map((m) => m.name).join('، ');
+  const editorial = boardNames().join('، ');
   return (
     <main data-screen-label="دربارهٔ گوسان" className="about-main">
       <AboutManifesto />
@@ -255,7 +270,7 @@ function AboutPage() {
             <div className="wrap" style={{ maxWidth: '100%', padding: 0, position: 'relative', zIndex: 1 }}>
               <Reveal>
                 <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>TEAM // ISSUE 01 — SUMMER 2585</span>
-                <SectionHead title="هیئت تحریریه" />
+                <SectionHead title="تیم نویسندگان گاهنامهٔ گوسان" />
                 <p className="board-hint">
                   دست‌اندرکاران این شماره؛ سال ۱ · شمارهٔ ۱ · پاییز ۲۵۸۵ (۱۴۰۵)
                 </p>
