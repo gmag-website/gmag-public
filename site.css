@@ -1,0 +1,2907 @@
+/* ============================================================
+   Gosan Weblog — site styles (on top of the DS tokens)
+   Paper + accent tones re-tuned to the hero video palette:
+   ochre #E1C486→#735927 · dusty cerulean #61878C · paper #EAEAE6
+   ============================================================ */
+
+/*
+   FONT LICENSING NOTICE
+   Font: IRANSansWeb (IRANSansX)
+   License Number: 1EMV6GP8
+   Licensed to: gosan.org (contact: info@gosan.org)
+*/
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('assets/fonts/IRANSansX-Regular.woff2') format('woff2'),
+       url('assets/fonts/IRANSansX-Regular.woff') format('woff');
+  font-weight: 100 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('assets/fonts/IRANSansX-Bold.woff2') format('woff2'),
+       url('assets/fonts/IRANSansX-Bold.woff') format('woff');
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IRANSansX is the site's only face — body, UI, display, and technical labels */
+:root {
+  --font-body: 'IRANSansX', 'Vazirmatn', 'Tahoma', sans-serif;
+  --font-display: 'IRANSansX', 'Vazirmatn', 'Tahoma', sans-serif;
+  --font-technical: 'IRANSansX', 'Vazirmatn', 'Tahoma', sans-serif;
+}
+
+/* ---------- head composition: one shell for masthead, nav bar and the wall ----------
+   The three top blocks (turquoise masthead, floating nav bar, hero wall) all
+   measure from the SAME box, so the composition of the head never drifts with the
+   window: the wall's far edge, the یاران گوسان pill and the masthead's issue block
+   share one inline-end edge, and the wall's near edge, the nav titles and the logo
+   share the opposite one. --shell-gutter is what every one of them measures from.  */
+:root {
+  --mast-logo: clamp(220px, 30vw, 340px);   /* the calligraphy's measure */
+  --mast-drop: -0.1cm;   /* how far the calligraphy is offset from where it lays out;
+                            the cover rides with it, keeping the two on one line */
+  /* how deep the bar rides over the foot of the calligraphy — a fraction of the
+     logo's own measure (0.222 of its width = 0.315 of its height), so the bar's
+     top edge always lands in the stretch where the tail is the only ink. */
+  --head-overlap: calc(var(--mast-logo) * 0.2221);
+  --shell-max: 1180px;   /* the head's content width on a wide screen           */
+  --shell-pad: 3.4rem;   /* smallest side gutter — also holds the search glyph  */
+  --shell-inset: 2.2rem; /* the head's inner inset; the nav titles measure from it */
+}
+/* the gutter as a length: percentages resolve against each block's own width,
+   which is why this must be re-declared (not inherited) on full-bleed bars. */
+.nc-masthead, .nc-topics {
+  --shell-gutter: max(var(--shell-pad), calc((100% - var(--shell-max)) / 2));
+}
+
+:root {
+  --paper: #FFFFFF;
+  --paper-warm: #FAFAF8;
+  --video-blue: #6E94A0;
+  --video-blue-dark: #547C8B;
+  --video-gold: #D9B35A;
+  /* the nav bar's blue-green (rgba(133,193,197,.26) — base #85C1C5, hue 184°),
+     darkened only as far as legibility needs: the by-line's colour. */
+  --name-teal: #2E6E73;
+}
+
+html { scroll-behavior: auto; }
+body { background: var(--paper); }
+
+/* ---------- layout helpers (responsive) ---------- */
+.wrap { max-width: var(--content-max); margin: 0 auto; padding-left: 2rem; padding-right: 2rem; }
+
+.hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 4.5rem; align-items: center; position: relative; }
+.feed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem 2.2rem; align-items: start; }
+.band-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 3.5rem; align-items: center; position: relative; }
+.issue-grid { display: grid; grid-template-columns: 300px 1fr; gap: 3.5rem; align-items: center; }
+.foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 3rem; }
+.contact-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 3.5rem; align-items: start; }
+.archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6rem 2.2rem; }
+
+@media (max-width: 920px) {
+  .hero-grid, .band-grid, .issue-grid, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .feed-grid { grid-template-columns: 1fr; }
+  .archive-grid { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* ---------- hero (minimal: centered drifting sketch) ---------- */
+.hero-lab {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #fff;
+}
+@keyframes hlReveal { 0% { opacity: 0; transform: translateY(22px); filter: blur(10px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
+@keyframes hlFadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes hlImgIn { 0% { opacity: 0; transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+
+/* centered sketch */
+.hl-stage {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-left: clamp(1.5rem, 5vw, 6rem);
+  pointer-events: none;
+}
+.hl-stage img, .hl-stage .hl-img, .hl-stage .hl-ghost-img {
+  position: absolute;
+  width: min(42vw, 520px); aspect-ratio: 1 / 1; max-height: 72vh;
+  background-size: contain; background-position: center; background-repeat: no-repeat;
+  will-change: transform;
+  animation: hlImgIn 1.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+.hl-img { z-index: 2; }
+.hl-ghost-img { z-index: 1; opacity: 0.16; mix-blend-mode: multiply; filter: saturate(1.1); }
+
+/* translucent gray text panel — covers the RTL-start (right) half */
+.hl-panel {
+  position: absolute; top: 0; bottom: 0; right: 0; width: 52%; z-index: 20;
+  display: flex; align-items: center; justify-content: flex-start;
+  background: linear-gradient(to left, rgba(28,31,33,0.66) 55%, rgba(28,31,33,0.42) 78%, rgba(28,31,33,0) 100%);
+  -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px);
+}
+.hl-panel-inner {
+  max-width: 440px; padding: 0 clamp(2rem, 5vw, 5rem); text-align: right;
+}
+.hl-heading { margin: 0 0 1.4rem; line-height: 1.08; }
+.hl-line1 {
+  display: block; font-weight: 500; color: var(--gold-light, #E1C486);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  opacity: 0; animation: hlReveal 1.1s cubic-bezier(0.16,1,0.3,1) 0.25s forwards;
+}
+.hl-line2 {
+  display: block; font-weight: 700; letter-spacing: -0.02em; margin-top: 0.1rem; color: #fff;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  opacity: 0; animation: hlReveal 1.1s cubic-bezier(0.16,1,0.3,1) 0.42s forwards;
+}
+.hl-lede {
+  font-size: 0.95rem; color: rgba(255,255,255,0.82); line-height: 2.05; margin: 0 0 2rem;
+  opacity: 0; animation: hlFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.7s forwards;
+}
+.hl-actions {
+  display: flex; align-items: center; gap: 1.5rem;
+  opacity: 0; animation: hlFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.85s forwards;
+}
+.hl-ghost { color: var(--gold-light, #E1C486); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+.hl-ghost:hover { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hl-img, .hl-ghost-img, .hl-line1, .hl-line2, .hl-lede, .hl-actions { animation: none; opacity: 1; }
+  .hl-ghost-img { opacity: 0.16; }
+  .hl-img, .hl-ghost-img { transform: none !important; }
+}
+@media (max-width: 820px) {
+  .hl-stage img, .hl-stage .hl-img, .hl-stage .hl-ghost-img { width: 78vw; max-height: 50vh; }
+  .hl-stage { align-items: flex-start; padding-top: 13vh; }
+  .hl-panel {
+    width: 100%; align-items: flex-end;
+    background: linear-gradient(to top, rgba(28,31,33,0.84) 34%, rgba(28,31,33,0.42) 60%, rgba(28,31,33,0) 82%);
+  }
+  .hl-panel-inner { max-width: none; width: 100%; padding: 0 1.6rem 2.6rem; }
+}
+
+/* ---------- header ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  color: var(--ink);
+  background-color: rgba(133, 193, 197, 0);
+  border-bottom: 1px solid transparent;
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  box-shadow: 0 0 0 rgba(28, 26, 23, 0);
+  transition: background-color var(--speed-base) var(--ease-out),
+              box-shadow var(--speed-base) var(--ease-out),
+              backdrop-filter var(--speed-base) var(--ease-out),
+              -webkit-backdrop-filter var(--speed-base) var(--ease-out);
+}
+.site-header.is-scrolled,
+.site-header:hover {
+  background-color: rgba(133, 193, 197, 0.26);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: 0 6px 24px -8px rgba(40, 90, 96, 0.18);
+}
+.header-logo { transition: opacity var(--speed-base) var(--ease-out); }
+.header-brand { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+.site-header.is-scrolled .header-logo,
+.site-header:hover .header-logo { opacity: 0; pointer-events: none; }
+/* think-tank: keep the gold logo present on the dark banner even when scrolled */
+body[data-page="thinktank"] .site-header.is-scrolled .header-logo,
+body[data-page="thinktank"] .site-header:hover .header-logo { opacity: 1; pointer-events: auto; }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+.site-header ul { display: flex; list-style: none; gap: 1.5rem; margin: 0; padding: 0; font-size: 0.92rem; flex-wrap: wrap; }
+.site-header ul a { white-space: nowrap; }
+.nav-think-li { display: flex; align-items: center; }
+.nav-think-li::before { content: ''; width: 1px; height: 16px; background: var(--ink); margin: 0 0.4rem 0 1rem; opacity: 0.5; }
+body[data-page="thinktank"] .nav-think-li::before { background: #ECE7DC; opacity: 0.35; }
+.nav-think {
+  color: var(--gold-deep) !important; font-weight: 700; font-size: 0.87rem;
+  position: relative; top: -2px;
+  border: 1px solid var(--gold); border-radius: 999px; padding: 0.18rem 0.8rem;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nav-think::after { display: none !important; }
+.nav-think:hover, .nav-think.is-active { background: var(--gold); color: var(--ink) !important; }
+body[data-page="thinktank"] .nav-think { color: var(--tt-gold, #E1C486) !important; border-color: var(--tt-gold, #E1C486); }
+body[data-page="thinktank"] .nav-think:hover, body[data-page="thinktank"] .nav-think.is-active { color: #14110d !important; background: var(--tt-gold, #E1C486); }
+@media (max-width: 1080px) { .site-header ul { gap: 1rem; font-size: 0.86rem; } }
+.site-header a { transition: color var(--speed-fast); }
+.site-header a:hover { color: var(--gold-deep); }
+.logo-ink { mix-blend-mode: multiply; }
+.logo-gold { filter: invert(1) sepia(1) saturate(4.5) hue-rotate(-14deg) brightness(0.95); }
+
+/* ---------- hero · split masthead (image right, description left) ---------- */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1.12fr;
+  gap: 2.2rem;
+  align-items: start;
+  padding-top: 2.5rem;
+  padding-bottom: 3rem;
+}
+.hero-split-img { min-width: 0; position: sticky; top: 88px; }
+.hero-split-img img { display: block; width: 100%; }
+.hero-split-text { padding: 0 0.5rem; }
+.hero-split-text .gsn-technical { margin-bottom: 1.2rem; }
+.hero-lede {
+  font-size: 0.9rem;
+  line-height: 2.0;
+  text-align: justify;
+  color: var(--text-body);
+  margin: 0 0 1.5rem;
+}
+.hero-actions { display: flex; gap: 1.4rem; align-items: center; }
+
+@media (max-width: 920px) {
+  .hero-split { grid-template-columns: 1fr; gap: 1.5rem; }
+  .hero-split-img { position: static; }
+  .hero-split-text { padding: 0; }
+}
+
+/* ---------- scroll reveals ---------- */
+.rv { opacity: 0; transform: translateY(26px); transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out); }
+.rv.rv-in { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; transition: none; }
+  .plx { transform: none !important; }
+}
+body[data-motion="off"] .rv { opacity: 1; transform: none; transition: none; }
+body[data-motion="off"] .plx { transform: none !important; }
+
+/* ---------- memoriam ---------- */
+.memoriam { text-align: center; }
+.memoriam .gsn-card { border-top: none; text-align: center; max-width: 620px; margin: 0 auto; }
+.memoriam .gsn-card p { text-align: center; }
+
+/* ---------- newsletter ---------- */
+.newsletter-form { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+.newsletter-form input {
+  font-family: inherit; font-size: 0.92rem; width: min(340px, 100%);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 0.78rem 1.1rem; background: var(--surface-card); color: var(--text-body);
+  outline: none; direction: ltr; text-align: left;
+  transition: border-color var(--speed-fast), box-shadow var(--speed-fast);
+}
+.newsletter-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--cerulean-wash); }
+
+/* ---------- archive filter ---------- */
+.filter-row { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; }
+.filter-btn {
+  font-family: inherit; cursor: pointer; background: none;
+  font-size: 0.82rem; font-weight: var(--weight-medium);
+  color: var(--text-muted); border: 1px solid var(--line);
+  border-radius: var(--radius-xs); padding: 0.18rem 0.9rem;
+  transition: color var(--speed-fast), border-color var(--speed-fast);
+}
+.filter-btn:hover { color: var(--accent-strong); border-color: var(--accent); }
+.filter-btn.is-active { color: var(--accent-strong); border-color: var(--accent); background: var(--cerulean-wash); }
+/* the archive's three ways in — the issue, the section, the words — sit together above the
+   list: two rows of the filter buttons and the newsletter's field, set for Persian */
+.archive-tools { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; justify-items: center; margin-bottom: 2.6rem; }
+.archive-tools .filter-row { justify-content: center; max-width: 100%; }
+.archive-search { width: 100%; margin-top: 0.3rem; }
+.archive-search input { direction: rtl; text-align: right; padding: 0.6rem 1.1rem; }
+.archive-search input::placeholder { color: var(--grey-faint); }
+.archive-issue-line { margin: 0; font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+
+/* ---------- contact card ---------- */
+.contact-card { background: var(--surface-card); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 2.4rem; }
+
+/* ---------- nav: animated gold underline ---------- */
+.site-header ul a { position: relative; padding-bottom: 3px; }
+.site-header ul a::after {
+  content: ''; position: absolute; right: 0; bottom: 0; height: 1.5px; width: 100%;
+  background: var(--gold); transform: scaleX(0); transform-origin: right center;
+  transition: transform var(--speed-base) var(--ease-out);
+}
+.site-header ul a:hover::after, .site-header ul a.is-active::after { transform: scaleX(1); }
+
+/* search trigger */
+.nav-search {
+  background: none; border: none; cursor: pointer; color: var(--ink);
+  font-size: 1.25rem; line-height: 1; padding: 0.1rem 0.2rem; opacity: 0.8;
+  transition: color var(--speed-fast), opacity var(--speed-fast);
+}
+.nav-search:hover { color: var(--gold-deep); opacity: 1; }
+
+/* ---------- top scroll-progress hairline ---------- */
+.scroll-progress {
+  position: fixed; top: 0; right: 0; left: 0; height: 2px; z-index: 60;
+  background: var(--gold); transform-origin: right center; transform: scaleX(0);
+  will-change: transform;
+}
+
+/* ---------- search overlay ---------- */
+.search-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 8vh 1.5rem 2rem;
+  animation: overlayIn 0.28s var(--ease-out);
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+.search-panel { width: min(680px, 100%); animation: panelIn 0.34s var(--ease-out); }
+@keyframes panelIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+.search-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+.search-close { background: none; border: none; font-size: 1.8rem; line-height: 1; color: var(--grey); cursor: pointer; }
+.search-close:hover { color: var(--ink); }
+.search-input {
+  width: 100%; box-sizing: border-box; font-family: var(--font-display);
+  font-size: 1.9rem; color: var(--ink); background: none;
+  border: none; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.2rem; outline: none;
+}
+.search-input::placeholder { color: var(--grey-faint); }
+.search-meta { margin: 1rem 0 0.4rem; color: var(--gold-deep); }
+.search-results { list-style: none; margin: 0; padding: 0; max-height: 56vh; overflow: auto; }
+.search-results li { border-bottom: 1px solid var(--line); }
+.search-results a {
+  display: flex; align-items: baseline; gap: 1rem; padding: 1rem 0.2rem;
+  transition: padding var(--speed-fast) var(--ease-out);
+}
+.search-results a:hover { padding-right: 0.8rem; }
+.search-r-tag { font-size: 0.72rem; color: var(--accent-strong); border: 1px solid var(--accent); border-radius: var(--radius-xs); padding: 0.02rem 0.55rem; flex-shrink: 0; }
+.search-r-title { font-weight: 700; color: var(--ink); flex: 1; }
+.search-r-arrow { color: var(--gold-deep); opacity: 0; transition: opacity var(--speed-fast); }
+.search-results a:hover .search-r-arrow { opacity: 1; }
+.search-empty { padding: 1.4rem 0.2rem; color: var(--grey); }
+
+/* ---------- subscription panel (both «دریافت اشتراک» controls open this) ---------- */
+.sub-title { font-size: 1.9rem; margin: 0.6rem 0 0.6rem; color: var(--ink); }
+.sub-lede { color: var(--text-muted); font-size: 0.95rem; line-height: 2; margin: 0 0 1.6rem; }
+.sub-form { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.sub-form input {
+  flex: 1 1 16rem; box-sizing: border-box; font-family: inherit; font-size: 0.95rem;
+  color: var(--ink); background: none; border: 0; border-bottom: 2px solid var(--ink);
+  padding: 0.5rem 0.2rem; outline: none;
+}
+.sub-form input::placeholder { color: var(--grey-faint); }
+.sub-form input:focus { border-bottom-color: var(--gold-deep); }
+.sub-ok { color: var(--accent-strong); font-weight: 500; margin: 0; line-height: 2; }
+.sub-note { font-size: 0.82rem; line-height: 1.9; color: var(--text-muted); margin: 0.9rem 0 0; }
+.sub-note.is-fail { color: var(--gold-deep); }
+.gsn-btn[disabled] { opacity: 0.6; cursor: default; }
+/* honeypot — present for bots, gone for everyone else */
+/* The honeypot must be invisible to people and present for a bot. left:-9999px
+   did that on a desktop, but in an RTL document it adds ten thousand pixels of
+   scrollable width to the left, and a phone opens the page parked at that far
+   edge — a blank screen where the article should be. Clipped in place instead. */
+.hp-field {
+  position: absolute; left: 0; top: 0; width: 1px; height: 1px;
+  opacity: 0; pointer-events: none; border: 0; padding: 0;
+  overflow: hidden; clip-path: inset(50%);
+}
+.comments-note { font-size: 0.85rem; color: var(--text-muted); margin: -0.8rem 0 1.6rem; }
+
+/* ---------- back to top ---------- */
+.back-top {
+  position: fixed; bottom: 1.8rem; left: 1.8rem; z-index: 55;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ink); color: var(--white); border: none; cursor: pointer;
+  font-size: 1.1rem; line-height: 1;
+  opacity: 0; transform: translateY(12px); pointer-events: none;
+  transition: opacity var(--speed-base), transform var(--speed-base), background var(--speed-base);
+  box-shadow: var(--shadow-card);
+}
+.back-top.is-show { opacity: 1; transform: none; pointer-events: auto; }
+.back-top:hover { background: var(--gold-deep); }
+
+/* think-tank route is a full-viewport iframe — hide magazine scroll chrome */
+body[data-page="thinktank"] .scroll-progress,
+body[data-page="thinktank"] .back-top { display: none; }
+
+/* ---------- route fade-in ---------- */
+.route-fade { animation: routeIn 0.5s var(--ease-out); }
+@keyframes routeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+body[data-motion="off"] .route-fade { animation: none; }
+
+/* ---------- latest feed: editorial numbering ---------- */
+.feed-item { position: relative; }
+.feed-index {
+  position: absolute; top: -0.15rem; left: 0;
+  font-family: var(--font-technical); font-size: 0.78rem;
+  letter-spacing: 0.08em; color: var(--gold-deep);
+}
+
+/* ---------- latest feed: reading time ---------- */
+.feed-cell { display: flex; flex-direction: column; }
+.read-time {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin-top: 0.9rem; color: var(--text-muted);
+  font-family: var(--font-body); font-size: 0.8rem;
+  letter-spacing: 0;
+}
+.read-time svg { color: var(--gold-deep); }
+
+/* ---------- selected essay: image hover zoom ---------- */.essay-figure { overflow: hidden; }
+.essay-figure img { display: block; width: 100%; transition: transform 0.7s var(--ease-out); }
+.essay-figure:hover img { transform: scale(1.045); }
+
+/* ---------- نوشته‌های آزاد: free-notes list ---------- */
+.notes-list { list-style: none; margin: 2rem 0 0; padding: 0; }
+.notes-list li { border-top: 1px solid var(--line); }
+.notes-list li:last-child { border-bottom: 1px solid var(--line); }
+.note-row {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 1.6rem; align-items: baseline;
+  padding: 1.6rem 0.2rem;
+  transition: padding var(--speed-base) var(--ease-out);
+}
+.note-row:hover { padding-right: 1rem; }
+.note-index { font-family: var(--font-technical); font-size: 1.5rem; color: var(--gold); line-height: 1; }
+.note-body { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+.note-title { font-size: 1.2rem; font-weight: 700; color: var(--ink); transition: color var(--speed-fast); }
+.note-row:hover .note-title { color: var(--accent-strong); }
+.note-excerpt { font-size: 0.9rem; color: var(--text-muted); line-height: 1.9; }
+.note-byline { font-size: 0.78rem; color: var(--text-muted); }
+.note-arrow { color: var(--gold-deep); font-size: 1.1rem; opacity: 0; transition: opacity var(--speed-fast); align-self: center; }
+.note-row:hover .note-arrow { opacity: 1; }
+@media (max-width: 620px) {
+  .note-row { grid-template-columns: auto 1fr; }
+  .note-arrow { display: none; }
+}
+
+/* ---------- article: author avatar ---------- */
+.author-avatar-wrap { position: relative; display: inline-flex; }
+.author-avatar-btn {
+  padding: 0; border: none; background: none; cursor: pointer;
+  border-radius: 50%; line-height: 0;
+  transition: transform var(--speed-fast) var(--ease-out);
+}
+.author-avatar-btn:hover { transform: translateY(-2px); }
+.author-avatar-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.author-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  object-fit: cover; object-position: top center;
+  border: 1px solid var(--line); background: var(--surface-band);
+  display: block; flex-shrink: 0;
+  transition: border-color var(--speed-fast);
+}
+.author-avatar-btn:hover .author-avatar { border-color: var(--accent); }
+.author-avatar--mono {
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700;
+  color: var(--gold-deep); font-size: 1.25rem;
+  border-style: dashed;
+}
+
+/* author intro pop-card — transparent turquoise */
+.author-bio-card {
+  position: absolute; top: calc(100% + 12px); right: 50%;
+  transform: translateX(50%);
+  width: min(320px, 78vw); z-index: 60;
+  text-align: right; direction: rtl;
+  background-color: rgba(133, 193, 197, 0.26);
+  -webkit-backdrop-filter: saturate(1.5) blur(16px);
+  backdrop-filter: saturate(1.5) blur(16px);
+  border: 1px solid rgba(110, 148, 160, 0.4);
+  border-radius: var(--radius-md);
+  box-shadow: 0 14px 40px -14px rgba(40, 90, 96, 0.4);
+  padding: 1.1rem 1.2rem;
+  animation: bioIn 0.28s var(--ease-out);
+}
+.author-bio-card::before {
+  content: ''; position: absolute; bottom: 100%; right: 50%; transform: translateX(50%);
+  border: 8px solid transparent; border-bottom-color: rgba(133, 193, 197, 0.4);
+}
+.author-bio-name {
+  display: block; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.05rem; color: var(--ink); margin-bottom: 0.5rem;
+}
+.author-bio-text {
+  margin: 0; font-size: 0.88rem; line-height: 1.95;
+  color: var(--text-body); text-align: justify;
+}
+@keyframes bioIn { from { opacity: 0; transform: translate(50%, -6px); } to { opacity: 1; transform: translateX(50%); } }
+body[data-motion="off"] .author-bio-card { animation: none; }
+
+.article-head .gsn-display { font-size: 2.4rem; margin: 0.6rem 0 1rem; }
+.article-kicker { display: flex; justify-content: center; margin: 0.2rem 0; }
+.article-head {
+  max-width: 860px; margin: 0 auto; padding: 4rem 2rem 2rem;
+  text-align: center; position: relative;
+}
+.article-byline {
+  display: flex; gap: 1.1rem; justify-content: center; align-items: center;
+  flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted);
+}
+.article-chips {
+  display: inline-flex; align-items: center; gap: 1rem; margin-top: 1.4rem;
+  padding: 0.5rem 1.2rem; border: 1px solid var(--line); border-radius: 999px;
+}
+.article-chip {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  font-size: 0.82rem; color: var(--text-muted); font-weight: 500;
+}
+.article-chip svg { color: var(--gold-deep); }
+.article-chip-sep { width: 1px; height: 16px; background: var(--line); }
+
+/* ---------- article: listen bar (TTS) ---------- */
+.listen-bar {
+  display: flex; align-items: center; gap: 0.75rem;
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  background: rgba(212, 175, 55, 0.04);
+  border-radius: 999px; padding: 0.4rem 0.5rem 0.4rem 1rem;
+  margin: 0 0 2.2rem; max-width: 420px;
+}
+.listen-bar.is-disabled { opacity: 0.6; }
+.listen-play {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--gold); color: var(--ink); border: none;
+  transition: transform var(--speed-fast), background var(--speed-fast);
+}
+.listen-bar {
+  display: flex; align-items: center; gap: 0.6rem; box-sizing: border-box;
+  border: 1px solid var(--line);
+  background: var(--surface-band);
+  border-radius: 999px; padding: 0.35rem 0.85rem 0.35rem 0.4rem;
+  margin: 0; width: 100%;
+}
+.listen-bar.is-disabled { opacity: 0.6; }
+.listen-play {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--text-muted); color: #fff; border: none;
+  transition: transform var(--speed-fast), background var(--speed-fast);
+}
+.listen-play svg { width: 14px; height: 14px; }
+.listen-play:hover:not(:disabled) { transform: scale(1.06); background: var(--ink); }
+.listen-play:disabled { cursor: not-allowed; }
+.listen-body { flex: 1; min-width: 0; }
+.listen-top { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.4rem; }
+.listen-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+.listen-stop {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: none; border: 1px solid var(--line); color: var(--text-muted);
+  transition: color var(--speed-fast), border-color var(--speed-fast);
+}
+.listen-stop svg { width: 12px; height: 12px; }
+.listen-stop:hover { color: var(--ink); border-color: var(--text-muted); }
+.listen-track { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; margin-inline-end: calc(32px + 1rem); }
+.listen-fill { display: block; height: 100%; background: var(--text-muted); border-radius: 2px; transition: width 0.2s linear; }
+.listen-fill.is-live { animation: listenPulse 1.4s var(--ease-out) infinite; }
+@keyframes listenPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.listen-tag { display: none; }
+body[data-motion="off"] .listen-fill.is-live { animation: none; }
+
+/* ---------- article: two-column body ---------- */
+.essay-lede {
+  font-family: var(--font-body); font-weight: 400;
+  font-size: 0.82rem; line-height: 1.95; color: var(--ink);
+  text-align: justify; margin: 0 0 1rem;
+}
+/* article table of contents — turquoise (matches the site banner accent),
+   boxed, at the top of the article body; only shown when > 3 headings */
+.article-toc {
+  margin: 0 0 1.8rem; padding: 0;
+}
+.article-toc-head {
+  display: block; font-family: var(--font-display); font-weight: 700;
+  font-size: 0.76rem; color: var(--accent); margin-bottom: 0.3rem;
+  letter-spacing: 0.03em;
+}
+.article-toc ol {
+  margin: 0; padding: 0 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.15rem;
+  list-style: none;
+}
+.article-toc li { font-size: 0.78rem; line-height: 1.5; color: var(--accent); }
+.article-toc li::before { content: '–'; color: var(--accent); opacity: 0.55; font-size: 0.7rem; margin-left: 0.4rem; }
+.article-toc a {
+  color: var(--accent); text-decoration: none; transition: color var(--speed-fast);
+}
+.article-toc a:hover { color: var(--accent-strong); text-decoration: underline; }
+.essay-cols {
+  columns: 2; column-gap: 2.8rem; column-rule: 1px solid var(--line-draft);
+  font-size: 0.82rem; line-height: 1.95; text-align: justify;
+  margin: 0 0 0.6rem;
+}
+.essay-cols p { margin: 0 0 1.2rem; break-inside: avoid; }
+.essay-cols p:last-child { margin-bottom: 0; }
+/* body figures: centered blocks between paragraphs, but smaller than the
+   full column so they don't dominate */
+.essay-figure {
+  width: 60%; max-width: 430px; margin: 2rem auto;
+}
+.essay-figure figcaption {
+  margin-top: 0.55rem; text-align: center; font-size: 0.74rem;
+  color: var(--text-muted); font-style: italic; line-height: 1.7;
+}
+/* articles with 3+ figures: float them left/right so the text wraps (they stay
+   spread by the paragraphs between). A .essay-figure-block stays a centered
+   block — e.g. a wide document scan. */
+article:has(.essay-figure:nth-of-type(3)) .essay-figure:not(.essay-figure-block) {
+  float: right; width: 285px; max-width: 40%; margin: 0.3rem 0 1.1rem 1.7rem;
+}
+article:has(.essay-figure:nth-of-type(3)) .essay-figure:not(.essay-figure-block):nth-of-type(even) {
+  float: left; margin: 0.3rem 1.7rem 1.1rem 0;
+}
+article:has(.essay-figure:nth-of-type(3)) .essay-close,
+article:has(.essay-figure:nth-of-type(3)) .essay-verse,
+article:has(.essay-figure:nth-of-type(3)) h2.gsn-display,
+article:has(.essay-figure:nth-of-type(3)) .essay-figure-block { clear: both; }
+@media (max-width: 640px) {
+  article:has(.essay-figure:nth-of-type(3)) .essay-figure:not(.essay-figure-block),
+  article:has(.essay-figure:nth-of-type(3)) .essay-figure:not(.essay-figure-block):nth-of-type(even) {
+    float: none; width: 85%; max-width: 100%; margin: 1.8rem auto;
+  }
+}
+/* hide the English technical label inside the frame — the Persian caption is enough */
+.essay-figure .gsn-draft-frame figcaption.gsn-technical { display: none; }
+/* two-up figure row: two related portraits side by side in one calm, aligned row */
+.essay-figure-pair {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem;
+  margin: 2.4rem auto; align-items: start; clear: both;
+}
+.essay-figure-pair .essay-figure { width: 100%; max-width: 100%; margin: 0; }
+@media (max-width: 640px) { .essay-figure-pair { grid-template-columns: 1fr; gap: 1.9rem; } }
+/* two-part titles: the part after «:» or «؛» drops to the next line, lighter */
+.title-sub { display: block; font-size: 0.72em; font-weight: 500; color: var(--text-muted); margin-top: 0.25em; line-height: 1.4; }
+.nc-title .title-sub { color: var(--text-muted); }
+.title-part { display: block; font-size: 0.55em; font-weight: 400; color: var(--text-muted); margin-top: 0.45em; letter-spacing: 0.03em; }
+/* compact writer / interviewee biography at the end of an article */
+.article-bio {
+  max-width: 720px; margin: 2.4rem auto 0; padding: 1.2rem 0 0;
+  border-top: 1px solid var(--line); display: flex; gap: 1rem; align-items: flex-start;
+}
+.article-bio-avatar { flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: var(--surface-band); }
+.article-bio-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.article-bio-body { flex: 1; min-width: 0; }
+.article-bio-label { display: block; font-size: 0.68rem; letter-spacing: 0.04em; color: var(--accent); font-weight: 700; margin-bottom: 0.15rem; }
+.article-bio-name { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; color: var(--ink); margin-bottom: 0.3rem; }
+.article-bio-text { margin: 0; font-size: 0.8rem; line-height: 1.9; color: var(--text-body); text-align: justify; }
+@media (max-width: 640px) {
+  .essay-figure { width: 85%; max-width: 100%; margin: 1.8rem auto; }
+}
+.essay-verse {
+  display: flex; align-items: flex-start; justify-content: center; gap: 0.3rem;
+  margin: 2.8rem 0;
+}
+.essay-close {
+  font-size: 0.82rem; line-height: 1.95; text-align: justify;
+  color: var(--text-body); margin: 0 0 1rem; padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- article: footnotes ---------- */
+.fn { position: relative; display: inline; }
+.fn-ref {
+  font-family: var(--font-technical); font-size: 0.62em; vertical-align: super;
+  line-height: 0; cursor: pointer; background: none; border: none; padding: 0 0.1em;
+  color: var(--gold-deep); font-weight: 700;
+  border-bottom: 1px dotted var(--gold); transition: color var(--speed-fast);
+}
+.fn-ref:hover, .fn-ref.is-open { color: var(--accent-strong); }
+.fn-card {
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(6px);
+  width: 290px; max-width: 80vw; z-index: 30;
+  display: flex; gap: 0.6rem; text-align: justify;
+  background: var(--surface-card); border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: var(--radius-md); padding: 0.9rem 1rem;
+  box-shadow: 0 16px 38px -18px rgba(120, 92, 30, 0.45);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity var(--speed-fast) var(--ease-out), transform var(--speed-fast) var(--ease-out), visibility var(--speed-fast);
+}
+.fn-card.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+.fn-card::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--surface-card);
+}
+.fn-card-num {
+  flex-shrink: 0; font-family: var(--font-technical); font-size: 0.7rem;
+  color: var(--gold-deep); font-weight: 700; padding-top: 0.1rem;
+}
+.fn-card-text { font-size: 0.82rem; line-height: 1.85; color: var(--text-body); }
+/* an English (LTR) note's hover card mirrors too: number on the left, text left-aligned */
+.fn-card[dir="ltr"] { text-align: left; }
+body[data-motion="off"] .fn-card { transition: none; }
+
+.fn-list-sec { margin-top: 2.6rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+.fn-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.7rem; counter-reset: none; }
+.fn-list li {
+  position: relative; padding-right: 1.8rem;
+  font-size: 0.85rem; line-height: 1.9; color: var(--text-muted); text-align: justify;
+}
+.fn-list-num {
+  position: absolute; right: 0; top: 0.15em; width: 1.3rem; text-align: center;
+  font-family: var(--font-technical); font-size: 0.7rem; color: var(--gold-deep); font-weight: 700;
+}
+/* an English (LTR) note mirrors the row: text starts at the left, number on the left */
+.fn-list li[dir="ltr"] { padding-right: 0; padding-left: 1.8rem; text-align: left; }
+.fn-list li[dir="ltr"] .fn-list-num { right: auto; left: 0; }
+
+/* ---------- article: body + summary aside ---------- */.article-layout {
+  max-width: 1140px; margin: 0 auto; padding: 0 2rem 1rem;
+  display: grid; grid-template-columns: 1fr 320px; gap: 3.2rem; align-items: start;
+}
+.article-aside { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 1.3rem; }
+.summary-card {
+  background: var(--surface-band);
+  border-top: 3px solid var(--gold);
+  padding: 1.1rem 1.5rem 1.2rem;
+}
+.summary-toggle {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  background: none; border: none; padding: 0.2rem 0; cursor: pointer;
+  font-family: inherit; text-align: right;
+}
+.summary-caret {
+  color: var(--gold-deep); font-size: 1.2rem; line-height: 1;
+  transition: transform var(--speed-base) var(--ease-out);
+}
+.summary-toggle.is-open .summary-caret { transform: rotate(180deg); }
+.summary-meta {
+  display: block; color: var(--gold-deep);
+  font-size: 0.82rem; font-weight: 600; margin-bottom: 0.9rem;
+}
+.summary-head {
+  display: block;
+  font-family: var(--font-display); color: var(--gold-deep);
+  font-size: 1.15rem; font-weight: 800; margin: 0;
+}
+.summary-text {
+  font-size: 0.92rem; line-height: 2.1; color: var(--text-body);
+  text-align: justify; margin: 0;
+}
+.summary-rule { border: none; border-top: 1px solid var(--gold); opacity: 0.5; margin: 0.9rem 0 1.1rem; }
+.summary-collapse {
+  overflow: hidden; max-height: 0;
+  transition: max-height var(--speed-base) var(--ease-out);
+}
+body[data-motion="off"] .summary-collapse { transition: none; }
+.summary-collapse-inner { padding-top: 1.1rem; }
+.share-card {
+  background: var(--surface-band);
+  border-top: 3px solid var(--line);
+  padding: 1.3rem 1.5rem;
+}
+
+/* share row */
+.share-row { display: flex; flex-direction: column; gap: 0.9rem; }
+.share-label { font-size: 0.82rem; color: var(--text-muted); }
+.share-icons { display: flex; gap: 0.65rem; }
+.share-icons a {
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; color: var(--text-muted);
+  transition: color var(--speed-fast), border-color var(--speed-fast), background var(--speed-fast), transform var(--speed-fast);
+}
+.share-icons a:hover {
+  color: var(--gold-deep); border-color: var(--gold);
+  background: var(--cerulean-wash); transform: translateY(-2px);
+}
+
+/* ---------- article: reader comments ---------- */
+.comments-section { max-width: 860px; margin: 0 auto; padding: 2rem 2rem 3rem; }
+.comments-section .gsn-rule-gold { width: 100%; }
+.comments-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; }
+@media (max-width: 920px) {
+  .article-layout { grid-template-columns: 1fr; gap: 2.2rem; }
+  .article-aside { position: static; order: -1; }
+}
+@media (max-width: 620px) {
+  .essay-cols { columns: 1; column-rule: none; }
+  .article-head { padding-top: 3rem; }
+  .listen-tag { display: none; }
+}
+@media (max-width: 560px) {
+  .comments-row { grid-template-columns: 1fr; }
+  .article-chips { flex-wrap: wrap; border-radius: var(--radius-lg); }
+}
+
+/* ---------- about: 3-column print spread ---------- */
+/* One width for the masthead column. The opening block and the spread below
+   both trail with this track plus the same gap, which is what keeps the
+   text's left edge on the engraving's — so it has to be a single value.
+   250, not 220: «مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان» needs 241px to sit
+   on one line. */
+.about-main { position: relative; --cred-col: 250px; }
+.about-spine {
+  position: absolute; left: -1.9rem; bottom: 0; z-index: 5;
+  writing-mode: vertical-rl; text-orientation: mixed;
+  transform: rotate(180deg);
+  font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 0;
+  color: var(--gold-deep); white-space: nowrap;
+  padding-left: 0.15rem; border-left: 1px solid var(--gold);
+}
+.about-spread {
+  position: relative;
+  /* 1rem at the head, not 3.5: the opening block sits directly above and the
+     two read as one movement. (The old `.about-manifesto + .about-spread` rule
+     never matched — Reveal wraps the manifesto, so they are not siblings.) */
+  max-width: 1200px; margin: 0 auto; padding: 1rem 3.5rem 4rem;
+  /* The text sits under the statement and the engraving, its left edge meeting
+     the engraving's. Rather than a fixed width, it takes the same two trailing
+     tracks as the opening block — 1fr + the 220px masthead column at the same
+     2.2rem gap — and occupies only the first, so the two edges cannot drift
+     apart when the measure changes. */
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--cred-col); gap: 0 2.2rem; align-items: start;
+}
+.about-text p {
+  font-size: 0.88rem; line-height: 1.95;
+  text-align: justify; color: var(--text-body); margin: 0 0 1.1rem;
+}
+.about-text p:last-child { margin-bottom: 0; }
+.about-text .gsn-pullquote {
+  font-size: 1.5rem; line-height: 1.55; padding: 1.4rem 2rem;
+  /* balance evens the two lines instead of leaving a short widow on the second */
+  text-wrap: balance;
+}
+.about-figure { position: sticky; top: 92px; }
+.about-figure img {
+  display: block; width: 100%; height: auto;
+  filter: contrast(1.05);
+}
+.about-cred { position: sticky; top: 92px; }
+.cred-list { margin: 0; display: grid; gap: 0.85rem; }
+.cred-row { display: grid; gap: 0.05rem; }
+.cred-row dt {
+  font-family: var(--font-display); font-weight: 800; color: var(--ink);
+  font-size: 0.88rem; line-height: 1.5;
+}
+.cred-row dd { margin: 0; color: var(--text-muted); font-size: 0.84rem; line-height: 1.6; }
+
+@media (max-width: 1024px) {
+  .about-spine { display: none; }
+  .about-spread { grid-template-columns: minmax(0, 1fr); gap: 2.2rem; padding: 3rem 2.5rem; }
+}
+@media (max-width: 720px) {
+  .about-spine { display: none; }
+  .about-spread { grid-template-columns: minmax(0, 1fr); gap: 2rem; padding: 2.5rem 1.6rem; }
+}
+
+/* ---------- about: contact block ----------
+   Was three different measures: the heading on .wrap (2rem padding), the grid
+   on its own 1100px cap, and the sections above on 1200px / 3.5rem. All three
+   now share the page's measure, so the block's edges line up with .about-spread
+   and the manifesto above it. The head follows the same pattern as تیم نویسندگان گاهنامهٔ گوسان
+   — label, rule, muted line, all ranged right — instead of a centred h2 over a
+   right-ranged paragraph. */
+.about-contact {
+  max-width: 1200px; margin: 0 auto; padding: 1.5rem 3.5rem 5rem;
+}
+/* 1180, matching .about-spread and the opening block: at 1024 this block kept
+   3.5rem padding for another 156px and its edges fell out of line with them */
+@media (max-width: 1180px) { .about-contact { padding: 1.5rem 2.5rem 4rem; } }
+@media (max-width: 720px) { .about-contact { padding: 1.5rem 1.6rem 3.5rem; } }
+
+/* ---------- about: editorial board, folded into the text column ----------
+   Sits under the motif rule at the foot of .about-text and is sized so the
+   column finishes level with the engraving beside it. Everything here is a
+   compaction of the standalone board above — no new elements. */
+/* both classes: .board-section is declared later in this file, so a bare
+   .board-inline loses the cascade on these two */
+.board-section.board-inline { background: none; border-bottom: 0; }
+.board-inline .gsn-technical { display: none; }
+.board-inline .gsn-section-head { margin-bottom: 0; }
+.board-inline .gsn-section-head > * { font-size: 1.15rem; }
+.board-inline .board-hint { font-size: 0.74rem; margin-top: 0.3rem; }
+/* the five faces centre in the text column rather than ranging to its edge */
+.board-inline .board-row { gap: 1rem; flex-wrap: nowrap; justify-content: center; }
+/* the portraits keep their full 148px: they were shrunk to 112 only so the
+   column would finish level with the engraving, and the engraving has since
+   moved up into the opening block. 5 × 148 + 4 × 1rem = 804 inside an 898
+   column, so they still hold one line. */
+
+/* nowrap holds the five faces on one line only while the column is wide
+   enough for them; below that it would push the row past the column edge */
+@media (max-width: 1024px) {
+  .board-inline .board-row { flex-wrap: wrap; }
+}
+
+/* ---------- about: editorial board (circular portraits + gold bio drawer) ---------- */
+.board-section {
+  position: relative;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.board-hint { color: var(--text-muted); font-size: 0.92rem; margin: 0.6rem 0 0; }
+.board { position: relative; }
+.board.has-open { padding-bottom: 0; }
+.board-row {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 1.4rem; align-items: flex-start;
+}
+.board-card {
+  position: relative; width: 148px; flex: 0 0 auto;
+  margin: 0; display: flex; flex-direction: column; align-items: center;
+  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+}
+.board-portrait-circle {
+  display: block; width: 100%; max-width: 160px; aspect-ratio: 1 / 1;
+  border-radius: 50%; overflow: hidden; border: 2px solid transparent;
+  transition: border-color var(--speed-base), transform var(--speed-base), box-shadow var(--speed-base);
+}
+.board-card:hover .board-portrait-circle {
+  border-color: var(--gold); transform: translateY(-4px);
+  box-shadow: 0 14px 30px -16px rgba(120, 92, 30, 0.5);
+}
+.board-card.is-open .board-portrait-circle {
+  border-color: transparent; transform: none; box-shadow: none;
+}
+.board-portrait-circle img {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 12%;
+  mix-blend-mode: multiply; filter: contrast(1.06);
+}
+.board-card figcaption { text-align: center; margin-top: 0.9rem; }
+.board-card-name {
+  display: block; font-family: var(--font-display); font-weight: 400;
+  font-size: 1.02rem; color: var(--ink); transition: color var(--speed-fast);
+}
+.board-card:hover .board-card-name { color: var(--gold-deep); }
+.board-card.is-open .board-card-name { color: var(--accent-strong); }
+
+/* turquoise bio popover — opens centered OVER the clicked circle (overlays, no layout shift) */
+/* the bio opens in the space that appears between the portraits and the
+   contact section: plain text on the page, no panel, no border, no shadow */
+.board-bio {
+  margin: 2.2rem auto 0; max-width: 640px; text-align: justify;
+  animation: boardBioIn 0.32s var(--ease-out) both;
+}
+@keyframes boardBioIn { from { opacity: 0; } to { opacity: 1; } }
+/* the name and craft already sit under the portrait, so the block is the bio
+   alone — in the same blue the craft line uses */
+.board-bio p { margin: 0; color: var(--accent-strong); font-size: 0.88rem; line-height: 1.95; text-wrap: pretty; }
+/* the open portrait keeps a gold ring, so it is clear whose bio is showing */
+.board-card.is-open .board-portrait-circle { border-color: var(--gold); transform: none; box-shadow: none; }
+
+/* ---------- about: editorial board responsive ---------- */
+@media (max-width: 760px) {
+  .board-row { gap: 1.3rem 1.1rem; }
+  .board-card { width: 130px; }
+}
+@media (max-width: 460px) {
+  .board-card { width: 118px; }
+  .board-bio { max-width: none; }
+}
+
+/* ---------- Persian motif divider ---------- */
+.gsn-motif-divider {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  max-width: 320px; margin: 0 auto 1.6rem;
+}
+.gsn-motif-line {
+  height: 1px; flex: 1; max-width: 110px;
+  background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.6) 52%, transparent);
+}
+.gsn-motif-mark { color: var(--gold); display: block; opacity: 0.92; flex-shrink: 0; }
+
+/* ============================================================
+   شیوه‌نامه — style guide / submissions (two-column + sticky index)
+   ============================================================ */
+.sv-layout {
+  max-width: 1140px; margin: 0 auto; padding: 0 2rem 4rem;
+  display: grid; grid-template-columns: 1fr 248px; gap: 3.4rem; align-items: start;
+}
+.sv-content { min-width: 0; }
+
+/* sticky index */
+.sv-toc { position: sticky; top: 96px; }
+.sv-toc-inner {
+  border-top: 3px solid var(--gold); padding-top: 1.1rem;
+}
+.sv-toc-head {
+  display: block; font-family: var(--font-display); font-weight: 800;
+  color: var(--gold-deep); font-size: 1.05rem; margin-bottom: 1rem;
+}
+.sv-toc-nav { display: grid; gap: 0; }
+.sv-toc-link {
+  display: flex; align-items: baseline; gap: 0.7rem; padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm); color: var(--text-muted);
+  border-right: 2px solid transparent; transition: color var(--speed-fast), background var(--speed-fast), border-color var(--speed-fast);
+}
+.sv-toc-link:hover { color: var(--gold-deep); background: var(--surface-band); }
+.sv-toc-link.is-active { color: var(--ink); border-right-color: var(--gold); background: var(--surface-band); }
+.sv-toc-num { font-family: var(--font-technical); font-size: 0.72rem; color: var(--gold-deep); }
+.sv-toc-label { font-size: 0.9rem; font-weight: 500; }
+.sv-toc-cta {
+  display: inline-block; margin-top: 1.4rem; font-size: 0.85rem;
+  color: var(--accent-strong); border-bottom: 1px solid var(--gold);
+}
+
+/* sections with big numerals */
+.sv-section { padding: 1.9rem 0; border-top: 1px solid var(--line); scroll-margin-top: 88px; }
+.sv-section:first-child { border-top: none; padding-top: 1rem; }
+.sv-section-head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 1.1rem; }
+.sv-num {
+  flex-shrink: 0; font-family: var(--font-display); font-weight: 800;
+  font-size: 1.9rem; line-height: 0.9; color: var(--gold);
+  -webkit-text-stroke: 0; opacity: 0.85;
+}
+.sv-section-titles { padding-top: 0.1rem; }
+.sv-en { display: block; color: var(--gold-deep); font-size: 0.62rem; margin-bottom: 0.2rem; }
+.sv-title { font-size: 1.3rem; margin: 0; color: var(--ink); }
+.sv-section-body { padding-right: calc(1.9rem + 0.85rem); }
+.sv-p { font-size: 0.9rem; line-height: var(--leading-prose); text-align: justify; color: var(--text-body); margin: 0 0 1rem; }
+.sv-lead { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; line-height: 1.9; color: var(--ink); }
+.sv-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.85rem; }
+.sv-list--cols { grid-template-columns: 1fr 1fr; gap: 0.85rem 2rem; }
+.sv-list li {
+  position: relative; padding-right: 1.5rem;
+  font-size: 0.88rem; line-height: 1.9; color: var(--text-body); text-align: justify;
+}
+.sv-list li::before {
+  content: ''; position: absolute; top: 0.7em; right: 0.2rem;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+}
+.sv-mono { font-family: var(--font-technical); font-size: 0.86em; direction: ltr; display: inline-block; }
+.sv-mail { color: var(--accent-strong); border-bottom: 1px solid var(--gold); direction: ltr; display: inline-block; }
+.sv-note {
+  margin-top: 1.6rem; border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.08); border-radius: var(--radius-lg); padding: 1.2rem 1.4rem;
+}
+.sv-note-tag {
+  font-family: var(--font-technical); font-size: 0.66rem; letter-spacing: 0.08em;
+  color: var(--gold-deep); display: block; margin-bottom: 0.5rem;
+}
+.sv-note p { margin: 0; font-size: 0.92rem; line-height: 1.95; color: var(--text-body); text-align: justify; }
+.sv-subhead {
+  display: block; margin: 1.6rem 0 0.8rem; font-family: var(--font-display);
+  font-weight: 800; color: var(--gold-deep); font-size: 0.95rem;
+}
+.sv-cite { margin: 0; padding: 0; list-style: none; counter-reset: cite; display: grid; gap: 0.8rem; }
+.sv-cite li {
+  position: relative; padding-right: 2rem; counter-increment: cite;
+  font-size: 0.88rem; line-height: 1.9; color: var(--text-muted);
+}
+.sv-cite li::before {
+  content: counter(cite); position: absolute; right: 0; top: 0.1em;
+  font-family: var(--font-technical); font-size: 0.72rem; color: var(--gold-deep);
+  width: 1.3rem; text-align: center;
+}
+.sv-cite-ltr { text-align: left; padding-right: 0; padding-left: 2rem; }
+.sv-cite-ltr::before { right: auto; left: 0; }
+.sv-cite em, .sv-p em, .sv-list em { font-style: italic; color: var(--text-body); }
+.sv-cta {
+  text-align: center; margin-top: 2.4rem; padding: 2.4rem 2rem;
+  border: 1px solid rgba(212, 175, 55, 0.4); border-radius: var(--radius-lg);
+  background: rgba(212, 175, 55, 0.06);
+}
+@media (max-width: 900px) {
+  .sv-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+  .sv-toc { position: static; order: -1; }
+  .sv-toc-inner { padding-bottom: 0.4rem; }
+  .sv-toc-nav { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: max-content; overflow-x: auto; gap: 0.4rem; }
+  .sv-toc-link { border-right: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .sv-toc-link.is-active { border-right-color: transparent; border-bottom-color: var(--gold); }
+  .sv-toc-cta { display: none; }
+  .sv-section-body { padding-right: 0; }
+}
+@media (max-width: 540px) {
+  .sv-list--cols { grid-template-columns: 1fr; }
+  .sv-num { font-size: 2rem; }
+}
+
+/* ============================================================
+   اندیشکدهٔ گوسان — think tank (bold dark dynamic theme)
+   ============================================================ */
+.tt {
+  position: relative; overflow: hidden;
+  color: #ECE7DC;
+  background: #0E1517;
+  --tt-gold: #E1C486;
+  --tt-teal: #6FB6BE;
+}
+/* header readability over the dark page */
+body[data-page="thinktank"] .site-header { color: #ECE7DC; }
+body[data-page="thinktank"] .site-header a { color: #ECE7DC; }
+body[data-page="thinktank"] .site-header a:hover { color: var(--tt-gold, #E1C486); }
+body[data-page="thinktank"] .nav-search { color: #ECE7DC; }
+
+/* animated background */
+.tt-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 80% -10%, #15403f 0%, rgba(21,64,63,0) 55%),
+    radial-gradient(100% 70% at 0% 110%, #2a1c10 0%, rgba(42,28,16,0) 50%),
+    linear-gradient(155deg, #0d1416 0%, #101a1c 50%, #0c1113 100%);
+}
+.tt-orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; }
+.tt-orb--gold { width: 420px; height: 420px; background: #c79a3e; top: -120px; right: -80px; animation: ttFloat 18s var(--ease-in-out, ease-in-out) infinite; }
+.tt-orb--teal { width: 380px; height: 380px; background: #1f6f74; bottom: -120px; left: -60px; animation: ttFloat 22s var(--ease-in-out, ease-in-out) infinite reverse; }
+@keyframes ttFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.12); }
+}
+.tt-grid {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(225,196,134,0.16) 1.4px, transparent 1.4px);
+  background-size: 26px 26px; opacity: 0.5;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+}
+body[data-motion="off"] .tt-orb { animation: none; }
+
+.tt > section { position: relative; z-index: 1; }
+.tt-section { max-width: 1100px; margin: 0 auto; padding: 3.5rem 2rem; }
+
+/* hero */
+.tt-hero { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 2rem; }
+.tt-eyebrow {
+  display: inline-block; font-family: var(--font-technical); letter-spacing: 0.22em;
+  font-size: 0.78rem; color: var(--tt-gold); margin-bottom: 1.4rem;
+}
+.tt-title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(2rem, 4.6vw, 3.5rem); line-height: 1.1; margin: 0 0 1.4rem;
+  color: #fff; max-width: none; white-space: nowrap;
+}
+.tt-lede { font-size: 1.1rem; line-height: 2.1; color: #C8C2B5; max-width: 52ch; margin: 0; text-align: justify; }
+@media (max-width: 480px) { .tt-title { white-space: normal; } }
+
+/* marquee */
+.tt-marquee { margin-top: 3rem; border-top: 1px solid rgba(225,196,134,0.25); border-bottom: 1px solid rgba(225,196,134,0.25); overflow: hidden; }
+.tt-marquee-track {
+  display: flex; gap: 2.5rem; white-space: nowrap; padding: 0.9rem 0;
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: rgba(236,231,220,0.5);
+  width: max-content; animation: ttMarquee 26s linear infinite;
+}
+.tt-marquee-track span:nth-child(even) { color: var(--tt-gold); }
+@keyframes ttMarquee { from { transform: translateX(0); } to { transform: translateX(50%); } }
+body[data-motion="off"] .tt-marquee-track { animation: none; }
+
+/* programs */
+.tt-programs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+.tt-program {
+  position: relative; text-align: right; cursor: pointer; font-family: inherit;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(236,231,220,0.14);
+  border-radius: var(--radius-lg); padding: 1.8rem 1.6rem 1.6rem; color: inherit;
+  display: flex; flex-direction: column; gap: 0.5rem; overflow: hidden;
+  transition: transform var(--speed-base) var(--ease-out), border-color var(--speed-base), background var(--speed-base);
+}
+.tt-program::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  background: linear-gradient(150deg, rgba(225,196,134,0.16), rgba(111,182,190,0.08));
+  transition: opacity var(--speed-base);
+}
+.tt-program:hover, .tt-program.is-active { transform: translateY(-6px); border-color: var(--tt-gold); }
+.tt-program.is-active::before, .tt-program:hover::before { opacity: 1; }
+.tt-program > * { position: relative; }
+.tt-program-en { font-family: var(--font-technical); letter-spacing: 0.18em; font-size: 0.7rem; color: var(--tt-teal); }
+.tt-program-label { font-family: var(--font-display); font-weight: 800; font-size: 2rem; color: #fff; }
+.tt-program-count { color: var(--tt-gold); font-weight: 600; font-size: 0.9rem; }
+.tt-program-desc { color: #B7B1A4; font-size: 0.9rem; line-height: 1.9; margin-top: 0.3rem; }
+.tt-program-arrow { position: absolute; top: 1.4rem; left: 1.4rem; font-size: 1.3rem; color: rgba(236,231,220,0.4); transition: color var(--speed-base), transform var(--speed-base); }
+.tt-program:hover .tt-program-arrow, .tt-program.is-active .tt-program-arrow { color: var(--tt-gold); transform: translate(-3px, 3px); }
+
+/* section head */
+.tt-section-head { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid rgba(236,231,220,0.16); padding-bottom: 1rem; margin-bottom: 2rem; }
+.tt-section-head h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; color: #fff; margin: 0; }
+.tt-section-tag { font-family: var(--font-technical); letter-spacing: 0.12em; font-size: 0.8rem; color: var(--tt-gold); }
+
+/* podcast player */
+.tt-player { background: rgba(255,255,255,0.035); border: 1px solid rgba(236,231,220,0.14); border-radius: var(--radius-lg); overflow: hidden; }
+.tt-player-main { display: flex; align-items: center; gap: 1.4rem; padding: 1.6rem 1.8rem; border-bottom: 1px solid rgba(236,231,220,0.1); }
+.tt-play {
+  flex-shrink: 0; width: 58px; height: 58px; border-radius: 50%; cursor: pointer;
+  background: var(--tt-gold); color: #14110d; border: none; display: grid; place-items: center;
+  transition: transform var(--speed-fast), box-shadow var(--speed-base);
+  box-shadow: 0 0 0 0 rgba(225,196,134,0.5);
+}
+.tt-play:hover { transform: scale(1.06); box-shadow: 0 0 30px -4px rgba(225,196,134,0.6); }
+.tt-player-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.tt-kicker { font-family: var(--font-technical); letter-spacing: 0.1em; font-size: 0.72rem; color: var(--tt-teal); }
+.tt-ep-title { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: #fff; margin: 0; }
+.tt-ep-sub { font-size: 0.82rem; color: #A8A296; }
+.tt-wave { display: flex; align-items: center; gap: 3px; height: 40px; flex-shrink: 0; }
+.tt-wave span { width: 3px; background: linear-gradient(var(--tt-teal), var(--tt-gold)); border-radius: 2px; height: 30%; }
+.tt-wave.is-playing span { animation: ttBar 0.9s var(--ease-in-out, ease-in-out) infinite; }
+@keyframes ttBar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+body[data-motion="off"] .tt-wave span { animation: none !important; }
+@media (max-width: 560px) { .tt-wave { display: none; } }
+
+.tt-ep-list { list-style: none; margin: 0; padding: 0.5rem 0.6rem; }
+.tt-ep-row {
+  width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 1.2rem; align-items: center;
+  background: none; border: none; cursor: pointer; font-family: inherit; color: inherit;
+  padding: 0.85rem 1rem; border-radius: var(--radius-md); text-align: right;
+  transition: background var(--speed-fast);
+}
+.tt-ep-row:hover { background: rgba(255,255,255,0.04); }
+.tt-ep-row.is-active { background: rgba(225,196,134,0.1); }
+.tt-ep-n { font-family: var(--font-technical); color: var(--tt-gold); font-size: 0.9rem; }
+.tt-ep-rt { color: #E4DFD4; font-size: 0.98rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-ep-len { font-size: 0.78rem; color: #968F84; font-family: var(--font-technical); }
+
+/* panels */
+.tt-panels { list-style: none; margin: 0; padding: 0; }
+.tt-panel {
+  display: grid; grid-template-columns: 90px 1fr auto auto; gap: 1.6rem; align-items: center;
+  padding: 1.4rem 0.4rem; border-top: 1px solid rgba(236,231,220,0.12);
+  transition: padding var(--speed-base) var(--ease-out);
+}
+.tt-panel:last-child { border-bottom: 1px solid rgba(236,231,220,0.12); }
+.tt-panel:hover { padding-right: 1.2rem; }
+.tt-panel-date { font-family: var(--font-display); font-weight: 800; color: var(--tt-gold); font-size: 1.05rem; }
+.tt-panel-title { color: #fff; font-size: 1.15rem; font-weight: 600; }
+.tt-panel-tag { font-size: 0.78rem; color: var(--tt-teal); border: 1px solid rgba(111,182,190,0.4); border-radius: 999px; padding: 0.2rem 0.8rem; }
+.tt-panel-cta { color: #B7B1A4; font-size: 0.85rem; opacity: 0; transition: opacity var(--speed-fast), color var(--speed-fast); }
+.tt-panel:hover .tt-panel-cta { opacity: 1; color: var(--tt-gold); }
+
+/* cta */
+.tt-cta { text-align: center; padding-bottom: 5rem; }
+.tt-cta h2 { font-family: var(--font-display); font-weight: 800; font-size: 2rem; color: #fff; margin: 0 0 0.6rem; }
+.tt-cta p { color: #B7B1A4; font-size: 0.98rem; margin: 0 0 2rem; }
+.tt-cta-form { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+.tt-cta-form input {
+  font-family: inherit; font-size: 0.95rem; width: min(320px, 100%); direction: ltr; text-align: left;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(236,231,220,0.2); color: #fff;
+  border-radius: var(--radius-md); padding: 0.85rem 1.1rem; outline: none;
+  transition: border-color var(--speed-fast);
+}
+.tt-cta-form input::placeholder { color: #8A8478; }
+.tt-cta-form input:focus { border-color: var(--tt-gold); }
+.tt-cta-form button {
+  font-family: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+  background: var(--tt-gold); color: #14110d; border: none; border-radius: var(--radius-md);
+  padding: 0.85rem 2rem; transition: transform var(--speed-fast), box-shadow var(--speed-base);
+}
+.tt-cta-form button:hover { transform: translateY(-2px); box-shadow: 0 10px 26px -10px rgba(225,196,134,0.6); }
+
+/* ============================================================
+   Halftone logo hero — beaded «گوسان» wordmark on near-black
+   ============================================================ */
+.hero-halftone {
+  position: relative;
+  background: #0A0C0B;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: min(88vh, 820px);
+  padding: clamp(3rem, 7vh, 6rem) 1.5rem clamp(4rem, 9vh, 7rem);
+  overflow: hidden;
+}
+/* faint dot field bleeding off the edges, so the hero feels printed on grain */
+.hero-halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(246,243,236,0.05) 1px, transparent 1.4px);
+  background-size: 19px 19px;
+  pointer-events: none;
+}
+.hero-halftone-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1120px;
+  width: 100%;
+}
+.hero-halftone-eyebrow {
+  font-family: var(--font-technical);
+  letter-spacing: 0.26em;
+  font-size: 0.74rem;
+  color: var(--gold);
+  margin-bottom: clamp(1.4rem, 3vh, 2.4rem);
+}
+.halftone-canvas {
+  display: block;
+  width: min(78vw, 1000px);
+  height: auto;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 1.1s ease, transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.halftone-canvas.is-ready { opacity: 1; transform: none; }
+.hero-halftone-tagline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  color: #F6F3EC;
+  margin: clamp(1rem, 2.5vh, 2rem) 0 0;
+  letter-spacing: 0.01em;
+}
+.hero-halftone-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: clamp(1.6rem, 3.5vh, 2.6rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.hero-halftone-btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.78rem 1.7rem;
+  border-radius: var(--radius-md);
+  background: #F6F3EC;
+  color: #0A0C0B;
+  border: 1px solid #F6F3EC;
+  transition: transform var(--speed-fast), background var(--speed-fast), color var(--speed-fast);
+}
+.hero-halftone-btn:hover { transform: translateY(-2px); background: var(--gold); border-color: var(--gold); }
+.hero-halftone-btn.is-ghost {
+  background: none;
+  color: #F6F3EC;
+  border-color: rgba(246,243,236,0.4);
+}
+.hero-halftone-btn.is-ghost:hover { background: none; color: var(--gold); border-color: var(--gold); transform: none; }
+.hero-halftone-scroll {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: rgba(246,243,236,0.5);
+}
+@media (max-width: 640px) {
+  .halftone-canvas { width: 86vw; }
+  .hero-halftone-scroll { display: none; }
+}
+
+/* ---- flickering-grid variant ---- */
+.hero-flicker-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  -webkit-mask-image: radial-gradient(900px circle at center, #000 0%, transparent 78%);
+  mask-image: radial-gradient(900px circle at center, #000 0%, transparent 78%);
+}
+.hero-flicker .hero-halftone-inner { z-index: 1; }
+.hero-flicker-logo {
+  position: relative;
+  width: min(78vw, 1000px);
+  aspect-ratio: 1608 / 1134;
+  -webkit-mask-image: url('assets/logo-mask.png');
+  mask-image: url('assets/logo-mask.png');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: heroFlickerPulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.flicker-grid { width: 100%; height: 100%; }
+.flicker-canvas { display: block; pointer-events: none; }
+@keyframes heroFlickerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.82; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-flicker-logo { animation: none; }
+}
+@media (max-width: 640px) {
+  .hero-flicker-logo { width: 86vw; }
+}
+
+/* ============================================================
+   New Criterion–style editorial home arrangement
+   ============================================================ */
+.nc-home { background: var(--paper); }
+
+/* --- masthead --- */
+/* the banner colour now runs the whole head: the masthead carries the same
+   ground and sits flush against the bar, so nothing shifts position. */
+/* the head is 2cm shorter than it was, so the bar — and the whole page under it —
+   rides up by that much. The first centimetre came out of the masthead's air (the
+   top padding and the 0.9rem that sat below the calligraphy); the second is the
+   overlap: the bar is pulled up over the foot of the calligraphy, whose tail — the
+   only ink in the lower third of the logo, and clear of the titles — crosses in
+   front of it. See .nc-topics (margin + opaque ground) and .nc-logo (z-index). */
+/* The logo section carries no ground of its own — the calligraphy, the cover and
+   the issue lines stand on paper, and the blue belongs to the bar alone. Every
+   measure here is untouched, so nothing moves. */
+.nc-masthead { margin: 0; padding: 1.15rem var(--shell-gutter) 0; background: none; }
+.nc-masthead-grid {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: grid;
+  /* logo holds the right; the issue block sits at the left edge */
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+.nc-masthead-grid .nc-mast-side.is-end { display: none; }
+.nc-masthead-grid .nc-mast-center { order: 1; justify-self: start; }
+.nc-masthead-grid .nc-mast-side.is-start { order: 2; justify-self: end; }
+.nc-mast-side { display: flex; flex-direction: column; gap: 0.4rem; }
+/* Issue line and subscribe link sit at the cover's bottom-left rather than
+   stacked above it: cover first in the DOM lands right in RTL, the meta block
+   beside it on the left, both bottom-aligned. */
+.nc-mast-side.is-start { flex-direction: row; align-items: flex-end; gap: 0.85rem;
+  /* the bar covers the foot of this column too, so the block is centred in what is
+     left above it: a bottom margin equal to the overlap lifts a centred grid item
+     by exactly half of it, which puts it dead centre in the visible band. */
+  margin-bottom: var(--head-overlap); }
+.nc-mast-meta { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; text-align: right; padding-bottom: 0.15rem; }
+.nc-mast-side.is-end { align-items: flex-end; text-align: left; }
+/* the magazine's name, set small above the issue line beside the cover */
+.nc-mast-name {
+  font-size: 0.72rem; font-weight: 600; color: var(--ink);
+  letter-spacing: 0.01em; line-height: 1.25; white-space: nowrap;
+  margin-bottom: -0.3rem;   /* closes on the issue line under it */
+}
+.nc-mast-meta .nc-issueline { line-height: 1.4; }
+.nc-issueline {
+  font-family: var(--font-technical);
+  letter-spacing: 0.1em;
+  font-size: 0.6rem;
+  color: var(--grey);
+  white-space: nowrap;
+}
+/* The cover's foot meets the line where the calligraphy's LEFT side ends — 0.63 of
+   the logo's height, below which only the tail hangs. Its block is centred in the
+   band, so the drop is the calligraphy's own offset plus 0.63 of its height, less
+   that block's foot (57.55px, half its height). Carrying --mast-drop means the two
+   move together whenever the calligraphy is nudged. Offset, not laid out, so the
+   block's centring is untouched. */
+.nc-mast-cover { position: relative;
+  top: calc(var(--mast-logo) * 0.20304 + var(--mast-drop) - 57.55px);
+  display: block; width: 78px; height: auto; box-shadow: 0 6px 20px -10px rgba(0,0,0,0.4); margin-top: 0.3rem; }
+/* the print ISSN, set as a second issue line under the first: same technical
+   register, always left-to-right so the number never reorders in the RTL column. */
+.nc-mast-issn { direction: ltr; unicode-bidi: isolate; font-size: 0.55rem; opacity: 0.85; }
+.nc-mast-meta .nc-mast-issn { margin-top: -0.2rem; }
+.nc-mast-sub {
+  font-size: 0.82rem; color: var(--ink); text-decoration: none;
+  background: none; border: 0; padding: 0; font-family: inherit; cursor: pointer;
+  border-bottom: 1px solid var(--gold); padding-bottom: 2px; font-weight: 600;
+}
+.nc-mast-sub:hover { color: var(--gold-deep); }
+.nc-mast-sub small { display: block; font-weight: 400; color: var(--grey); border: 0; letter-spacing: 0; margin-bottom: 0.25rem; }
+/* the calligraphy sits 1cm to the right of the shell's edge — it holds the corner
+   of the head rather than lining up with the titles beneath it. Its own gutter is
+   what carries the shift, so it never reaches the window edge (the head stacks
+   below 820px, where the shift is dropped). */
+.nc-mast-center { display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  margin-inline-start: -0.5cm;
+  /* offset rather than laid out: relative, so it paints where it should without
+     lengthening the band or pushing the bar down. */
+  position: relative; top: var(--mast-drop); }
+.nc-logo {
+  width: var(--mast-logo);
+  /* above the bar (z-index 40), so the tail crosses in front of it, never behind.
+     Its BOX — the full 340px square, not just the ink — hangs over the titles, and
+     since the bar is its own stacking context nothing inside it can be raised past
+     the logo. So the logo takes no pointer at all: hovers and clicks fall through to
+     the titles under it. (It only ever linked home from the home page.) */
+  position: relative; z-index: 41; pointer-events: none;
+  aspect-ratio: 1608 / 1134;
+  background: var(--ink);
+  -webkit-mask-image: url('assets/logo-mask.png');
+  mask-image: url('assets/logo-mask.png');
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.nc-tagline { font-size: 0.92rem; color: var(--grey); letter-spacing: 0.02em; margin: 0; }
+
+/* --- topic nav --- */
+/* --- floating nav bar (turquoise) --- */
+.nc-topics {
+  position: sticky; top: 0; z-index: 40;
+  /* the pull-up: the bar rides over the foot of the calligraphy (2cm at desktop) */
+  margin: calc(-1 * var(--head-overlap)) 0 0; padding: 0.7rem var(--shell-gutter);
+  border: none;
+  background: rgba(133, 193, 197, 0.26);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  backdrop-filter: saturate(1.4) blur(12px);
+  box-shadow: 0 0 0 rgba(40, 90, 96, 0);
+  transition: box-shadow var(--speed-base) var(--ease-out);
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 1.4rem; flex-wrap: wrap;
+}
+.nc-topics.is-stuck { box-shadow: 0 6px 22px -12px rgba(40, 90, 96, 0.28); }
+
+/* the گوسان calligraphy docked at the bar's inline-start (right in RTL), mirroring
+   the controls at inline-end; visible only after the manifesto logo passes the bar */
+.nc-topics-logo {
+  position: absolute; inset-inline-start: var(--shell-gutter); top: 50%;
+  transform: translateY(calc(-50% + 6px));
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--speed-base) var(--ease-out), transform var(--speed-base) var(--ease-out);
+}
+.nc-topics-logo img { height: 26px; display: block; }
+.nc-topics-logo.is-docked { opacity: 1; pointer-events: auto; transform: translateY(-50%); }
+/* the titles carry the head's inner inset, so the first title (خانه) sits on the
+   wall's own near edge at every window width. The wider inset is taken only while
+   the calligraphy is docked in the bar — by then the wall has scrolled away, so
+   there is nothing left to align with. */
+.nc-topics-main { display: flex; align-items: center; justify-content: flex-start;
+  gap: 1.3rem; flex-wrap: wrap; padding-inline-start: var(--shell-inset);
+  transition: padding-inline-start var(--speed-base) var(--ease-out); }
+.nc-topics.has-logo .nc-topics-main { padding-inline-start: 4.4rem; }
+/* the pill is the group's outer edge — it lands on the wall's far edge;
+   the search glyph hangs beside it, out in the gutter. */
+.nc-topics-controls { position: absolute; inset-inline-end: var(--shell-gutter); top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.9rem; }
+.nc-topics-controls .nav-search {
+  position: absolute; inset-inline-start: 100%;
+  top: 0; bottom: 0; height: -moz-fit-content; height: fit-content;
+  margin-block: auto; margin-inline-start: 0.9rem;
+}
+.nc-support-btn {
+  font-size: 0.82rem; font-weight: 600; color: var(--paper, #fff);
+  background: var(--ink); text-decoration: none; white-space: nowrap;
+  padding: 0.42rem 1.05rem; border-radius: 999px; line-height: 1;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nc-support-btn:hover { background: var(--gold-deep); color: #fff; }
+.nc-topics-sep { width: 1px; height: 18px; background: var(--ink); opacity: 0.4; flex-shrink: 0; }
+.nc-topic-link {
+  font-size: 0.92rem; font-weight: 500; color: var(--ink); text-decoration: none;
+  letter-spacing: 0.01em; transition: color var(--speed-fast);
+}
+.nc-topic-link:hover { color: var(--gold-deep); }
+.nc-topic-link.is-active { font-weight: 700; }
+
+/* --- latest-articles wall (hero) ---
+   Seven plates standing side by side, the way prints lean against a wall. The
+   open one carries the essay in a frosted panel and drifts on the slow Ken
+   Burns defined in the reduced-motion block below; the rest hold their place
+   in grey. The wall measures from the same shell as the masthead and the bar. */
+.nc-wall { width: min(var(--shell-max), calc(100% - var(--shell-pad) * 2)); max-width: none; margin: 0 auto; padding-top: 2rem; }
+.nc-wall-row { display: flex; gap: 0.4rem; height: clamp(300px, 33vw, 458px); }
+.nc-plate {
+  position: relative; flex: 1 1 0; min-width: 0; overflow: hidden;
+  background: var(--surface-band); transition: flex-grow 0.9s var(--ease-out);
+}
+.nc-plate.is-open { flex-grow: 6.4; }
+.nc-plate-face { position: absolute; inset: 0; display: block; text-decoration: none; color: inherit; }
+.nc-plate-face:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.nc-plate-face > img.nc-cover-img, .nc-plate-face > image-slot {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover;
+}
+.nc-plate-face > img.nc-cover-img {
+  filter: grayscale(1) contrast(1.05); opacity: 0.78;
+  transition: filter 0.9s var(--ease-out), opacity 0.9s var(--ease-out);
+}
+.nc-plate.is-open .nc-plate-face > img.nc-cover-img { filter: none; opacity: 1; }
+
+/* the caption sits behind frosted glass: ground enough to read against, thin
+   enough that the photograph still carries through it */
+.nc-plate-copy {
+  position: absolute; z-index: 3; box-sizing: border-box; bottom: 1.1rem; inset-inline-start: 1.1rem;
+  max-width: min(46ch, 74%); padding: 1rem 1.2rem 1.1rem;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
+  border-top: 2px solid var(--gold-deep); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.18);
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.45s var(--ease-out) 0.2s, transform 0.55s var(--ease-out) 0.2s;
+}
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .nc-plate-copy { background: rgba(255, 255, 255, 0.88); }
+}
+.nc-plate.is-open .nc-plate-copy { opacity: 1; transform: none; }
+.nc-plate-title {
+  display: block; font-family: var(--font-display); font-weight: 700; color: var(--ink);
+  font-size: clamp(0.98rem, 1.5vw, 1.3rem); line-height: 1.6; overflow-wrap: break-word;
+}
+.nc-plate-title .title-sub { color: inherit; }   /* both halves of a two-part title read as one */
+.nc-plate-by { display: block; font-size: 0.84rem; color: var(--name-teal); margin-top: 0.3rem; }
+.nc-plate-dek {
+  display: block; font-size: 0.78rem; line-height: 1.9; color: var(--text-body);
+  margin-top: 0.6rem; text-align: justify;
+}
+/* the credit dot belongs to the open plate only, and reads light against the
+   photograph — the article page's dark disc disappears into these covers */
+.nc-plate .cover-credit { opacity: 0; bottom: 11px; left: 11px; transition: opacity 0.5s var(--ease-out) 0.25s; }
+.nc-plate.is-open .cover-credit { opacity: 1; }
+.nc-plate .cover-credit-btn {
+  width: 21px; height: 21px; opacity: 1; font-size: 11.5px;
+  background: rgba(255, 255, 255, 0.72); color: var(--ink);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.nc-plate .cover-credit:hover .cover-credit-btn,
+.nc-plate .cover-credit-btn:focus-visible { background: #fff; }
+.nc-plate .cover-credit-tip { bottom: 28px; }
+@media (max-width: 820px) {
+  /* the head stacks here — photo over text — so there are no two axes left to
+     hold: the gutter narrows again and the search glyph rejoins the pill. */
+  :root { --shell-pad: 1.6rem; --shell-inset: 1.6rem; --head-overlap: 0px; }
+  .nc-mast-cover { top: 0; }   /* stacked: nothing to line up with */
+  .nc-mast-center { margin-inline-start: 0; }
+  .nc-wall-row { height: auto; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .nc-wall-row::-webkit-scrollbar { display: none; }
+  .nc-plate { flex: 0 0 78%; height: 62vw; scroll-snap-align: start; }
+  .nc-plate.is-open { flex-grow: 0; }
+  /* on a phone the caption becomes a band across the foot of the plate — a
+     narrow floating box cannot hold a Persian headline without clipping it */
+  .nc-plate-copy { inset-inline-start: 0; bottom: 0; width: 100%; max-width: 100%; padding: 0.85rem 1rem 1rem; }
+  .nc-plate-title { font-size: 0.92rem; }
+  .nc-plate-dek { display: none; }   /* on a phone the band would swallow the photograph */
+  .nc-topics-controls .nav-search { position: static; margin: 0; }
+}
+
+/* --- manifesto (two-column composition: statement + branding) --- */
+.nc-manifesto { background: var(--paper); }
+.nc-manifesto-grid {
+  max-width: 1180px; margin: 0 auto; padding: 4.4rem 2rem 4rem;
+  display: grid; grid-template-columns: 0.92fr 2px 1.08fr; gap: 0 3rem;
+  align-items: stretch; min-height: 540px;
+}
+.nc-man-divider {
+  width: 2px; align-self: stretch; border: 0;
+  background: linear-gradient(to bottom,
+    rgba(201,146,39,0) 0%, var(--gold) 14%, var(--gold-deep) 50%, var(--gold) 86%, rgba(201,146,39,0) 100%);
+}
+.nc-man-brand { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; }
+.nc-man-brand-foot { position: relative; z-index: 1; text-align: right; }
+.nc-man-logo { display: block; width: clamp(150px, 15vw, 215px); height: auto; margin: 0 0 0.6rem; }
+.nc-man-sub { font-size: 0.92rem; color: var(--grey); margin: 0; }
+.nc-man-issue { font-size: 0.7rem; color: var(--accent-strong); margin: -0.2rem 0 0; font-weight: 500; }
+.nc-man-text { display: flex; flex-direction: column; justify-content: center; }
+.nc-manifesto-p { font-size: 0.86rem; line-height: 2; color: var(--text-body); margin: 0 0 1.1rem; text-align: justify; }
+.nc-man-first strong { font-family: var(--font-display); font-weight: 800; color: var(--ink); }
+.nc-manifesto-verse {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 2.6rem;
+  margin: 1.4rem auto; padding: 0.4rem 0;
+  font-family: var(--font-display); font-weight: 500; font-size: 0.95rem;
+  color: var(--gold-deep); line-height: 1.9;
+}
+.nc-manifesto-close { font-size: 0.86rem; text-align: justify; margin-bottom: 0; color: var(--text-body); }
+.nc-man-actions { margin-top: 1.6rem; }
+.nc-man-archive { font-size: 0.84rem; color: var(--accent-strong); text-decoration: none; font-weight: 500; transition: color var(--speed-fast); }
+.nc-man-archive:hover { color: var(--gold-deep); }
+
+/* The About page's opening block: the statement and the masthead share one row.
+   RTL order of the grid children: brand/logo, gold rule, statement, شناسنامه. */
+.about-manifesto { position: relative; }
+.about-manifesto .nc-manifesto-grid {
+  /* 1200, matching .about-spread and .about-contact: at 1240 this block's
+     edges stood 20px proud of the rest of the page on any viewport past ~1264 */
+  min-height: 0; max-width: 1200px; padding: 3rem 3.5rem 2.8rem;
+  grid-template-columns: 1fr 300px var(--cred-col);
+  gap: 0 2.2rem; align-items: start;
+}
+.about-manifesto .nc-man-logo { width: clamp(130px, 12vw, 176px); }
+/* the statement now runs the full width the wordmark used to share, so the
+   type comes up with it — at 0.84rem an 898px measure was ~110 characters
+   a line, far past a comfortable read */
+.about-manifesto .nc-manifesto-p { font-size: 0.95rem; line-height: 2; }
+/* the statement starts level with «صاحب امتیاز», not with the dotted motif
+   above it: 140px of GoldDots + its 2rem margin. The masthead stretches to
+   the row so it and the gold rule stay flush top and bottom. */
+/* The masthead's head-piece and the statement's top offset are one value, so
+   the credit rows and the statement's first line stay on the same baseline.
+   It used to be the dots' 140px + 2rem, written out twice; the wordmark that
+   replaced them is a different height, which put the two 7px apart. */
+.about-manifesto { --cred-head: 152px; }
+.about-manifesto .man-cred-mark {
+  display: block; width: 170px; height: 120px;
+  object-fit: contain; object-position: right center;
+  margin: 0 0 2rem;
+}
+.about-manifesto .nc-man-text { margin-top: var(--cred-head); }
+/* not stretched: the column's height is its content, so .about-spine — which
+   is anchored to its bottom — ends level with the last credit line instead
+   of hanging below it. The stretch was only there to keep the masthead
+   flush with the gold rule, and that rule is gone. */
+.about-manifesto .man-cred { align-self: start; }
+/* the engraving now lives in the opening block, between the statement and
+   the masthead. It is no longer the sticky sidebar of .about-spread, so the
+   sticky/offset it carried there is cleared here. */
+.about-manifesto .man-figure { position: static; top: auto; align-self: start; }
+.about-manifesto .man-figure { margin: 0; }
+.about-manifesto .man-figure img { display: block; width: 100%; height: auto; filter: contrast(1.05); }
+/* the credit rides on the image itself, as the landing-page covers do */
+.about-manifesto .man-figure { position: relative; }
+/* ...but the badge is a dark translucent circle sized for the landing page's
+   photographic covers, and this engraving is near-black, so it disappeared.
+   Light circle, dark glyph, and opaque enough to read against the hatching. */
+.man-figure .cover-credit-btn {
+  background: rgba(250, 249, 245, 0.82); color: rgba(24, 23, 20, 0.9); opacity: 0.9;
+}
+.man-figure .cover-credit:hover .cover-credit-btn,
+.man-figure .cover-credit-btn:focus-visible { background: #FAF9F5; opacity: 1; }
+
+.about-manifesto .nc-manifesto-verse { margin: 1.1rem auto; gap: 0.4rem 1.8rem; font-size: 0.9rem; }
+/* positioned, not static: .about-spine is absolute and anchors to this column,
+   the way it anchored to .about-cred when this list lived in .about-spread.
+   `top: auto` cancels the 92px carried over from the old sticky rule, which was
+   offsetting the masthead down that far and out of line with the gold rule —
+   the two columns are the same height, so they now sit flush top and bottom. */
+.about-manifesto .man-cred { position: relative; top: auto; }
+
+@media (max-width: 1180px) {
+  /* the opening block stacks here, so there is no masthead column left for
+     the text to range against — it takes the full measure instead */
+  .about-spread { grid-template-columns: minmax(0, 1fr); padding: 3rem 2.5rem 4rem; }
+  .about-manifesto .nc-manifesto-grid {
+    grid-template-columns: 1fr; padding: 2.8rem 2.5rem 2.6rem;
+  }
+  /* the rule has nothing to divide once the masthead drops below, and the
+     statement has no credit row to line up with, so its offset goes too */
+  .about-manifesto .nc-man-divider { display: none; }
+  .about-manifesto .nc-man-text { margin-top: 0; }
+  /* no room for a fourth column — the masthead drops to its own full-width row */
+  .about-manifesto .man-cred { grid-column: 1 / -1; margin-top: 2.2rem; }
+  .about-manifesto .man-figure { max-width: 300px; margin-inline: auto; }
+  .about-manifesto .man-cred .cred-list { grid-template-columns: repeat(3, 1fr); gap: 1.6rem 2rem; }
+}
+@media (max-width: 780px) {
+  /* must repeat the single column: the 1180px rule above is more specific than
+     the base .nc-manifesto-grid mobile rule and would otherwise keep two columns */
+  .about-manifesto .nc-manifesto-grid {
+    grid-template-columns: 1fr; padding: 2.4rem 1.6rem 2.2rem;
+  }
+  .about-manifesto .man-cred { margin-top: 1.8rem; }
+  .about-manifesto .man-cred .cred-list { grid-template-columns: 1fr; }
+  .about-manifesto + .about-spread { padding-top: 2rem; }
+}
+
+/* --- category placeholder cards (empty sections, fillable) --- */
+.nc-cat-ph .nc-img-wrap { aspect-ratio: 16 / 10; }
+.nc-cat-ph .nc-img-wrap image-slot { display: block; width: 100%; height: 100%; }
+.nc-cat-ph-title { color: var(--grey-faint, #B4AFA2); font-weight: 700; }
+.nc-cat-ph-by { font-size: 0.82rem; color: var(--grey-faint, #B4AFA2); margin: 0.45rem 0 0; }
+.nc-cat-ph-dek { color: var(--grey-faint, #B4AFA2); }
+/* collaboration invitation shown in sections that have no articles yet */
+.nc-cat-invite {
+  border: 1px solid var(--gold); border-radius: 12px; background: var(--gold-wash);
+  padding: 2.2rem 2rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+}
+.nc-cat-invite-lead {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); margin: 0;
+}
+.nc-cat-invite-body {
+  font-size: 0.9rem; line-height: 2; color: var(--text-body);
+  margin: 0; max-width: 46ch;
+}
+.nc-cat-invite-cta {
+  margin-top: 0.6rem; display: inline-block; font-family: var(--font-display);
+  font-weight: 700; font-size: 0.85rem; color: var(--gold-deep);
+  border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1.4rem;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nc-cat-invite-cta:hover { background: var(--gold); color: var(--ink); }
+
+.article-cat-link { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--speed-fast); }
+.article-cat-link:hover { border-bottom-color: currentColor; }
+
+/* --- print / save-as-PDF: keep just the article body --- */
+@media print {
+  .scroll-progress, .back-top, .site-header, .nc-topics,
+  .listen-bar, .share-card, .article-aside, .comments-section,
+  .author-bio-card, .tweaks-root, .search-overlay { display: none !important; }
+  .article-layout, .article-head, .essay-cols { display: block !important; }
+  .essay-cols { column-count: 1 !important; }
+  body { background: #fff !important; }
+  a { text-decoration: none !important; color: inherit !important; }
+}
+
+@media (max-width: 860px) {
+  .nc-manifesto-grid { grid-template-columns: 1fr; gap: 2.6rem 0; min-height: 0; padding: 3.2rem 1.6rem; }
+  .nc-man-divider { display: none; }
+  .nc-man-brand { order: -1; align-items: center; }
+  .nc-man-brand-foot { text-align: center; }
+  .nc-man-logo { margin-inline: auto; }
+}
+
+/* --- shared editorial item --- */
+.nc-kicker {
+  font-family: var(--font-technical); letter-spacing: 0.16em;
+  font-size: 0.66rem; color: var(--gold-deep); text-transform: uppercase;
+}
+
+/* --- provenance mark: written by the اندیشکده, not the گاهنامه's own desk ---
+   The گاهنامه carries two kinds of writing, and a reader is entitled to know
+   which is which. Same pill the اندیشکده wears in the nav bar, but filled
+   rather than outlined: a light wash of the institute's own blue-green
+   (--name-teal) instead of the house gold, so the mark reads as a different
+   voice on the card without ever competing with the headline. Kept transparent
+   — a tint over the paper, not a solid label. */
+.nc-kicker-row {
+  /* the section tag on its own line, the provenance mark tucked under it —
+     never beside it, so the kicker line keeps the rhythm it has on every
+     other card */
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 0.28rem; line-height: 1.5;
+}
+.nc-origin {
+  display: inline-flex; align-items: center;
+  font-size: 0.51rem; font-weight: 700; letter-spacing: 0;
+  color: var(--name-teal); text-decoration: none; white-space: nowrap;
+  background: rgba(46, 110, 115, 0.10);
+  border: 0; border-radius: 999px;
+  /* optically centred, not metrically: the Persian face sits high in its own
+     line box, so equal padding leaves the label ~2px above the pill's middle.
+     The extra top padding puts the ink's mass on the pill's centre line. */
+  padding: 0.18rem 0.55rem 0.11rem;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nc-origin::after { display: none !important; }
+.nc-origin:hover { background: rgba(46, 110, 115, 0.2); color: var(--name-teal); }
+
+.nc-title { color: var(--ink); font-weight: 800; line-height: 1.4; margin: 0; }
+.nc-title a { color: inherit; text-decoration: none; transition: color var(--speed-fast); }
+.nc-title a:hover { color: var(--gold-deep); }
+.nc-by { font-size: 0.82rem; color: var(--accent); margin: 0.45rem 0 0; }
+.nc-by .nc-by-name { font-weight: 600; }
+.nc-dek { color: var(--grey); font-size: 0.9rem; line-height: 1.85; margin: 0.5rem 0 0; }
+/* a card whose piece is still to come carries only its date: set small and faint so it does not
+   compete with the cards around it (EIC, 8 Oct 2026); GOSAN_POSTS[].pending */
+.nc-dek.is-pending, .nc-plate-dek.is-pending { font-size: 0.74em; opacity: 0.5; font-weight: 400; letter-spacing: 0; }
+.nc-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.nc-img-wrap { overflow: hidden; background: var(--surface-band); }
+.nc-img-wrap img { transition: transform 0.8s cubic-bezier(0.16,1,0.3,1); width: 100%; height: 100%; object-fit: cover; display: block; }
+.nc-img-wrap:hover img { transform: scale(1.04); }
+
+/* --- front lead block --- */
+.nc-lead {
+  max-width: 1180px; margin: 0 auto; padding: 2.6rem 2rem 2.2rem;
+  display: grid; grid-template-columns: 1.55fr 1fr; gap: 2.6rem;
+}
+.nc-lead-main .nc-img-wrap { aspect-ratio: 16 / 10; margin-bottom: 1.1rem; }
+.nc-lead-main .nc-title { font-size: clamp(1.9rem, 3.2vw, 2.9rem); line-height: 1.18; }
+.nc-lead-main .nc-dek { font-size: 1.02rem; max-width: 44ch; }
+.nc-lead-aside { display: flex; flex-direction: column; }
+.nc-lead-aside > * { padding-bottom: 1.4rem; margin-bottom: 1.4rem; border-bottom: 1px solid var(--line); }
+.nc-lead-aside > *:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+.nc-lead-aside .nc-title { font-size: 1.35rem; }
+
+/* featured 3-up strip */
+/* --- پیشخوان: three on the counter, the rest one hover away ---
+   the strip is a rail of thirds; the arrow at the far edge glides it open. */
+.nc-feat-wrap {
+  position: relative; max-width: 1180px; margin: 0 auto; padding: 0 2rem;
+  /* container units, so the arrows' height can be read off the strip's WIDTH:
+     one card is a third of the inner width, and its photograph is 4:3 of that.
+     (A percentage here would resolve against height and collapse the arrows.) */
+  container-type: inline-size;
+  --feat-gap: 2.6rem;
+  --feat-card: calc((100cqw - var(--feat-gap) * 2) / 3);
+  --feat-band: calc(var(--feat-card) * 0.75);
+}
+.nc-feat {
+  display: flex; gap: var(--feat-gap); padding: 2.4rem 0 1.4rem;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+}
+.nc-feat::-webkit-scrollbar { display: none; }
+.nc-feat.is-gliding { scroll-snap-type: none; }   /* snapping would pull every step back */
+.nc-feat > .rv { flex: 0 0 calc((100% - var(--feat-gap) * 2) / 3); min-width: 0; scroll-snap-align: start; }
+.nc-feat .nc-img-wrap { aspect-ratio: 4 / 3; margin-bottom: 0.9rem; }
+.nc-feat .nc-title { font-size: clamp(1.4rem, 2vw, 1.7rem); }
+.nc-feat article { display: flex; flex-direction: column; }
+image-slot { display: block; width: 100%; height: 100%; }
+
+.nc-feat-arrow {
+  position: absolute; top: 2.4rem; height: var(--feat-band); width: 4.6rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; padding: 0; cursor: pointer; color: var(--ink); z-index: 4;
+  transition: opacity var(--speed-base) var(--ease-out), color var(--speed-fast);
+}
+/* No white gradient behind the arrows — it read as a cloudy smear over the
+   edge of the strip. The hit area stays the full band, but the mark itself is
+   a small round chip so it reads over the page and over a cover alike. */
+.nc-feat-arrow.is-next { left: 2rem;  background: none; }
+.nc-feat-arrow.is-prev { right: 2rem; background: none; }
+.nc-feat-arrow::before {
+  content: ""; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 12px -5px rgba(24, 23, 20, 0.45);
+  transition: background var(--speed-fast), border-color var(--speed-fast), box-shadow var(--speed-fast);
+}
+.nc-feat-arrow svg { position: relative; z-index: 1; }
+.nc-feat-arrow:hover::before {
+  background: #fff; border-color: var(--gold);
+  box-shadow: 0 4px 16px -5px rgba(24, 23, 20, 0.5);
+}
+.nc-feat-arrow:hover { color: var(--gold-deep); }
+.nc-feat-arrow svg { transition: transform var(--speed-base) var(--ease-out); }
+.nc-feat-arrow.is-next:hover svg { transform: translateX(-3px); }
+.nc-feat-arrow.is-prev:hover svg { transform: translateX(3px); }
+.nc-feat-arrow.is-off { opacity: 0; pointer-events: none; }
+.nc-feat-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+@media (max-width: 820px) {
+  /* on a phone the counter simply stacks — nothing to glide, nothing to hide */
+  .nc-feat { flex-direction: column; gap: 2rem; overflow: visible; }
+  .nc-feat > .rv { flex: 0 0 auto; }
+  .nc-feat-arrow { display: none; }
+}
+
+.nav-lang {
+  font-family: var(--font-technical); font-size: 0.72rem; letter-spacing: 0.08em;
+  padding: 0.22rem 0.6rem; border: 1px solid var(--ink); border-radius: 4px;
+  background: none; color: var(--ink); cursor: pointer; font-weight: 700;
+  transition: background var(--speed-fast), color var(--speed-fast);
+}
+.nav-lang:hover { background: var(--ink); color: var(--paper); }
+
+/* --- issue divider --- */
+.nc-issue-divider {
+  max-width: 1180px; margin: 0 auto; padding: 0.5rem 2rem 1rem;
+  display: flex; align-items: center; gap: 1.2rem; color: var(--gold);
+}
+/* soft gold, not full strength — the alpha sits on the parts rather than the
+   element because .is-in animates the element's own opacity to reveal it */
+.nc-issue-divider::before, .nc-issue-divider::after { content: ""; flex: 1; height: 1px; background: rgba(212, 175, 55, 0.42); }
+/* closing rule carries no label, so the two halves meet as one line */
+.nc-issue-divider span {
+  font-family: var(--font-technical); letter-spacing: 0.18em; font-size: 0.74rem;
+  color: rgba(201, 146, 39, 0.72); text-transform: uppercase;
+}
+
+/* --- body: main + sidebar --- */
+.nc-body {
+  max-width: 1180px; margin: 0 auto; padding: 1.5rem 2rem 4rem;
+  display: grid; grid-template-columns: 1fr 320px; gap: 3.4rem;
+  align-items: start;
+}
+.nc-main { min-width: 0; }
+.nc-section { margin-bottom: 3rem; }
+.nc-sectionhead { display: flex; align-items: center; gap: 0.85rem; margin: 0 0 1.5rem; }
+.nc-sectionhead .nc-sh-label {
+  font-weight: 800; font-size: 1.05rem; color: var(--ink); white-space: nowrap; letter-spacing: 0.01em;
+}
+.nc-sectionhead .nc-sh-mark { color: var(--gold); font-size: 0.7rem; }
+.nc-sectionhead::after { content: ""; flex: 1; height: 1px; background: var(--ink); opacity: 0.85; }
+.nc-sectionhead .nc-sh-more {
+  font-size: 0.8rem; color: var(--grey); text-decoration: none; white-space: nowrap; font-weight: 600;
+}
+.nc-sectionhead .nc-sh-more:hover { color: var(--gold-deep); }
+
+/* feature grid (Features) */
+.nc-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 2.4rem; }
+.nc-grid2 .nc-img-wrap { aspect-ratio: 3 / 2; margin-bottom: 0.85rem; }
+.nc-grid2 .nc-title { font-size: 1.4rem; }
+
+/* horizontal list rows (Dispatch / Reflections / Notes) */
+.nc-rows { display: grid; gap: 1.5rem; }
+.nc-row {
+  display: grid; grid-template-columns: 150px 1fr; gap: 1.3rem; align-items: start;
+  padding-bottom: 1.5rem; border-bottom: 1px solid var(--line);
+}
+.nc-rows .nc-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.nc-row .nc-img-wrap { aspect-ratio: 3 / 2; }
+.nc-row .nc-title { font-size: 1.25rem; }
+.nc-row.is-note { grid-template-columns: 1fr; }
+.nc-row.is-note .nc-title { font-size: 1.2rem; font-style: italic; }
+
+/* poems */
+.nc-poems { display: grid; gap: 1.6rem; }
+
+/* --- sidebar --- */
+.nc-aside { display: flex; flex-direction: column; gap: 2.4rem; position: sticky; top: 84px; }
+.nc-aside-block { }
+.nc-aside-head {
+  font-weight: 800; font-size: 0.95rem; color: var(--ink);
+  padding-bottom: 0.6rem; margin: 0 0 1rem; border-bottom: 2px solid var(--ink);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.nc-aside-head .nc-sh-mark { color: var(--gold); font-size: 0.65rem; }
+.nc-popular { list-style: none; margin: 0; padding: 0; counter-reset: pop; }
+.nc-popular li {
+  counter-increment: pop; display: grid; grid-template-columns: auto 1fr; gap: 0.9rem;
+  padding: 0.75rem 0; border-bottom: 1px solid var(--line); align-items: baseline;
+}
+.nc-popular li:last-child { border-bottom: 0; }
+.nc-popular li::before {
+  content: counter(pop, decimal); font-family: var(--font-technical);
+  color: var(--gold-deep); font-size: 0.95rem; font-weight: 600;
+}
+.nc-popular a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 0.98rem; line-height: 1.5; }
+.nc-popular a:hover { color: var(--gold-deep); }
+.nc-popular .nc-pop-by { display: block; color: var(--grey); font-weight: 400; font-size: 0.8rem; margin-top: 0.2rem; }
+
+.nc-cover-card { background: var(--surface-band); border: 1px solid var(--line); padding: 1.5rem; text-align: center; }
+.nc-cover-card img { width: 62%; height: auto; box-shadow: var(--shadow-cover, 0 14px 34px -16px rgba(0,0,0,0.5)); margin: 0 auto 1.1rem; display: block; }
+.nc-cover-card h4 { font-size: 0.92rem; font-weight: 800; margin: 0 0 1.1rem; color: var(--ink); line-height: 1.6;
+  text-wrap: balance; }   /* the date line breaks evenly rather than orphaning the year */
+.nc-cover-card p { font-size: 0.82rem; color: var(--grey); margin: 0 0 1.1rem; line-height: 1.7; }
+
+.nc-editors { background: var(--ink); color: var(--text-on-dark); padding: 1.6rem 1.5rem; text-align: center; }
+.nc-editors .nc-kicker { color: var(--gold-light); }
+.nc-editors h4 { color: var(--white); font-size: 1.05rem; font-weight: 800; margin: 0.6rem 0 0.5rem; line-height: 1.5; }
+.nc-editors p { color: var(--grey-faint); font-size: 0.84rem; line-height: 1.7; margin: 0 0 1.1rem; }
+
+.nc-news-mini { border: 1px solid var(--line); padding: 1.5rem; }
+.nc-news-mini h4 { font-size: 1rem; font-weight: 800; color: var(--ink); margin: 0.5rem 0 0.4rem; }
+.nc-news-mini p { font-size: 0.82rem; color: var(--grey); margin: 0 0 1rem; line-height: 1.7; }
+.nc-news-mini form { display: flex; flex-direction: column; gap: 0.6rem; }
+.nc-news-mini input {
+  font-family: inherit; font-size: 0.88rem; border: 1px solid var(--line);
+  border-radius: var(--radius-md); padding: 0.7rem 0.9rem; background: var(--white); color: var(--ink); outline: none;
+}
+.nc-news-mini input:focus { border-color: var(--accent); }
+
+@media (max-width: 1000px) {
+  .nc-body { grid-template-columns: 1fr; }
+  .nc-aside { position: static; flex-direction: row; flex-wrap: wrap; }
+  .nc-aside-block { flex: 1 1 280px; }
+}
+@media (max-width: 720px) {
+  .nc-masthead-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .nc-mast-side { align-items: center !important; }
+  .nc-mast-side.is-start { flex-direction: column; }
+  .nc-mast-meta { align-items: center; }
+  /* no docked logo to clear at this width, so the titles centre again */
+  .nc-topics { justify-content: center; }
+  .nc-topics-main { justify-content: center; padding-inline-start: 0; }
+  .nc-lead { grid-template-columns: 1fr; }
+  .nc-grid2 { grid-template-columns: 1fr; }
+  .nc-row { grid-template-columns: 110px 1fr; gap: 1rem; }
+  .nc-aside { flex-direction: column; }
+}
+
+@media (max-width: 760px) {
+  .tt-programs { grid-template-columns: 1fr; }
+  .tt-panel { grid-template-columns: 70px 1fr; row-gap: 0.5rem; }
+  .tt-panel-tag, .tt-panel-cta { grid-column: 2; justify-self: start; }
+  .tt-player-main { flex-wrap: wrap; }
+}
+
+/* ============================================================
+   Elegant motion layer — minimal, subtle, gated on motion prefs.
+   All hidden/animated base states live inside the no-preference
+   query so reduced-motion + print show the final state outright.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ---- the head arrives whole ----
+     It used to stagger: the issue lines first, the cover at 0.16s, the calligraphy
+     at 0.24s (rising 12px of its own), the bar last at 0.5s — so on load the logo
+     and the bar were visibly out of step and a gap opened between them. Nothing in
+     the head animates on its own now; the whole page, head included, comes in on
+     the one route fade (.route-fade / routeIn). */
+
+  /* ---- generic section reveal (sectionhead + staggered rows) ---- */
+  .nc-home .nc-section > .nc-sectionhead,
+  .nc-home .nc-section .nc-row,
+  .nc-home .nc-section .nc-grid2 > article,
+  .nc-home .nc-section .nc-poems > * { opacity: 0; }
+  .nc-home .nc-section.is-in > .nc-sectionhead,
+  .nc-home .nc-section.is-in .nc-rows .nc-row,
+  .nc-home .nc-section.is-in .nc-grid2 > article,
+  .nc-home .nc-section.is-in .nc-poems > * { animation: gsnRise 0.8s var(--ease-out) both; }
+  /* cascade */
+  .nc-section.is-in .nc-rows .nc-row:nth-child(2),
+  .nc-section.is-in .nc-grid2 > article:nth-child(2),
+  .nc-section.is-in .nc-poems > *:nth-child(2) { animation-delay: 0.1s; }
+  .nc-section.is-in .nc-rows .nc-row:nth-child(3),
+  .nc-section.is-in .nc-grid2 > article:nth-child(3) { animation-delay: 0.2s; }
+
+  /* ---- issue divider ---- */
+  .nc-issue-divider { opacity: 0; }
+  .nc-issue-divider.is-in { animation: gsnFade 0.9s var(--ease-out) both; }
+
+  /* ---- manifesto: columns rise, gold divider draws downward ----
+     Scoped to .nc-home: only the home page runs the observer that adds .is-in.
+     The About page's copy is revealed by its own <Reveal> wrapper, so it must
+     not start at opacity 0 / scaleY(0) here or it would never appear. */
+  .nc-home .nc-manifesto .nc-man-text,
+  .nc-home .nc-manifesto .nc-man-brand { opacity: 0; }
+  .nc-home .nc-manifesto.is-in .nc-man-text { animation: gsnRise 0.9s var(--ease-out) both; }
+  .nc-home .nc-manifesto.is-in .nc-man-brand { animation: gsnRise 0.9s var(--ease-out) 0.14s both; }
+  .nc-home .nc-man-divider { transform: scaleY(0); transform-origin: top; }
+  .nc-home .nc-manifesto.is-in .nc-man-divider { animation: gsnDrawY 1.1s var(--ease-out) 0.1s forwards; }
+
+  /* ---- sidebar blocks ---- */
+  .nc-home .nc-aside-block { opacity: 0; }
+  .nc-home .nc-aside-block.is-in { animation: gsnRise 0.8s var(--ease-out) both; }
+
+  /* ---- hero wall: slow Ken Burns on the open plate ---- */
+  .nc-plate-face > image-slot,
+  .nc-plate-face > img.nc-cover-img {
+    transition: filter 0.9s var(--ease-out), opacity 0.9s var(--ease-out), transform 7.5s linear;
+    transform: scale(1.001);
+  }
+  .nc-plate.is-open .nc-plate-face > image-slot,
+  .nc-plate.is-open .nc-plate-face > img.nc-cover-img { transform: scale(1.06); }
+}
+
+/* motion-off / reduced-motion safety: force everything visible & still */
+body[data-motion="off"] .nc-home .nc-section > .nc-sectionhead,
+body[data-motion="off"] .nc-home .nc-section .nc-row,
+body[data-motion="off"] .nc-home .nc-section .nc-grid2 > article,
+body[data-motion="off"] .nc-home .nc-section .nc-poems > *,
+body[data-motion="off"] .nc-home .nc-aside-block,
+body[data-motion="off"] .nc-manifesto .nc-man-text,
+body[data-motion="off"] .nc-manifesto .nc-man-brand,
+body[data-motion="off"] .nc-issue-divider { opacity: 1 !important; animation: none !important; }
+body[data-motion="off"] .nc-man-divider { transform: scaleY(1) !important; animation: none !important; }
+body[data-motion="off"] .nc-plate-face > image-slot,
+body[data-motion="off"] .nc-plate-face > img.nc-cover-img { transition: none !important; transform: none !important; }
+
+@keyframes gsnRise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes gsnFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gsnDrawY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* ---- refined hover micro-interactions ---- */
+.nc-title a {
+  background-image: linear-gradient(var(--gold-deep), var(--gold-deep));
+  background-size: 0% 1px; background-position: right 0.02em;
+  background-repeat: no-repeat;
+  transition: background-size 0.45s var(--ease-out), color var(--speed-fast);
+}
+.nc-title a:hover { background-size: 100% 1px; }
+
+.nc-row { transition: transform 0.4s var(--ease-out); }
+.nc-row:hover { transform: translateX(5px); }
+
+.nc-popular li a { transition: color var(--speed-fast), transform 0.35s var(--ease-out); display: block; }
+.nc-popular li a:hover { color: var(--accent-strong); transform: translateX(-4px); }
+
+.nc-topic-link { position: relative; }
+.nc-topic-link::after {
+  content: ""; position: absolute; right: 0; bottom: -3px; height: 1px; width: 0;
+  background: var(--gold-deep); transition: width 0.32s var(--ease-out);
+}
+.nc-topic-link:hover::after { width: 100%; }
+
+.nav-search { transition: transform 0.3s var(--ease-out), color var(--speed-fast); }
+.nav-search:hover { transform: scale(1.12); color: var(--gold-deep); }
+.nc-support-btn { transition: background var(--speed-fast), color var(--speed-fast), transform 0.3s var(--ease-out); }
+.nc-support-btn:hover { transform: translateY(-1px); }
+
+.nc-dot { transition: background var(--speed-fast), transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out); }
+.nc-dot.is-active { transform: scale(1.18); box-shadow: 0 0 0 3px var(--cerulean-wash, rgba(110,148,160,0.18)); }
+
+.nc-mast-cover { transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
+.nc-mast-cover:hover { transform: translateY(-4px) rotate(-1deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nc-row:hover, .nc-popular li a:hover, .nc-mast-cover:hover, .nc-support-btn:hover, .nav-search:hover { transform: none; }
+}
+
+
+/* the About page opens with the wordmark at full size in the masthead column,
+   so the header's small copy is redundant there. `display` lives here rather
+   than on the element — inline styles win over the stylesheet, so the hide
+   never took while it was written inline. */
+.header-logo { display: block; }
+body[data-page="about"] .header-logo { display: none; }
+
+/* --- foot-of-article link to the next پاره of a serialised essay --- */
+.series-nav {
+  max-width: 860px; margin: 0 auto; padding: 1.6rem 2rem 0;
+  border-top: 1px solid var(--line);
+}
+.series-nav-count {
+  display: block; font-family: var(--font-technical); font-size: 0.68rem;
+  letter-spacing: 0.12em; color: var(--gold-deep); margin-bottom: 0.9rem;
+}
+.series-nav-links { display: flex; justify-content: space-between; gap: 1.5rem; }
+.series-nav-link {
+  display: block; max-width: 46%; text-decoration: none;
+  border: 1px solid var(--line); border-radius: 3px; padding: 0.8rem 1rem;
+  transition: border-color var(--speed-fast), background var(--speed-fast);
+}
+.series-nav-link:hover { border-color: var(--gold); background: var(--surface-band); }
+.series-nav-link.is-next { text-align: left; }
+.series-nav-dir {
+  display: block; font-size: 0.72rem; color: var(--accent-strong); margin-bottom: 0.2rem;
+}
+.series-nav-title {
+  display: block; font-family: var(--font-display); font-weight: 700;
+  font-size: 0.92rem; color: var(--ink); line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .series-nav-links { flex-direction: column; }
+  .series-nav-link { max-width: none; }
+  .series-nav-link.is-next { text-align: right; }
+}
+
+/* --- cover credit badge: tiny info circle on cover images (3 Aug 2026) --- */
+.nc-img-wrap { position: relative; }
+.cover-credit { position: absolute; bottom: 8px; left: 8px; z-index: 3; direction: ltr; }
+.cover-credit-btn { width: 17px; height: 17px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 0;
+  background: rgba(24,23,20,0.28); color: rgba(255,255,255,0.85);
+  font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 10.5px; line-height: 1;
+  opacity: 0.45; transition: opacity 0.25s ease, background 0.25s ease; }
+.cover-credit:hover .cover-credit-btn, .cover-credit-btn:focus-visible { opacity: 1; background: rgba(24,23,20,0.55); outline: none; }
+.cover-credit-tip { position: absolute; bottom: 24px; left: 0; width: max-content; max-width: 265px;
+  background: rgba(28,26,23,0.93); color: #EAEAE6; font-size: 0.66rem; line-height: 1.85;
+  padding: 0.45rem 0.7rem; border-radius: 3px; direction: rtl; text-align: right;
+  opacity: 0; visibility: hidden; transform: translateY(3px); pointer-events: none; z-index: 4;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s; }
+.cover-credit:hover .cover-credit-tip, .cover-credit:focus-within .cover-credit-tip { opacity: 1; visibility: visible; transform: none; }
+
+/* ---------- گاه‌نوشت (journal / blog) ---------- */
+.blog-wrap { max-width: 780px; }
+.blog-list { display: flex; flex-direction: column; gap: 2.6rem; }
+.blog-item { padding-bottom: 2.4rem; border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+.blog-item:last-child { border-bottom: 0; }
+.blog-meta {
+  display: flex; gap: 0.9rem; align-items: baseline;
+  font-family: var(--font-technical); font-size: 0.66rem;
+  letter-spacing: 0.09em; color: var(--grey); margin-bottom: 0.55rem;
+}
+.blog-meta-post { margin-bottom: 1.6rem; }
+.blog-author { color: var(--gold-deep); }
+.blog-title { font-size: 1.45rem; margin: 0 0 0.7rem; line-height: 1.5; }
+.blog-title a { color: var(--ink); text-decoration: none; }
+.blog-title a:hover { color: var(--accent); }
+.blog-excerpt { color: var(--text-muted); font-size: 0.95rem; line-height: 2; margin: 0 0 0.9rem; text-align: justify; }
+.blog-more { font-size: 0.85rem; font-weight: 600; color: var(--accent); border-bottom: 1px solid var(--gold); padding-bottom: 2px; }
+.blog-body p { font-size: 0.95rem; line-height: 2.15; text-align: justify; margin: 0 0 1.3rem; }
+
+/* ---------- گاه‌نوشت band on the home page ---------- */
+/* a real grey ground, distinct from the paper the issue sits on */
+.nc-blog-band { padding: 3rem 0 4rem; text-align: center; background: #ECEBE7;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.nc-blog-band > .wrap { padding-inline: 2rem; }
+.nc-blog-head { font-size: 1.7rem; margin: 0 0 0.5rem; }
+.nc-blog-lede { color: var(--ink); font-size: 1.02rem; font-weight: 600; margin: 0 0 0.35rem; }
+.nc-blog-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0 0 2.2rem; }
+.nc-blog-empty { color: var(--text-muted); font-size: 0.92rem; margin: 0; }
+.nc-blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 2rem; text-align: right; }
+.nc-blog-card h3 { font-size: 1.1rem; line-height: 1.6; margin: 0.4rem 0 0.6rem; }
+.nc-blog-card h3 a { color: var(--ink); text-decoration: none; }
+.nc-blog-card h3 a:hover { color: var(--accent); }
+.nc-blog-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.95; margin: 0; text-align: justify; }
+.nc-blog-date { font-family: var(--font-technical); font-size: 0.64rem; letter-spacing: 0.09em; color: var(--grey); }
+
+/* heading line above the featured 3-up strip, aligned to its container */
+.nc-feat-head { max-width: 1180px; margin: 0 auto; padding: 2.4rem 2rem 0; }
+.nc-feat-head + .nc-feat-wrap .nc-feat { padding-top: 1.2rem; }
+.nc-feat-head + .nc-feat-wrap .nc-feat-arrow { top: 1.2rem; }
+
+/* ============================================================
+   یاد فرزندان ایران — the remembrance ribbon (landing page only)
+   A 34×76 Lion-and-Sun flag fixed in one bottom corner. Clicking it
+   opens a drawer leftward and draws one name; clicking it again draws
+   another. Closes on an outside click or Escape.
+   ============================================================ */
+.fz-wrap {
+  position: fixed; right: 22px; bottom: 22px; z-index: 60;
+  width: 34px; height: 76px;   /* the wrap is the flag; the drawer is absolute */
+}
+.fz-rib {
+  all: unset; box-sizing: border-box; display: grid; place-items: center; cursor: pointer;
+  width: 34px; height: 76px; flex: none;
+  background: linear-gradient(180deg, #1E7A46 0 33.34%, #F7F5EF 33.34% 66.67%, #C21D2C 66.67% 100%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
+  filter: drop-shadow(0 2px 6px rgba(26, 26, 26, 0.22));
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fz-rib img { width: 26px; height: 18.8px; display: block; pointer-events: none; }
+.fz-wrap:not(.is-on) .fz-rib:hover { transform: translateY(4px); }
+.fz-rib:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+
+.fz-card {
+  position: absolute; bottom: 0; right: calc(100% + 12px);
+  box-sizing: border-box; width: min(296px, calc(100vw - 84px));
+  background: rgba(19, 20, 17, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  backdrop-filter: blur(18px) saturate(1.25);
+  border: 1px solid rgba(212, 175, 55, 0.30);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22), 0 20px 46px -24px rgba(0, 0, 0, 0.7);
+  padding: .88rem .98rem .92rem; overflow: hidden;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  opacity: 0; transform: translateX(22px); transform-origin: right center;
+  -webkit-clip-path: inset(0 0 0 100%); clip-path: inset(0 0 0 100%); pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              -webkit-clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fz-card::before {
+  content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 1.5px;
+  background: var(--gold); opacity: 0.6;
+}
+.fz-wrap.is-on .fz-card {
+  opacity: 1; transform: none; pointer-events: auto;
+  -webkit-clip-path: inset(0); clip-path: inset(0);
+}
+.fz-card > * { opacity: 0; transform: translateY(9px); transition: opacity .5s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+.fz-wrap.is-on .fz-card > * { opacity: 1; transform: none; }
+.fz-wrap.is-on .fz-kicker { transition-delay: .30s; }
+.fz-wrap.is-on .fz-name   { transition-delay: .44s; }
+.fz-wrap.is-on .fz-role   { transition-delay: .52s; }
+.fz-wrap.is-on .fz-when   { transition-delay: .62s; }
+.fz-card.is-swap { opacity: .2; transition-duration: .28s; }
+.fz-card.is-swap > * { transition-duration: .2s; }
+
+.fz-kicker {
+  margin: 0 0 .52rem; color: #DFB861; font-size: 0.82rem; font-weight: 500;
+  line-height: 1.6;
+}
+.fz-name { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.6; color: #F4F2EA; }
+.fz-role { margin: .05rem 0 .54rem; font-size: 0.78rem; color: #A6A192; }
+.fz-when {
+  margin: 0; padding: .32rem .56rem; background: rgba(150, 108, 44, 0.24);
+  border-inline-start: 2px solid #C21D2C; font-size: 0.76rem;
+  display: flex; gap: .6rem; flex-wrap: wrap; align-items: baseline;
+}
+.fz-when b { font-weight: 700; color: #F4F2EA; }
+.fz-when span { color: #ABA593; }
+
+@media (max-width: 640px) {
+  .fz-wrap { right: 14px; bottom: 14px; width: 26px; height: 58px; }
+  .fz-rib { width: 26px; height: 58px; }
+  .fz-rib img { width: 21px; height: 15.2px; }
+  .fz-card { right: calc(100% + 10px); width: calc(100vw - 64px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fz-rib, .fz-card, .fz-card > * {
+    transition-duration: .01ms !important; transition-delay: 0s !important;
+  }
+}
+
+/* ============================================================================
+   MOBILE HEADER  —  a bar and a drawer, not the desktop row squeezed
+   The desktop nav wraps to four lines below ~760px and its issue menu needs
+   hover, so under that width it is retired outright and MobileNav takes over.
+   ========================================================================= */
+.mnav-controls, .mnav-scrim, .mnav-panel { display: none; }
+
+/* 1000px, not 760: between 760 and 1000 the desktop nav either wrapped into two
+   rows (inner pages at 768) or the «یاران گوسان» pill rode over the think-tank
+   pill (home bar at 768–834). An iPad held upright gets the bar and the drawer;
+   the full row returns at 1024, where it fits. Only the masthead sizing below
+   stays a phone-only rule. */
+@media (max-width: 1000px) {
+  .nav-desktop { display: none !important; }
+  /* the home page's own floating bar collapses to the same slim bar */
+  .nc-topics-main, .nc-topics-controls { display: none !important; }
+  .nc-topics {
+    justify-content: space-between;
+    padding: 0.45rem 1.1rem;
+    gap: 0.5rem; flex-wrap: nowrap;
+    background: var(--paper);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-bottom: 1px solid var(--line);
+  }
+  /* the mark is docked from the start here: on a phone the bar is the only
+     masthead on screen once the calligraphy has scrolled away */
+  .nc-topics-logo,
+  .nc-topics-logo.is-docked {
+    position: static; transform: none; opacity: 1; pointer-events: auto;
+  }
+  .nc-topics-logo img { height: 30px; }
+
+  /* the calligraphy is a 340px square on a 375px screen — half the first
+     viewport before a single headline. It comes down to a phone masthead. */
+  @media (max-width: 760px) {
+    .nc-masthead { padding-top: 0.9rem; }
+    .nc-masthead-grid { gap: 0.9rem; }
+    :root { --mast-logo: 165px; }
+    /* the desktop rule pins the calligraphy to the start of its column; stacked
+       on a phone there is no second column to sit against, so it centres */
+    .nc-masthead-grid .nc-mast-center { justify-self: center; margin-inline-start: 0; }
+    .nc-masthead-grid .nc-mast-side.is-start { justify-self: center; }
+    .nc-mast-cover { max-height: 124px; width: auto; }
+    .nc-mast-name { font-size: 0.95rem; }
+    .nc-mast-side.is-start { gap: 0.6rem; }
+  }
+
+  /* the bar itself: opaque, so content scrolling under it stays legible */
+  .site-header {
+    background-color: var(--paper);
+    border-bottom: 1px solid var(--line);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .site-header.is-scrolled, .site-header:hover {
+    background-color: var(--paper);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: 0 4px 18px -12px rgba(28, 26, 23, 0.5);
+  }
+  .site-header .wrap {
+    padding: 0.45rem 1.1rem;
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+  /* the mark sits on the right, the controls on the left — and it stays put
+     when scrolled, since on a phone the bar is the only masthead on screen */
+  .site-header .header-mark { order: -1; display: block; }
+  .site-header .header-logo,
+  .site-header.is-scrolled .header-logo,
+  .site-header:hover .header-logo {
+    display: block !important; opacity: 1 !important; pointer-events: auto;
+    height: 30px !important;
+  }
+
+  .mnav-controls { display: flex; align-items: center; gap: 0.35rem; }
+  .mnav-icon {
+    background: none; border: 0; padding: 0.5rem; cursor: pointer;
+    color: var(--ink); display: grid; place-items: center;
+    width: 42px; height: 42px;            /* a comfortable touch target */
+  }
+  .mnav-burger { flex-direction: column; gap: 4px; display: flex; justify-content: center; }
+  .mnav-burger i {
+    display: block; width: 20px; height: 1.5px; background: currentColor;
+    transition: transform var(--speed-fast) var(--ease-out),
+                opacity var(--speed-fast) var(--ease-out);
+  }
+  .mnav-burger.is-open i:nth-child(1) { transform: translateY(5.5px) rotate(-45deg); }
+  .mnav-burger.is-open i:nth-child(2) { opacity: 0; }
+  .mnav-burger.is-open i:nth-child(3) { transform: translateY(-5.5px) rotate(45deg); }
+
+  .mnav-scrim {
+    display: block; position: fixed; inset: 0; z-index: 60;
+    background: rgba(28, 26, 23, 0.42);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--speed-base) var(--ease-out);
+  }
+  .mnav-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+  .mnav-panel {
+    display: flex; flex-direction: column;
+    position: fixed; z-index: 61; top: 0; bottom: 0; right: 0;
+    width: min(84vw, 340px);
+    background: var(--paper);
+    box-shadow: -18px 0 40px -22px rgba(28, 26, 23, 0.55);
+    transform: translateX(100%);
+    transition: transform var(--speed-base) var(--ease-out);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+  .mnav-panel.is-open { transform: translateX(0); }
+  .mnav-panel:focus { outline: none; }
+
+  .mnav-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; padding: 1.4rem 1.4rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .mnav-head > div { display: grid; gap: 0.5rem; justify-items: start; }
+  .mnav-head img { height: 34px; }
+  .mnav-head span {
+    font-size: 0.72rem; color: var(--gold-deep); letter-spacing: 0.02em;
+  }
+  .mnav-close {
+    background: none; border: 0; cursor: pointer; color: var(--text-muted);
+    width: 38px; height: 38px; margin: -0.5rem -0.6rem 0 0;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+
+  .mnav-body { padding: 0.5rem 0 0.4rem; }
+  .mnav-link {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; box-sizing: border-box;
+    padding: 0.82rem 1.4rem;
+    font: inherit; font-size: 1rem; text-align: right;
+    color: var(--ink); background: none; border: 0; cursor: pointer;
+  }
+  .mnav-link.is-active { font-weight: 700; color: var(--gold-deep); }
+  .mnav-foot {
+    margin-top: auto; display: grid; gap: 0.7rem; justify-items: stretch;
+    padding: 1.4rem 1.4rem 2rem; border-top: 1px solid var(--line);
+  }
+  .mnav-support {
+    display: block; text-align: center;
+    background: var(--ink); color: var(--paper, #fff);
+    border-radius: 999px; padding: 0.58rem 1.1rem;
+    font-size: 0.85rem; font-weight: 600;
+  }
+  .mnav-think {
+    display: block; text-align: center;
+    border: 1px solid var(--gold); border-radius: 999px;
+    padding: 0.55rem 1.1rem; font-size: 0.85rem; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .mnav-mail { font-size: 0.8rem; color: var(--text-muted); direction: ltr; }
+
+  body.nav-locked { position: fixed; width: 100%; overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mnav-panel, .mnav-scrim, .mnav-burger i { transition: none; }
+}
+
+/* ----------------------------------------------------------------------------
+   PHONE COMPOSITION
+   Not a squeezed desktop: the pieces that assume a wide measure are re-set for
+   a 375px column. .article-chips was the worst — an inline-flex pill 567px wide
+   inside a 375px viewport, which pushed the whole document sideways.
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  /* The drafting rules hang 6rem past their box on both sides — on a 375px
+     screen that is 96px of horizontal overflow, which scrolled the whole
+     document sideways. Pulled inside the screen they lose their point (a
+     margin device with no margin) and read as a stray divider, so on a phone
+     they go. Their insets are inline styles, hence !important. */
+  .gsn-draft-h, .gsn-draft-v { display: none !important; }
+
+  .article-head { padding: 2.2rem 1.2rem 1.4rem; }
+  .article-head .gsn-display { font-size: 1.72rem; margin: 0.5rem 0 0.8rem; }
+  .article-chips {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    max-width: 100%; box-sizing: border-box;
+    gap: 0.35rem 0.75rem; padding: 0.6rem 0.9rem;
+    border-radius: 16px; margin-top: 1.1rem;
+  }
+  .article-chip { font-size: 0.76rem; }
+
+  /* the reading rail is a desktop margin device — 2.2rem from the left edge is
+     inside the text column on a phone, and it drew a line through the prose.
+     The gold bar across the top of the window already reports the same thing. */
+  .reading-rail { display: none; }
+
+  /* seven 34px circles plus gaps do not fit a phone column: let them wrap */
+  .share-icons { flex-wrap: wrap; }
+  .share-card { padding: 1.15rem 1.1rem; }
+  .article-chip-sep { display: none; }   /* the wrap already separates them */
+  .article-byline { gap: 0.6rem; font-size: 0.8rem; }
+
+  /* floating furniture: smaller, and quiet until touched, so it sits lightly
+     over a column that now runs the full width of the screen */
+  .back-top { width: 38px; height: 38px; bottom: 1rem; left: 1rem; }
+  .back-top.is-show { opacity: 0.82; }
+  .fz-wrap { right: 14px; bottom: 14px; width: 26px; height: 58px; }
+  .fz-rib { width: 26px; height: 58px; opacity: 0.9; }
+  .fz-rib img { width: 20px; height: 14.5px; }
+  .fz-card { width: min(272px, calc(100vw - 60px)); }
+}
+
+/* ---------- cards for essays whose text has not arrived ----------
+   The card is unchanged — cover, kicker, title, byline — but its link is
+   rendered as an inert <span> (see NO_LINK / ALink in page-home.jsx). These
+   rules restore the styling that the element selectors above apply only to
+   <a>, and remove every affordance that would suggest the card is clickable. */
+.nc-title [aria-disabled="true"] { color: inherit; text-decoration: none; cursor: default; }
+.nc-popular [aria-disabled="true"] {
+  color: var(--ink); text-decoration: none; font-weight: 700;
+  font-size: 0.98rem; line-height: 1.5; cursor: default;
+}
+.nc-plate-face[aria-disabled="true"] { cursor: default; }
+
+/* The پاره navigation sits inside the article column, immediately after the
+   essay text and before the notes/کتابنامه (see referenceAnchor in
+   page-article.jsx). In that position it is bounded by the column, so it drops
+   the page-level centring it uses when it falls back to the foot of the page. */
+.series-nav-slot .series-nav {
+  max-width: none; margin: 2.6rem 0 0; padding: 1.6rem 0 0;
+}
+
+/* «دنبالهٔ …» — the line above the title on a پاره that continues an earlier
+   one. Same technical kicker treatment as .series-nav-count at the foot, so
+   the two ends of the piece speak in the same voice. */
+.series-lead {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+  font-family: var(--font-technical); font-size: 0.68rem; letter-spacing: 0.12em;
+  color: var(--gold-deep); margin: 0 0 0.1rem;
+}
+.series-lead-sep { opacity: 0.55; }
+.series-lead-link { color: var(--gold-deep); text-decoration: none; border-bottom: 1px solid var(--line); }
+.series-lead-link:hover { color: var(--ink); border-color: var(--gold); }
+
+/* «دنبالهٔ …» sits at the top of the essay text, above its first heading, so it
+   needs room beneath it rather than the tight spacing it had under the title. */
+.series-lead-slot .series-lead { margin: 0 0 1.4rem; }
+
+/* A wide document scan — a manuscript opening, a two-page spread — read at 430px
+   is only a picture of a page; the point of running it is that the reader can
+   see the notation. .essay-figure-wide lets such a plate hold the full text
+   column. PROPOSAL, 2026-09-19: awaiting the editor-in-chief. */
+.essay-figure.essay-figure-wide { width: 100%; max-width: 100%; }
+/* an upright picture stands on its own, narrower and centred, never paired beside a landscape one (EIC, 8 Oct 2026) */
+.essay-figure.essay-figure-portrait { width: 46%; max-width: 46%; margin-left: auto; margin-right: auto; float: none; }
+@media (max-width: 640px) { .essay-figure.essay-figure-portrait { width: 72%; max-width: 72%; } }
+
+/* ============================================================================
+   The printed issue, turned page by page (#/issue/1, page-issue.jsx)
+   ========================================================================== */
+.flip-wrap { max-width: 1120px; margin: 0 auto; padding: 2.4rem 1rem 1.6rem; }
+.flip-head { text-align: center; margin-bottom: 1.4rem; }
+.flip-head .gsn-technical { display: block; color: var(--gold-deep); margin-bottom: 0.5rem; }
+.flip-head h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; margin: 0 0 0.4rem; color: var(--ink); }
+.flip-head p { margin: 0; color: var(--text-muted, #6B7275); font-size: 0.92rem; }
+.flip-stage { position: relative; width: 100%; aspect-ratio: 4 / 3; perspective: 2800px; user-select: none; }
+.flip-book { position: absolute; inset: 0; transform-style: preserve-3d; }
+.flip-half { position: absolute; top: 0; width: 50%; height: 100%; cursor: pointer; }
+.flip-half.is-left { left: 0; }
+.flip-half.is-right { right: 0; }
+.flip-half img, .flip-face img, .flip-one img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.flip-half.is-left img { object-position: right center; filter: drop-shadow(-1px 2px 6px rgba(0,0,0,0.12)); }
+.flip-half.is-right img { object-position: left center; filter: drop-shadow(1px 2px 6px rgba(0,0,0,0.12)); }
+.flip-spine { position: absolute; left: 50%; top: 4%; bottom: 4%; width: 2px; margin-left: -1px;
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.14) 10%, rgba(0,0,0,0.14) 90%, rgba(0,0,0,0)); pointer-events: none; }
+.flip-stage.is-closed .flip-spine, .flip-stage.is-ended .flip-spine { display: none; }
+.flip-leaf { position: absolute; left: 0; top: 0; width: 50%; height: 100%; transform-origin: right center;
+  transform-style: preserve-3d; pointer-events: none; z-index: 5;
+  animation: flip-fwd 0.95s cubic-bezier(0.45, 0, 0.2, 1) forwards; }
+.flip-leaf.is-returning { animation-name: flip-back; }
+.flip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-face.is-front img { object-position: right center; }
+.flip-face.is-back { transform: rotateY(180deg); }
+.flip-face.is-back img { object-position: left center; }
+@keyframes flip-fwd { from { transform: rotateY(0deg); } 50% { filter: brightness(0.9); } to { transform: rotateY(180deg); } }
+@keyframes flip-back { from { transform: rotateY(180deg); } 50% { filter: brightness(0.9); } to { transform: rotateY(0deg); } }
+.flip-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--gold); background: var(--paper); color: var(--gold-deep); font-size: 1.6rem; line-height: 1;
+  cursor: pointer; display: grid; place-items: center; transition: background 0.2s, color 0.2s; z-index: 8; }
+.flip-btn:hover { background: var(--gold); color: var(--ink); }
+.flip-btn:disabled { opacity: 0.25; cursor: default; }
+.flip-btn.is-next { left: -10px; }
+.flip-btn.is-prev { right: -10px; }
+.flip-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+.flip-where { color: var(--text-muted, #6B7275); font-size: 0.9rem; }
+.flip-actions { display: flex; gap: 0.8rem; align-items: center; }
+.flip-link { background: none; border: none; cursor: pointer; color: var(--gold-deep); font: inherit; font-size: 0.9rem; padding: 0; }
+.flip-request { display: inline-block; background: none; border: 1px solid var(--gold); color: var(--gold-deep); border-radius: 999px;
+  padding: 0.4rem 1.1rem; font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.flip-request:hover { background: var(--gold); color: var(--ink); }
+.flip-one { position: absolute; inset: 0; cursor: pointer; }
+.flip-stage.is-single { aspect-ratio: 2 / 3; }
+@media (max-width: 719px) {
+  .flip-wrap { padding: 1.6rem 16px 1rem; }
+  .flip-btn { width: 36px; height: 36px; font-size: 1.3rem; }
+  .flip-btn.is-next { left: -6px; }
+  .flip-btn.is-prev { right: -6px; }
+}
+
+/* a thin, glossy sheet: a quick turn with a sweeping sheen, no thickness, no darkening */
+.flip-stage { perspective: 2200px; }
+.flip-leaf { animation-duration: 0.76s; animation-timing-function: cubic-bezier(0.3, 0.1, 0.25, 1); }
+@keyframes flip-fwd { from { transform: rotateY(0deg); } to { transform: rotateY(180deg); } }
+@keyframes flip-back { from { transform: rotateY(180deg); } to { transform: rotateY(0deg); } }
+.flip-shade { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.0) 35%, rgba(255,255,255,0.45) 50%, rgba(0,0,0,0.08) 62%, rgba(0,0,0,0) 80%);
+  background-size: 300% 100%; animation: flip-sheen 0.76s linear forwards; mix-blend-mode: soft-light; }
+.flip-face.is-back .flip-shade { animation-direction: reverse; }
+@keyframes flip-sheen { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+.flip-half img { filter: none; }
+.flip-half.is-left img { box-shadow: -1px 1px 3px rgba(0,0,0,0.10); }
+.flip-half.is-right img { box-shadow: 1px 1px 3px rgba(0,0,0,0.10); }
+/* the back of a turning sheet must never show through: no filter or blend on the leaf or its faces,
+   which would flatten the 3-D context and defeat backface-visibility */
+.flip-leaf { will-change: transform; filter: none; }
+.flip-face, .flip-face img, .flip-shade { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-face { transform-style: preserve-3d; }
+.flip-face.is-front { transform: rotateY(0deg) translateZ(0.5px); }
+.flip-face.is-back { transform: rotateY(180deg) translateZ(0.5px); }
+.flip-shade { mix-blend-mode: normal;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.28) 50%, rgba(0,0,0,0.06) 62%, rgba(0,0,0,0) 80%);
+  background-size: 300% 100%; }
+
+/* the dots under the book: one per spread, the current one in gold; the range beneath drags */
+.flip-dots { position: relative; height: 26px; margin: 1.2rem 8px 0; }
+.flip-dotrow { position: absolute; left: 0; right: 0; top: 10px; height: 6px; }
+.flip-dot { position: absolute; top: 0; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+  background: var(--gold-light, #E1C486); cursor: pointer; transition: transform 0.2s, background 0.2s; }
+.flip-dot:hover { transform: scale(1.6); background: var(--gold); }
+.flip-dot.is-on { background: var(--gold-deep); transform: scale(1.9); }
+.flip-dot.is-cover { background: var(--ink); opacity: 0.55; }
+.flip-range { position: absolute; left: 0; right: 0; top: 0; width: 100%; height: 26px; margin: 0; opacity: 0; cursor: pointer; z-index: 2; }
+
+/* the slider under the book: a thin gold track, the cover at the right end, pages advancing leftwards */
+.flip-dots, .flip-dotrow, .flip-dot { display: none; }
+.flip-slide { margin: 1.1rem 6px 0; }
+.flip-range { position: static; display: block; width: 100%; height: 22px; margin: 0; opacity: 1; direction: rtl;
+  -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+.flip-range::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(90deg, var(--gold-light, #E1C486), var(--gold)); border-radius: 2px; }
+.flip-range::-moz-range-track { height: 2px; background: var(--gold-light, #E1C486); border-radius: 2px; }
+.flip-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6px; border-radius: 50%;
+  background: var(--paper); border: 2px solid var(--gold-deep); box-shadow: 0 1px 3px rgba(0,0,0,0.18); transition: transform 0.15s; }
+.flip-range::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--gold-deep); }
+.flip-range:hover::-webkit-slider-thumb { transform: scale(1.2); }
+.flip-range:focus-visible { outline: none; }
+.flip-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(201,146,39,0.3); }
+
+/* the slider in chapters (EIC, 3 Oct): the track reads as one segment for each piece of the issue, with a
+   hairline gap where each begins — gold as far as the reader has come, the light tone beyond. A small label
+   above the track names the piece under the pointer, or under the thumb while it is dragged. All of it only
+   when the manifest carries chapters (.has-chapters); without them the plain slider above stands as it is. */
+.flip-slide.has-chapters { --flip-thumb: 14px; position: relative; margin-top: 2.7rem; }
+.flip-slide.has-chapters .flip-range { position: relative; z-index: 1; }
+.flip-slide.has-chapters .flip-range::-webkit-slider-runnable-track { background: transparent; }
+.flip-slide.has-chapters .flip-range::-moz-range-track { background: transparent; }
+/* one thumb width in every engine (FLIP_THUMB in page-issue.jsx), so each gap sits where the thumb's centre stops */
+.flip-slide.has-chapters .flip-range::-webkit-slider-thumb { box-sizing: border-box; width: var(--flip-thumb); height: var(--flip-thumb); }
+.flip-slide.has-chapters .flip-range::-moz-range-thumb { box-sizing: border-box; width: var(--flip-thumb); height: var(--flip-thumb); }
+.flip-chapters { position: absolute; left: calc(var(--flip-thumb) / 2); right: calc(var(--flip-thumb) / 2); top: 50%; height: 0; pointer-events: none; }
+.flip-seg { position: absolute; top: -1.5px; height: 3px; }
+.flip-seg::before { content: ''; position: absolute; top: 0; bottom: 0; left: 1px; right: 1px; background: var(--gold-light); opacity: 0.5; }
+.flip-seg b { position: absolute; top: 0; bottom: 0; right: 1px; max-width: calc(100% - 2px); background: var(--gold); }
+.flip-seg:first-child::before, .flip-seg:first-child b { right: 0; }
+.flip-seg:last-child::before { left: 0; }
+.flip-seg:first-child b, .flip-seg:last-child b { max-width: calc(100% - 1px); }
+.flip-seg.is-hot { top: -2.5px; height: 5px; }
+/* the label: plain type in the white between the book and the track (the slide's top margin is its room, so it
+   never lies on the pages), centred on the pointer and kept inside the two ends of the slider by page-issue.jsx */
+.flip-tip { position: absolute; bottom: 100%; right: 0; width: max-content; max-width: min(100%, 30rem); line-height: 1.45;
+  display: flex; flex-direction: column; align-items: center; pointer-events: none; opacity: 0; transition: opacity 0.12s; }
+.flip-tip.is-on { opacity: 1; }
+.flip-tip-top { display: flex; align-items: baseline; gap: 0.6rem; }
+.flip-tip-sec { font-size: 0.68rem; font-weight: 700; color: var(--gold-deep); white-space: nowrap; }
+.flip-tip-pg { font-size: 0.68rem; color: var(--text-muted, #6B7275); white-space: nowrap; }
+.flip-tip-row { display: flex; align-items: baseline; gap: 0.7rem; max-width: 100%; }
+.flip-tip-ttl { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.86rem; font-weight: 700; color: var(--ink); }
+.flip-tip-by { flex: none; font-size: 0.74rem; color: var(--text-muted, #6B7275); white-space: nowrap; }
+/* the line under the slider names the piece as well: beside the buttons where there is room, on a row of its
+   own where there is not; two lines at most, and the foot keeps room for both, so a long title wraps and
+   nothing under it moves */
+.flip-foot.has-chapters { min-height: 2.8rem; }
+.flip-foot.has-chapters .flip-where { flex: 1 1 12rem; min-width: 0; line-height: 1.5;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; text-wrap: balance; }
+.flip-where-ttl { color: var(--ink); }
+@media (max-width: 719px) { .flip-foot.has-chapters .flip-where { min-height: 3em; } }
+/* the booklet a fifth smaller on the page */
+.flip-wrap { max-width: 896px; }
+@media (min-width: 720px) { .flip-wrap { width: 80%; } }
+/* zoom: the book scales inside its stage; when zoomed it can be dragged, and the stage clips */
+.flip-zoomlayer { position: absolute; inset: 0; transform-origin: center center; transition: transform 0.25s ease; }
+.flip-stage { overflow: hidden; }
+.flip-stage.is-zoomed { cursor: grab; }
+.flip-stage.is-zoomed:active { cursor: grabbing; }
+.flip-stage.is-zoomed .flip-zoomlayer { transition: none; }
+.flip-zoom { display: inline-flex; align-items: center; gap: 0.3rem; margin-inline-end: 0.4rem; }
+.flip-zbtn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--gold); background: var(--paper); color: var(--gold-deep);
+  font-size: 1.1rem; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: background 0.2s, color 0.2s; }
+.flip-zbtn:hover { background: var(--gold); color: var(--ink); }
+.flip-zbtn:disabled { opacity: 0.3; cursor: default; }
+.flip-zval { font-size: 0.8rem; color: var(--text-muted, #6B7275); min-width: 2.6em; text-align: center; }
+/* the zoomed book clips inside its own box; the arrows stay outside it, uncut */
+.flip-stage { overflow: visible; }
+.flip-clip { position: absolute; inset: 0; overflow: hidden; }
+
+/* zoom withdrawn (EIC, 2 Oct evening); the stage clips nothing */
+.flip-stage { overflow: visible; }
+.flip-zoom, .flip-zbtn, .flip-zval, .flip-clip, .flip-zoomlayer { display: none; }
+
+/* zoom restored with the sharp page set; the arrows sit outside the clipping box */
+.flip-zoom, .flip-zbtn, .flip-zval, .flip-clip, .flip-zoomlayer { display: revert; }
+.flip-zoom { display: inline-flex; }
+.flip-zbtn { display: grid; }
+.flip-clip { display: block; position: absolute; inset: 0; overflow: hidden; }
+.flip-zoomlayer { display: block; position: absolute; inset: 0; transform-origin: center center; transition: transform 0.25s ease; }
+.flip-stage.is-zoomed .flip-zoomlayer { transition: none; }
+.flip-stage.is-zoomed { cursor: grab; }
+.flip-stage.is-zoomed:active { cursor: grabbing; }
+
+/* zoom at true size: the layer grows, the clip scrolls — every page is rasterised at the size it is shown */
+.flip-clip { overflow: auto; scrollbar-width: none; }
+.flip-clip::-webkit-scrollbar { display: none; }
+.flip-zoomlayer { position: relative; inset: auto; transform: none; transition: none; }
+
+/* The closed issue as an object (EIC, 3 Oct): on arrival the book stands at an angle so its thickness shows —
+   the cover, the gold spine on its right (a Persian book), the block of pages at its head, a soft shadow on
+   the ground before it. The first gesture brings it to the flat closed position; .flip-obj is then removed
+   and the book beneath is the one it always was. Its box is the flat cover's own box, so at rest the two
+   coincide. --flip-r (thickness ÷ trim width) and --flip-ar (trim width ÷ height) come from the manifest;
+   the edges hang from the cover's own edges, so nothing here is in pixels. */
+.flip-stage.is-posed .flip-half.is-left img, .flip-stage.is-posed .flip-one img { visibility: hidden; }
+.flip-obj { position: absolute; top: 0; left: 0; width: 50%; height: 100%; z-index: 6; cursor: pointer;
+  transform-style: preserve-3d; -webkit-tap-highlight-color: transparent;
+  --tx: 0%; --ty: 0%; --rx: 0deg; --ry: 0deg; --s: 1;
+  transform: translate3d(var(--tx), var(--ty), 0) rotateX(var(--rx)) rotateY(var(--ry)) scale3d(var(--s), var(--s), var(--s));
+  transition: transform 0.72s cubic-bezier(0.3, 0, 0.2, 1); }
+.flip-stage.is-single .flip-obj { width: 100%; }
+/* at an angle: in the middle of the stage, seen a little from above and from the spine side */
+.flip-obj.is-posed { --tx: 50%; --ty: -1.5%; --rx: -14deg; --ry: -27deg; --s: 0.86; transition-duration: 0.35s; }
+.flip-stage.is-single .flip-obj.is-posed { --tx: 0%; --s: 0.8; }
+@media (hover: hover) { .flip-obj.is-posed:hover { --ry: -23deg; } }
+.flip-obj:focus { outline: none; }
+.flip-obj:focus-visible .flip-obj-cover { outline: 2px solid var(--accent); outline-offset: 4px; }
+.flip-obj-cover { position: absolute; top: 0; left: 0; display: block; width: 100%; height: 100%;
+  object-fit: contain; object-position: right center; background: var(--white); box-shadow: -1px 1px 3px rgba(0,0,0,0.10); }
+.flip-stage.is-single .flip-obj-cover { object-position: center; box-shadow: none; }
+/* the spine hangs from the cover's right edge and runs back; the page block from its top edge */
+.flip-obj-spine { position: absolute; top: 0; left: 100%; width: calc(var(--flip-r) * 100%); height: 100%;
+  transform-origin: 0 50%; transform: rotateY(90deg);
+  background: linear-gradient(to right, rgba(0,0,0,0.10), rgba(0,0,0,0.26)), var(--gold-deep); }
+.flip-obj-head { position: absolute; left: 0; bottom: 100%; width: 100%; height: calc(var(--flip-r) * var(--flip-ar) * 100%);
+  transform-origin: 50% 100%; transform: rotateX(90deg);
+  background:
+    linear-gradient(to left, var(--gold-deep) 0, var(--gold-deep) 1.5px, transparent 1.5px),
+    repeating-linear-gradient(to top, rgba(26,26,26,0.13) 0, rgba(26,26,26,0.13) 1px, transparent 1px, transparent 2.5px),
+    var(--paper-warm); }
+/* the ground before the foot of the book, and the book's shadow on it: darkest where the foot stands, a wider
+   and fainter pool before it. Along the foot line both end at the book's two corners, so no edge shows beside it. */
+.flip-obj-ground { position: absolute; left: -16%; width: 132%; top: 100%; height: 26%; pointer-events: none;
+  transform-origin: 50% 0; transform: rotateX(90deg);
+  background:
+    radial-gradient(ellipse 37% 36% at 50% 0, rgba(0,0,0,0.26), rgba(0,0,0,0) 100%),
+    radial-gradient(ellipse 50% 62% at 50% 40%, rgba(0,0,0,0.15), rgba(0,0,0,0.07) 50%, rgba(0,0,0,0) 100%);
+  transition: opacity 0.3s; }
+/* one page wide (a phone): the book fills the stage, so the ground keeps closer to its foot and inside the screen */
+.flip-stage.is-single .flip-obj-ground { left: -8%; width: 116%;
+  background:
+    radial-gradient(ellipse 43% 36% at 50% 0, rgba(0,0,0,0.26), rgba(0,0,0,0) 100%),
+    radial-gradient(ellipse 50% 62% at 50% 40%, rgba(0,0,0,0.15), rgba(0,0,0,0.07) 50%, rgba(0,0,0,0) 100%); }
+.flip-obj.is-landing .flip-obj-ground { opacity: 0; }
+body[data-motion="off"] .flip-obj, body[data-motion="off"] .flip-obj-ground { transition: none; }
+@media (prefers-reduced-motion: reduce) { .flip-obj, .flip-obj-ground { transition: none; } }
+
+/* ============================================================================
+   The issue's own page (#/issue/1, IssuePage in page-issue.jsx): the complete
+   issue to turn, then what is in it, who wrote it and what is on its cover.
+   The column under the book is the book's own width, so the edges line up.
+   ========================================================================== */
+.issue-head { text-align: center; padding: 1.5rem 1.4rem 0; }
+/* the page's heading is for screen readers only: two quiet lines are the head (EIC, 3 Oct) */
+.issue-h1 { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.issue-line { margin: 0; color: var(--ink); font-size: 0.95rem; font-weight: 500; line-height: 1.7; min-height: 1.7em; }
+.issue-facts { margin: 0.15rem 0 0; color: var(--ink); font-size: 0.72rem; line-height: 1.9; }   /* black, a size down (EIC, 8 Oct 2026) */
+.issue-facts-half > span { white-space: nowrap; }
+/* each fact keeps to one line; the line breaks only at the spaces around the dots between them */
+.issue-facts i { font-style: normal; color: var(--gold); margin: 0 0.3em; }
+.issue-page .flip-wrap { padding-top: 1.1rem; }
+.issue-body { max-width: 896px; margin: 0 auto; padding: 1.2rem 1rem 4.5rem; }
+@media (min-width: 720px) { .issue-body { width: 80%; } }
+.issue-sec { margin-bottom: 3.2rem; }
+.issue-page .nc-sectionhead { margin-bottom: 1.3rem; }
+/* «در این شماره»: the print contents — the section, then page number, title, author */
+.issue-toc { columns: 2; column-gap: 3.4rem; }
+.issue-toc-group { break-inside: avoid; padding-bottom: 1.3rem; }
+.issue-toc-sec { display: flex; align-items: center; gap: 0.7rem; margin: 0 0 0.2rem; font-size: 0.74rem; font-weight: 700; color: var(--gold-deep); }
+.issue-toc-sec::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.issue-toc-group ol { list-style: none; margin: 0; padding: 0; }
+.issue-toc-row { display: flex; align-items: baseline; gap: 0.7rem; padding: 0.45rem 0; }
+/* a page number is a control: it opens the book at that page. The one whose piece lies open is washed in gold */
+.issue-pg { flex: none; min-width: 2.5em; margin: 0 -0.35rem; padding: 0.05rem 0.35rem; border: 0; border-radius: var(--radius-xs);
+  background: none; font: inherit; font-size: 1rem; font-weight: 700; line-height: 1.6; color: var(--gold-deep); text-align: start;
+  font-variant-numeric: tabular-nums; cursor: pointer; transition: background var(--speed-fast), color var(--speed-fast); }
+.issue-pg:hover { background: var(--gold-wash); color: var(--ink); }
+.issue-pg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.issue-toc-row.is-open .issue-pg { background: var(--gold-wash); }
+.issue-toc-t { flex: 1; min-width: 0; font-size: 0.98rem; line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
+.issue-toc-t a, .issue-toc-t .is-awaited { font-weight: 700; color: inherit; text-decoration: none; }
+.issue-toc-t a { transition: color var(--speed-fast); }
+.issue-toc-t a:hover { color: var(--gold-deep); }
+.issue-toc-by { display: block; margin-top: 0.05rem; font-size: 0.8rem; font-weight: 400; color: var(--grey); }
+/* inline-block: the mark is a thing beside the title, never joined to its last letter */
+.issue-soon { display: inline-block; margin-inline-start: 0.35rem; font-size: 0.7rem; font-weight: 700; color: var(--gold-deep); white-space: nowrap; }
+.issue-sh-pg { order: 3; }
+.issue-sh-pg .issue-pg { min-width: 0; margin: 0; font-size: 0.8rem; font-weight: 600; }
+/* «نویسندگان این شماره»: the house portraits, each leading to that writer's piece */
+.issue-people { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem 0; list-style: none; margin: 0; padding: 0; }
+.issue-people > li { flex: 0 0 calc(100% / 6); min-width: 0; }
+.issue-person { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; padding: 0 0.4rem; text-align: center; color: var(--ink); text-decoration: none; }
+.issue-person .author-avatar { width: 68px; height: 68px; }
+.issue-person .author-avatar--mono { font-size: 1.6rem; }
+.issue-person-name { font-size: 0.8rem; line-height: 1.55; font-weight: 500; overflow-wrap: anywhere; transition: color var(--speed-fast); }
+a.issue-person:hover .author-avatar { border-color: var(--accent); }
+a.issue-person:hover .issue-person-name { color: var(--gold-deep); }
+/* «روی جلد»: the cover, small, and the one sentence the print colophon carries */
+.issue-cover { display: flex; align-items: center; gap: 1.6rem; }
+.issue-cover-btn { flex: none; padding: 0; border: 0; background: none; line-height: 0; cursor: pointer; }
+.issue-cover-btn img { display: block; width: 112px; height: auto; box-shadow: 0 6px 20px -10px rgba(0,0,0,0.4); }
+.issue-cover-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.issue-cover p { margin: 0; max-width: 34rem; font-size: 0.92rem; line-height: 2; color: var(--text-body); text-wrap: balance; }
+.issue-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem 2.2rem; padding-top: 2.2rem; border-top: 1px solid var(--line); }
+.issue-more { font-size: 0.86rem; font-weight: 600; color: var(--grey); text-decoration: none; transition: color var(--speed-fast); }
+.issue-more:hover { color: var(--gold-deep); }
+@media (max-width: 899px) {
+  .issue-toc { column-gap: 2.2rem; }
+  .issue-people > li { flex-basis: 25%; }
+}
+@media (max-width: 719px) {
+  .issue-head { padding: 1.1rem 1.2rem 0; }
+  .issue-line { font-size: 0.88rem; }
+  .issue-facts { font-size: 0.67rem; line-height: 1.8; }
+  .issue-facts-half { display: block; }      /* two lines, and no dot left hanging at the end of one */
+  .issue-facts-sep { display: none; }
+  .issue-page .flip-wrap { padding-top: 0.9rem; }
+  .issue-body { padding: 0.8rem 16px 3.4rem; }
+  .issue-sec { margin-bottom: 2.5rem; }
+  .issue-page .nc-sectionhead { gap: 0.6rem; margin-bottom: 1rem; }
+  .issue-page .nc-sectionhead .nc-sh-label { font-size: 0.98rem; }
+  .issue-toc { columns: 1; }
+  .issue-people > li { flex-basis: calc(100% / 3); }
+  .issue-cover { gap: 1.1rem; }
+  .issue-cover-btn img { width: 88px; }
+  .issue-cover p { font-size: 0.86rem; line-height: 1.95; }
+}
+
+/* ---- the issue on a phone and a tablet (8 Oct 2026) ----
+   Upright: one page, a line under it asking the reader to turn the device, and the piece's web page a
+   tap away. Sideways on a short screen: the spread, sized so the whole of it stands inside the screen
+   height (the stage keeps its 4:3 box, so the width follows), the furniture around it drawn in. */
+.flip-read { display: block; flex: 1 1 100%; margin-top: 0.2rem; font-size: 0.88rem; font-weight: 700; color: var(--gold-deep); text-decoration: none; }
+.flip-read:hover { text-decoration: underline; text-underline-offset: 3px; }
+.flip-hint { display: flex; flex: 1 1 100%; align-items: center; gap: 0.5rem; margin-top: 0.1rem; font-size: 0.74rem; line-height: 1.6; color: var(--text-muted, #6B7275); }
+.flip-hint-ico { flex: none; width: 14px; height: 20px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; transform: rotate(-20deg); opacity: 0.8; }
+.flip-hint-ico::after { content: ''; position: absolute; left: 3px; right: 3px; bottom: 2px; height: 1.5px; background: currentColor; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .issue-head { padding-top: 0.6rem; }
+  .issue-page .flip-wrap, .flip-wrap { padding-top: 0.5rem; padding-bottom: 0.5rem; width: auto; max-width: none; }   /* never wider than the screen: the 80 % / 896 px rules of the desk do not apply here */
+  .flip-stage { width: min(100%, calc((100vh - 96px) * 4 / 3)); margin-inline: auto; }
+  .flip-slide { width: min(100%, calc((100vh - 96px) * 4 / 3)); margin-inline: auto; }
+  .flip-foot { margin-top: 0.5rem; }
+  .flip-btn { width: 36px; height: 36px; font-size: 1.3rem; }
+  .flip-hint, .flip-read { display: none; }
+}
+
+/* ---- a caption's source: one unit after the description, on the same line when the line has room, on the
+   next line as a whole when it has not (EIC, 8 Oct 2026); a long address still wraps inside it ---- */
+.cap-src { display: inline-block; overflow-wrap: anywhere; }
+
+/* a note that cannot be sent as it stands says why, in place (forms audit, 8 Oct 2026) */
+.form-err { margin: -0.4rem 0 1rem; font-size: 0.86rem; color: var(--accent-strong, #A23B2A); }

@@ -1,0 +1,732 @@
+/* Gosan Weblog — archive, about, contact pages */
+
+/* The issue's sections in editorial order — the same taxonomy the home page lays
+   out and the «دفتر نخست» menu links to, so every one of those links lands on a
+   filter that exists here. Sections with nothing in them yet are still listed: the
+   archive says so plainly rather than hiding a section that was announced. */
+const ARCHIVE_SECTIONS = [
+  'جستار',
+  'پروندهٔ سیاست‌گذاری فرهنگی',
+  'پروندهٔ اقتصاد خلاق',
+  'پروندهٔ آموزش',
+  'دیدگاه',
+  'یادمان',
+  'گفتگو',
+  'نقد و بررسی',
+];
+
+/* The register of issues — issues.json, the same file the share cards are built
+   from: issues[{ number, line, slugs }]. One request, kept for the session. A
+   site without the file simply has no issue choice. */
+let GOSAN_ISSUES = null;
+const loadIssues = () => GOSAN_ISSUES || (GOSAN_ISSUES = fetch('issues.json')
+  .then((r) => r.json())
+  .then((d) => (d && Array.isArray(d.issues) ? d.issues.filter((i) => i && Number.isFinite(i.number) && Array.isArray(i.slugs)) : []))
+  .catch(() => { GOSAN_ISSUES = null; return []; }));
+
+/* Search that reads Persian the way a reader types it: Arabic ي and ك are ی and ک,
+   the half-space and the tatweel are not there, «هٔ» and «ۀ» are «ه», vowel marks
+   are dropped, and a digit is the same digit in Persian, Arabic or Latin form. */
+const faFold = (s) => String(s || '').toLowerCase()
+  .replace(/[‌‍‎‏­ـ]/g, '')            // ZWNJ, ZWJ, marks, soft hyphen, tatweel
+  .replace(/[ً-ٰٟ]/g, '')                              // harakat, tanwin, hamza above (هٔ)
+  .replace(/[يى]/g, 'ی').replace(/ك/g, 'ک')  // ي ى → ی ; ك → ک
+  .replace(/[ۀۂة]/g, 'ه')                         // ۀ ۂ ة → ه
+  .replace(/[۰-۹]/g, (d) => d.charCodeAt(0) - 0x06f0)       // ۰–۹ → 0–9
+  .replace(/[٠-٩]/g, (d) => d.charCodeAt(0) - 0x0660)       // ٠–٩ → 0–9
+  .replace(/\s+/g, ' ').trim();
+
+/* The issue chosen and the words typed. A change of section is a change of address
+   and remounts the page, so the two are kept here and the three narrow together;
+   leaving the archive clears them, and the next visit opens on everything. */
+const ARCHIVE_PICK = { issue: null, q: '' };
+
+function ArchivePage({ tag }) {
+  /* Any tag in the URL filters. An unknown or empty section shows nothing rather
+     than silently falling back to the whole archive — پروندهٔ آموزش has no essays
+     yet, and showing all twelve there would misrepresent it. */
+  const active = tag || 'همه';
+  const [issues, setIssues] = React.useState([]);
+  const [issue, setIssue] = React.useState(ARCHIVE_PICK.issue);
+  const [q, setQ] = React.useState(ARCHIVE_PICK.q);
+  React.useEffect(() => {
+    let on = true;
+    loadIssues().then((list) => { if (on) setIssues(list); });
+    return () => {
+      on = false;
+      if (window.gosanPath().replace(/^\/?/, '').split('/')[0] !== 'archive') { ARCHIVE_PICK.issue = null; ARCHIVE_PICK.q = ''; }
+    };
+  }, []);
+  React.useEffect(() => { ARCHIVE_PICK.issue = issue; ARCHIVE_PICK.q = q; }, [issue, q]);
+
+  /* three ways to narrow the one list, and they narrow together: the issue, the
+     section, the words. Only what the registry lists is ever shown — a slug an
+     issue names but the site does not list never surfaces. */
+  const picked = issues.find((i) => i.number === issue) || null;
+  const inIssue = picked ? new Set(picked.slugs) : null;
+  const words = faFold(q).split(' ').filter(Boolean);
+  const posts = GOSAN_POSTS.filter((p) => {
+    if (active !== 'همه' && p.tag !== active) return false;
+    if (inIssue && !inIssue.has(p.slug)) return false;
+    if (!words.length) return true;
+    const text = faFold([p.title, p.author, p.excerpt, GOSAN_SUMMARIES[p.slug]].join(' '));
+    return words.every((w) => text.includes(w));
+  });
+  const sectionEmpty = active !== 'همه' && !GOSAN_POSTS.some((p) => p.tag === active);
+  /* a tag a post carries but the list above forgot is appended rather than lost —
+     that is how دیدگاه went missing from this page while carrying two essays */
+  const strays = [...new Set(GOSAN_POSTS.map((p) => p.tag))].filter((t) => !ARCHIVE_SECTIONS.includes(t));
+  const tags = ['همه', ...ARCHIVE_SECTIONS, ...strays];
+  return (
+    <main data-screen-label="بایگانی">
+      <PageTitle technical="ARCHIVE // ALL ENTRIES" title="بایگانی" lede="همهٔ نوشتارهای گاهنامه، از نخستین دفتر تاکنون" />
+      <div className="wrap" style={{ paddingBottom: '5rem' }}>
+        <div className="archive-tools">
+          {issues.length ? (
+            <div className="filter-row" role="group" aria-label="شماره">
+              <button type="button" className={`filter-btn${picked ? '' : ' is-active'}`} aria-pressed={!picked} onClick={() => setIssue(null)}>همهٔ شماره‌ها</button>
+              {issues.map((i) => (
+                <button
+                  key={i.number} type="button" title={i.line}
+                  className={`filter-btn${picked === i ? ' is-active' : ''}`} aria-pressed={picked === i}
+                  onClick={() => setIssue(i.number)}
+                >{'شمارهٔ ' + faDigits(i.number)}</button>
+              ))}
+            </div>
+          ) : null}
+          <div className="filter-row">
+            {tags.map((t) => (
+              <a
+                key={t}
+                className={`filter-btn${t === active ? ' is-active' : ''}`}
+                href={t === 'همه' ? '/archive' : `/archive/${t}`}
+              >{t}</a>
+            ))}
+          </div>
+          <div className="newsletter-form archive-search">
+            <input
+              type="text" inputMode="search" enterKeyHint="search" autoComplete="off"
+              value={q} onChange={(e) => setQ(e.target.value)}
+              placeholder="عنوان، موضوع یا نویسنده…" aria-label="جستجو"
+            />
+          </div>
+          {picked && picked.line ? <p className="archive-issue-line">{picked.line}</p> : null}
+        </div>
+        {posts.length === 0 ? (
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0 4rem' }}>
+            {sectionEmpty ? 'هنوز نوشتاری در این بخش منتشر نشده است.' : 'چیزی یافت نشد.'}
+          </p>
+        ) : null}
+        <div className="archive-grid">
+          {posts.map((p, i) => (
+            <Reveal key={p.slug} delay={(i % 3) * 110}>
+              <ArticleCard {...p} tagVariant={p.tag === 'یادمان' ? 'gold' : undefined} href={`/article/${p.slug}`} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+const GOSAN_BOARD = [
+  { key: 'hafez', name: 'حافظ باباشاهی', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-hafez.png',
+    bio: 'موسیقیدان و دانش‌آموختهٔ دانشگاه موسیقی وین، بنیان‌گذار جشنوارهٔ آواز کلاسیک «وینر لیدر هربست»، مدیر هنری مسابقهٔ پیانوی ماکان، مدرس پیانو در کنسرواتوار ریشارد واگنر وین است. به عنوان تک‌نواز، پیانیست لید و نوازندهٔ موسیقی مجلسی در تالارهایی چون موزیک‌فراین و کنسرت‌هاوس وین، گاستایگ مونیخ، دویچه اوپر برلین، ویگمور هال لندن و تالار کنسرت شانگهای روی صحنه رفته است. جشنوارهٔ آواز او بیش از یک دهه است که به پرورش و عرضهٔ آواز کلاسیک می‌پردازد، و جشنوارهٔ پیانوی ماکان، با مسابقهٔ برخط برای کودکان و آموزش از راه دور، به پرورش پیانیست‌های جوان در ایران اختصاص دارد.' },
+  { key: 'yalda', name: 'یلدا زمانی', role: 'مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان / سردبیر گاهنامهٔ گوسان', craft: 'رهبر ارکستر، آهنگساز', img: 'assets/board-yalda.png',
+  bio: 'رهبر ارکستر و آهنگساز؛ سردبیر گاهنامهٔ گوسان و مدیرمسئول اندیشکدهٔ فرهنگ و هنر گوسان. مدرس پیشین دانشگاه موسیقی و تئاتر هامبورگ، بنیان‌گذار و مدیر هنری ارکستر مجلسی معاصر البه و دستیار پیشین رهبر آنسامبل اینترکنتمپورن در فیلارمونی پاریس (۲۰۲۴–۲۰۲۶) است. در کنار کار هنری، پژوهشگر و مشاور سیاست‌گذاری فرهنگی است.' },
+  { key: 'ehsan', name: 'احسان شواربی', role: 'مدیر بخش پژوهش', craft: 'باستان‌شناس، سکه‌شناس', img: 'assets/board-ehsan.png',
+    bio: 'باستان‌شناس و سکه‌شناس؛ متصدی سکه‌های سدهٔ میانه و شرق در گنجینهٔ سکهٔ موزهٔ تاریخ هنر وین است. پژوهش‌های او بر سکه و تاریخ پولی جهان ایرانی باستان، آسیای میانه و شمال هند متمرکز است؛ به‌ویژه بر سکه‌شناسی و شمایل‌نگاری ساسانی، جغرافیای تاریخی ایران پیش از اسلام، و زبان‌ها و کتیبه‌های ایران باستان. پیش‌تر سکه‌های ساسانی موزهٔ ملک تهران را فهرست کرده و سروده‌های بازماندهٔ منجیک ترمذی، شاعر سدهٔ چهارم هجری، را تصحیح کرده است. احسان شواربی مدیر بخش  پژوهش گاهنامهٔ گوسان و اندیشکدهٔ فرهنگ و هنر گوسان است. خوشنویسی نشان گوسان نیز کار اوست.' },
+  { key: 'sohrab', name: 'سهراب لبیب', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'پیانیست، مدرس موسیقی', img: 'assets/board-sohrab.png',
+    bio: 'سهراب لبیب، متولد ۱۳۶۶، فراگیری موسیقی را از کودکی آغاز کرد و پس از اتمام تحصیلات در هنرستان موسیقی تهران، عازم فرانسه و مدرسۀ عالی آلفرد کورتو در پاریس شد. پس از طی چند سال هنرآموزی نزد اساتید تراز اول در این مدرسۀ عالی، با اخذ بالاترین درجه در نوازندگی پیانو از آن فارغ‌التحصیل شد و فعالیت خود را در دو عرصۀ نوازندگی و آموزش موسیقی ادامه داد. همکاری و اجراهای متعدد با پیانیست شهیر فرانسوی، فیلیپ آنترومون، در کارنامۀ او ثبت است. سهراب دغدغه‌مند مسائل ایران است و فعالیت‌های اجتماعی و فرهنگی خود را در ارتباط با ایران از ۱۳۸۸ تا به امروز حفظ کرده است.' },
+  { key: 'amin', name: 'امین نایب‌پور', role: 'تیم نویسندگان گاهنامهٔ گوسان', craft: 'محقق اندیشهٔ سیاسی', img: 'assets/board-amin.png',
+    bio: 'تحصیلات خود را در رشتۀ ریاضیات در دانشگاه صنعتی آریامهر (شریف) آغاز کرد و سپس برای ادامۀ تحصیل در فلسفه راهی آمریکا و آلمان شد. کارشناسی فلسفه و الهیات مسیحی را در دانشگاه سنت لوئیس در ایالت میزوری به پایان رساند و در ادامه در دانشگاه New School for Social Research در نیویورک به تحصیل در مقطع کارشناسی ارشد پرداخت. او مدرک دکتری خود در فلسفه را در سال ۲۰۲۳ از دانشگاه فرایبورگ آلمان دریافت کرد و پس از آن یک دورۀ پژوهشی پست‌دکترا را در دانشگاه شیکاگو گذراند. او اکنون خارج از دانشگاه مشغول مشاورۀ ریسک‌های حقوقی و سیاسی برای شرکت‌های بخش خصوصی است.' },
+]
+
+/* The team is listed به ترتیب حروف الفبا — by family name (باباشاهی، زمانی،
+   شواربی، لبیب، نایب‌پور), which is the order GOSAN_BOARD itself is kept in.
+   Both mastheads read the names from here rather than repeating them, so
+   adding or reordering a member updates every place the list appears. */
+const boardNames = () => GOSAN_BOARD.map((m) => m.name);
+/* the same names broken into rows of `per`, each row but the last ending in a
+   Persian comma, so the masthead keeps its stacked shape */
+function BoardNameLines({ per = 2 }) {
+  const names = boardNames();
+  const rows = [];
+  for (let i = 0; i < names.length; i += per) rows.push(names.slice(i, i + per));
+  return rows.map((row, i) => (
+    <React.Fragment key={i}>
+      {row.join('، ')}{i < rows.length - 1 ? '،' : ''}
+      {i < rows.length - 1 ? <br /> : null}
+    </React.Fragment>
+  ));
+}
+
+function EditorialBoard() {
+  const [open, setOpen] = React.useState(null);
+  const boardRef = React.useRef(null);
+  React.useEffect(() => {
+    if (open === null) return;
+    const onDoc = (e) => { if (boardRef.current && !boardRef.current.contains(e.target)) setOpen(null); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(null); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+  return (
+    <div className={`board${open !== null ? ' has-open' : ''}`} ref={boardRef}>
+      <div className="board-row">
+        {GOSAN_BOARD.map((b, i) => (
+          <button
+            key={b.key}
+            type="button"
+            className={`board-card${i === open ? ' is-open' : ''}`}
+            onClick={() => setOpen(open === i ? null : i)}
+            aria-expanded={i === open}
+          >
+            <span className="board-portrait-circle">
+              <img src={b.img} alt={b.name} loading="lazy" />
+            </span>
+            <figcaption>
+              <span className="board-card-name">{b.name}</span>
+            </figcaption>
+          </button>
+        ))}
+      </div>
+      {/* the bio opens as a plain block below the row, not over the portrait —
+          which also gets it out of the <button>, where a role="dialog" was
+          never valid markup */}
+      {open !== null ? (
+        <div className="board-bio" role="region" aria-live="polite">
+          {GOSAN_BOARD[open].bio.split('\n').map((para, i) => <p key={i} style={i ? { marginTop: '0.8em' } : null}>{para}</p>)}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function Credentials() {
+  const editorial = boardNames().join('، ');
+  return (
+    <div className="cred-float">
+      <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>MASTHEAD // ISSUE 01</span>
+      <h2 className="gsn-display cred-title">شناسنامهٔ شماره</h2>
+      <dl className="cred-list">
+        <div className="cred-row">
+          <dt>مدیرمسئول و سردبیر</dt>
+          <dd>یلدا زمانی</dd>
+        </div>
+        <div className="cred-row">
+          <dt>مدیر بخش پژوهش</dt>
+          <dd>احسان شواربی</dd>
+        </div>
+        <div className="cred-row">
+          <dt>تیم نویسندگان گاهنامهٔ گوسان</dt>
+          <dd>{editorial}</dd>
+        </div>
+        <div className="cred-row">
+          <dt>ویراستار / خوشنویسی نشان</dt>
+          <dd>احسان شواربی</dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+/* The magazine's statement. Moved here from the home page on 2026-08-31 so it
+   opens the About page; Persian only, like the rest of this page. The «دربارهٔ گوسان ←»
+   action the home version carried is dropped — on this page it pointed at itself. */
+const ABOUT_MANIFESTO = {
+  lead: 'گوسان ریشه در روزگاران کهن دارد.',
+  body: [
+    'در ایران باستان، گوسان به رامشگران و نغمه‌خوانانی گفته می‌شد که حافظ تاریخ و افسانه‌های کهن بودند. گوسان‌ها روایتگر بودند؛ روایتگر شادی و اندوه مردمان، روایتگر رزم و بزم شاهان، روایتگر پیروزی و شکست قهرمانان. و این همه را به دیبای وزن و قافیه می‌آراستند تا سینه به سینه بازگفته و بازخوانده شود. گوسان‌ها می‌سرودند و می‌نواختند تا تاریخ و افسانه را در جامهٔ زربفتِ چامه و موسیقی از گزند فراموشی در امان بدارند. از پس آنان خدای‌نامه‌نویسانِ ساسانی آمدند و پسان‌تر سرایندگانِ پارسی‌گوی، از توس و بخارا تا تبریز و گنجه، از شیراز و کرمان تا غزنه و دهلی.',
+    'امروز نیز ما در گاهنامهٔ «گوسان» گردآمده‌ایم تا روایتگر باشیم؛ روایتگرِ فرهنگ و هنر و میراثِ کهنِ ایران، در روزگاری که فرهنگ و هنر به کنج انزوا گرفتار آمده و ستیز با تاریخ و میراثِ کهنِ ایران فزونی گرفته است؛ چنان‌که حکیم توس در شرح روزگارِ چیرگی ضحاکِ تازی گفته است:',
+  ],
+  verse: { a: 'هنر خوار شد جادویی ارجمند', b: 'نهان راستی، آشکارا گزند' },
+  close: 'گاهنامهٔ «گوسان» در پی آن است که غبار فراموشی را از صفحهٔ فرهنگ و هنر و میراثِ ایران بزداید؛ گوشه‌های ناشناختهٔ تاریخ و فرهنگ و هنرِ ایران را به ابزارِ پژوهش و نقد بکاود، بشناسد و روایت کند.',
+};
+
+const ENGRAVING_CREDIT = 'جزئی از نگارهٔ بشقاب سیمین ساسانی؛ نوازنده‌ای سوار بر جانور بالدار افسانه‌ای. اصل اثر در موزهٔ ارمیتاژ، سن‌پترزبورگ.';
+
+/* an About string the desk returned with bold or italic (tools/apply-desk-texts.py, EIC 9 Oct 2026) */
+const aboutRich = (x) => (/<\/?(i|b|em|strong)\b/.test(String(x)) ? <span dangerouslySetInnerHTML={{ __html: x }} /> : x);
+
+function AboutManifesto() {
+  const M = ABOUT_MANIFESTO;
+  return (
+    <Reveal>
+      <section className="nc-manifesto about-manifesto">
+        <div className="nc-manifesto-grid">
+          <div className="nc-man-text">
+            <p className="nc-manifesto-p nc-man-first"><strong>{aboutRich(M.lead)}</strong> {aboutRich(M.body[0])}</p>
+            {M.body.slice(1).map((para, i) => <p key={i} className="nc-manifesto-p">{aboutRich(para)}</p>)}
+            <div className="nc-manifesto-verse">
+              <span>{aboutRich(M.verse.a)}</span>
+              <span>{aboutRich(M.verse.b)}</span>
+            </div>
+            <p className="nc-manifesto-p nc-manifesto-close">{aboutRich(M.close)}</p>
+          </div>
+          <figure className="about-figure man-figure">
+            <img src="assets/shahnameh-engraving.jpg" alt={ENGRAVING_CREDIT} />
+            <span className="cover-credit">
+              <button type="button" className="cover-credit-btn" aria-label={'اعتبار تصویر: ' + ENGRAVING_CREDIT}>i</button>
+              <span className="cover-credit-tip" role="tooltip">{ENGRAVING_CREDIT}</span>
+            </span>
+          </figure>
+          <div className="about-cred man-cred">
+            <img className="man-cred-mark" src="assets/logo-gosan.png" alt="گوسان" />
+            <dl className="cred-list">
+              <div className="cred-row">
+                <dt>صاحب امتیاز</dt>
+                <dd>اندیشکدهٔ فرهنگ و هنر گوسان<br /><span style={{ direction: 'ltr', display: 'inline-block' }}>Gōsān Institute e. V. i. Gr.</span></dd>
+              </div>
+              <div className="cred-row">
+                <dt>مدیرمسئول و سردبیر</dt>
+                <dd>یلدا زمانی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>مدیر بخش پژوهش</dt>
+                <dd>احسان شواربی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>تیم نویسندگان گاهنامهٔ گوسان</dt>
+                <dd><BoardNameLines per={2} /></dd>
+              </div>
+              <div className="cred-row">
+                <dt>ویراستار / خوشنویسی نشان</dt>
+                <dd>احسان شواربی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>هویت بصری، طراحی و صفحه‌آرایی</dt>
+                <dd>یلدا زمانی</dd>
+              </div>
+              <div className="cred-row">
+                <dt>تماس</dt>
+                <dd>
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>info@gosan.org</span><br />
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>www.gosan.org</span>
+                </dd>
+              </div>
+              <div className="cred-row">
+                <dt>شاپا · ISSN</dt>
+                <dd>
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>ISSN 3056-2201</span> (چاپی)<br />
+                  <span style={{ direction: 'ltr', display: 'inline-block' }}>ISSN 3056-221X</span> (برخط)
+                </dd>
+              </div>
+            </dl>
+            <span className="about-spine">گوسان · سال ۱ · شمارهٔ ۱ · مهرگان ۲۵۸۵ (۱۴۰۵)</span>
+          </div>
+        </div>
+      </section>
+    </Reveal>
+  );
+}
+
+function AboutPage() {
+  const editorial = boardNames().join('، ');
+  return (
+    <main data-screen-label="دربارهٔ گوسان" className="about-main">
+      <AboutManifesto />
+      <section className="about-spread">
+        {/* right column (RTL first): manifesto text */}
+        <Reveal className="about-text">
+          <PullQuote style={{ margin: '0 0 1.8rem' }}>
+            فرهنگ و هنر، ستون‌های تاب‌آوری، بازسازی و بازشناسی هویت یک ملت در تندبادهای تاریخ‌اند.
+          </PullQuote>
+          <p>
+            امروز که غبار «وحشتی بزرگ» بر شئون زندگانی ایرانیان سایه افکنده، و نشانه‌های بحران از فرهنگ و هنر تا اقتصاد و اقلیم این کهن‌دیار را
+            فرا گرفته‌اند، ما فرزندان این بوم و بر بیش از هر زمان دیگری از خود می‌پرسیم در کجای این شب تاریک و گرداب هایل ایستاده‌ایم.
+            بیش از هر زمان دیگری نشان فرهنگ و تاریخ خویش را می‌جوییم تا در ریسمان‌های آن چنگ زنیم. میراث نیاکان، نه یادگاری‌های خاموش،
+            که ریسمان‌هایی در هم پیوسته‌اند برای ایستادگی در تندبادهای فراموشی و سرگردانی؛ ریسمان‌های ایران.
+          </p>
+          <p>
+            ما در «گوسان» بر این باوریم که گذار از بحران عمیق کنونی، نه با قرار دادن خود در جایگاه قربانی، که تنها با بازشناسی نقش خویش شدنی است.
+            بیش از چهار دهه سلطهٔ نظام ایدئولوژیک و متحجر بر فرهنگ و هنر این سرزمین، بی‌تردید زخمی عمیق بر جان جمعی ما نهاده،
+            و پرسشی ناگزیر و سهمگین را در برابرمان قرار داده است: سهم و نقش ما در گذار از این ویرانی چیست؟
+          </p>
+          <p>
+            فرهنگ و هنر، نه کالاهای تفننی، که ستون‌های تاب‌آوری، بازسازی و بازشناسی هویت یک ملت در تندبادهای تاریخ‌اند.
+            در سرزمینی غارت‌شده و جامعه‌ای بحران‌زده که نهادهای آن رو به فرسایش‌اند، آیا نمی‌توان فرهنگ و هنر را به نیرویی برای بازسازی بدل کرد؟
+            آیا نمی‌توان و نباید هنر و فرهنگ را از حاشیهٔ فراموشی به متن احیاء یک ملت آورد و با آن پلی به سوی فردایی روشن‌تر ساخت؟
+          </p>
+          <p style={{ color: 'var(--ink)', fontWeight: 500 }}>
+            ما فرزندان ایران در گاهنامهٔ «گوسان» می‌کوشیم در مسیر این هدف گام برداشته، پلی باشیم میان میراث کهن پدران و چشم‌انداز فردا،
+            و نیز همراهی برای همهٔ آنان که در گرگ و میش شب، نور مهر ایران را در دل دارند.
+          </p>
+          <MotifDivider style={{ marginTop: '2.8rem', marginBottom: '2.4rem' }} />
+          <section className="board-section board-inline">
+            <div className="wrap" style={{ maxWidth: '100%', padding: 0, position: 'relative', zIndex: 1 }}>
+              <Reveal>
+                <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>TEAM // ISSUE 01 — AUTUMN 2585 (1405)</span>
+                <SectionHead title="تیم نویسندگان گاهنامهٔ گوسان" />
+                <p className="board-hint">
+                  دست‌اندرکاران این شماره؛ سال ۱ · شمارهٔ ۱ · مهرگان ۲۵۸۵ (۱۴۰۵)
+                </p>
+              </Reveal>
+              <Reveal delay={120}>
+                <div style={{ marginTop: '2rem' }}>
+                  <EditorialBoard />
+                </div>
+              </Reveal>
+            </div>
+          </section>
+        </Reveal>
+
+
+      </section>
+
+
+      <section className="about-contact" id="contact">
+        <Reveal>
+          <span className="gsn-technical" style={{ color: 'var(--gold-deep)', display: 'block', textAlign: 'right', marginBottom: '0.7rem' }}>CONTACT // GŌSĀN</span>
+          <SectionHead title="تماس" />
+          <p className="board-hint">برای همکاری با گاهنامه، با ما در گفت‌وگو باشید.</p>
+        </Reveal>
+        <Reveal delay={110}>
+          <div style={{ marginTop: '2.4rem' }}>
+            <ContactBody bare />
+          </div>
+        </Reveal>
+      </section>
+    </main>
+  );
+}
+
+function ContactBody({ bare = false }) {
+  const [sent, setSent] = React.useState(false);   // false · 'ok' · 'mail' (the reader's mail app took over)
+  const [err, setErr] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  return (
+      <div
+        className={bare ? 'contact-grid' : 'wrap contact-grid'}
+        style={bare ? { paddingBottom: 0 } : { paddingBottom: '5rem', maxWidth: '1100px' }}
+      >
+        <Reveal>
+          <div className="contact-card">
+            {sent ? (
+              <div style={{ textAlign: 'center', padding: '2.5rem 0' }}>
+                <span className="gsn-technical" style={{ color: 'var(--gold-deep)' }}>MESSAGE SENT</span>
+                <h3 className="gsn-display" style={{ fontSize: '1.6rem', margin: '0.8rem 0 0.5rem' }}>{sent === 'mail' ? 'ایمیل شما آماده است' : 'پیام شما رسید'}</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0 }}>{sent === 'mail'
+                  ? 'فرستادن از وب‌سایت ممکن نشد؛ پیام شما در برنامهٔ ایمیلتان باز شده است. لطفاً آن را از همان‌جا بفرستید.'
+                  : 'سپاس از همراهی شما؛ به‌زودی پاسخ می‌دهیم.'}</p>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const v = (id) => (document.getElementById(id) || {}).value || '';
+                const fields = {
+                  name: v('c-name'), email: v('c-mail'), message: v('c-msg'),
+                  website: v('c-hp'),   /* honeypot */
+                  subject: 'تماس از وب‌سایت گوسان — ' + (v('c-name') || 'بدون نام'),
+                  page: (typeof location !== 'undefined' ? location.href : ''),
+                };
+                const problem = gosanNoteProblem(fields);
+                if (problem) { setErr(problem); return; }
+                if (busy) return;
+                setErr(''); setBusy(true);
+                gosanFormSubmit(fields).then(() => setSent('ok')).catch(() => { gosanMailtoFallback(fields); setSent('mail'); }).finally(() => setBusy(false));
+              }}>
+                <FormField id="c-name" label="نام" placeholder="نام و نام خانوادگی" />
+                <FormField id="c-mail" label="رایانامه" type="email" placeholder="you@example.com" />
+                <FormField id="c-msg" label="پیام" multiline placeholder="پیام خود را بنویسید…" />
+                <input id="c-hp" className="hp-field" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+                {err ? <p className="form-err" role="alert">{err}</p> : null}
+                <Button variant="gold">{busy ? 'در حال فرستادن…' : 'ارسال پیام'}</Button>
+              </form>
+            )}
+          </div>
+        </Reveal>
+        <Reveal delay={130}>
+          <div style={{ position: 'relative', paddingTop: '0.5rem' }}>
+            <GoldDots width={120} height={140} style={{ opacity: 0.7, marginBottom: '1.6rem' }} />
+            <p style={{ fontSize: '0.95rem', lineHeight: 2.2, color: 'var(--text-muted)', textAlign: 'justify', margin: '0 0 1.8rem' }}>
+              {/* the invitation of the issue's inside back cover, verbatim (EIC, 8 Oct 2026) */}
+              گاهنامهٔ گوسان بستری است برای بازتاب اندیشه‌ها و پژوهش‌های نو در فرهنگ و هنر ایران. از تمامی پژوهشگران، منتقدان و هنرمندان دعوت می‌کنیم تا آثار خود را، اعم از جستار، نقد و بررسی، گفتگو، تحلیل‌های فرهنگی و یادمان، برای ما بفرستند.
+            </p>
+            <a href="mailto:info@gosan.org" style={{ direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 }}>info@gosan.org</a>
+          </div>
+        </Reveal>
+      </div>
+  );
+}
+
+function ContactPage() {
+  return (
+    <main data-screen-label="تماس">
+      <PageTitle technical="CONTACT // GŌSĀN" title="تماس" lede="نامه‌ها، پیشنهادها و نوشتارهای شما" />
+      <ContactBody />
+    </main>
+  );
+}
+
+function ImpressumPage() {
+  const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '1.9rem 0 0.55rem' };
+  const line = { fontSize: '0.98rem', lineHeight: 2, color: 'var(--ink)', margin: '0 0 0.3rem', direction: 'ltr', textAlign: 'right' };
+  const mail = { direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 };
+  return (
+    <main data-screen-label="Impressum">
+      <PageTitle technical="IMPRESSUM // GŌSĀN" title="اطلاعات ناشر — Impressum" lede="شناسنامهٔ حقوقی وب‌سایت بر پایهٔ § ۵ DDG و § ۱۸ MStV" />
+      <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
+        <Reveal>
+          <p style={{ fontSize: '0.9rem', lineHeight: 2, color: 'var(--text-muted)', margin: '0 0 1.4rem', textAlign: 'justify' }}>
+            اطلاعات قانونی زیر بر پایهٔ § ۵ قانون خدمات دیجیتال آلمان (DDG) ارائه می‌شود.
+          </p>
+
+          <div style={label}>ناشر · Diensteanbieter</div>
+          <p style={line}>Gōsān Institute e. V. i. Gr.</p>
+          <p style={line}>Friedrichstr. 155</p>
+          <p style={line}>10117 Berlin</p>
+          <p style={line}>Germany</p>
+
+          <div style={label}>نماینده · Vertreten durch</div>
+          <p style={line}>Yalda Zamani</p>
+
+          <div style={label}>تماس · Kontakt</div>
+          <p style={line}>E-Mail: <a href="mailto:info@gosan.org" style={mail}>info@gosan.org</a></p>
+
+          <div style={label}>ثبت انجمن · Registereintrag</div>
+          <p style={line}>Eintragung beim Amtsgericht beantragt.</p>
+          <p style={line}>Vereinsregister-Nummer wird nachgetragen.</p>
+
+          <div style={label}>شاپا · ISSN</div>
+          <p style={line}>ISSN 3056-221X (Online-Ausgabe)</p>
+          <p style={line}>ISSN 3056-2201 (Druckausgabe)</p>
+          <p style={{ ...line, direction: 'rtl', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            زیر عنوان <span style={{ direction: 'ltr', display: 'inline-block' }}>Gāhnāme-ye Gōsān</span>، از سوی مرکز ملی شاپای آلمان (کتابخانهٔ ملی آلمان).
+          </p>
+
+          <div style={label}>شمارهٔ مالیاتی · Umsatzsteuer-Identifikationsnummer</div>
+          <p style={line}>Nicht vorhanden; wird nachgetragen, sofern erteilt.</p>
+
+          <div style={label}>مسئول محتوا · Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</div>
+          <p style={line}>Yalda Zamani</p>
+          <p style={line}>Friedrichstr. 155, 10117 Berlin, Germany</p>
+
+          <div style={label}>حقوق و مسئولیت نوشتارها · Rechte und Verantwortung</div>
+          <p style={{ fontSize: '0.86rem', lineHeight: 2, color: 'var(--ink)', margin: '0 0 0.7rem', textAlign: 'justify' }}>
+            حقوق هر نوشتار از آنِ نویسندهٔ آن است. مسئولیت محتوای هر نوشتار بر عهدهٔ نویسندهٔ آن است و دیدگاه‌های طرح‌شده در آن لزوماً بازتاب دیدگاه گاهنامهٔ گوسان نیست.
+          </p>
+
+          <div style={label}>اعتبار تصویرها · Bildnachweise</div>
+          <p style={{ fontSize: '0.78rem', lineHeight: 1.95, color: 'var(--text-muted)', margin: '0 0 0.7rem', textAlign: 'justify' }}>
+            تصویرهای روی جلد نوشتارها از مجموعه‌های دسترسی آزاد موزه‌ها و آرشیوهای عمومی برگزیده شده‌اند و با پردازش یکسان آرشیوی گاهنامه بازنشر می‌شوند:
+          </p>
+          <ul style={{ listStyle: 'none', margin: '0 0 0.5rem', padding: 0 }}>
+            {GOSAN_POSTS.filter((p) => (window.GOSAN_COVER_ALTS || {})[p.slug]).map((p) => (
+              <li key={p.slug} style={{ fontSize: '0.72rem', lineHeight: 1.9, color: 'var(--text-muted)', padding: '0.28rem 0', borderBottom: '1px dashed var(--line, #CFCCC3)' }}>
+                <a href={`/article/${p.slug}`} style={{ color: 'var(--ink)', textDecoration: 'none' }}>{p.title}</a>
+                <span style={{ margin: '0 0.35rem' }}>—</span>
+                <span>{gosanSoftCredit(window.GOSAN_COVER_ALTS[p.slug])}</span>
+              </li>
+            ))}
+          </ul>
+
+          <MotifDivider style={{ margin: '2.6rem 0 1.4rem' }} />
+          <p style={{ fontSize: '0.82rem', lineHeight: 1.95, color: 'var(--text-muted)', textAlign: 'justify' }}>
+            حل اختلاف مصرف‌کننده · Verbraucherstreitbeilegung: Gōsān Institute e. V. i. Gr. مایل یا موظف به شرکت در روش حل اختلاف در برابر هیئت داوری مصرف‌کننده نیست.
+          </p>
+        </Reveal>
+      </div>
+    </main>
+  );
+}
+
+function DatenschutzPage() {
+  const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '1.9rem 0 0.55rem' };
+  const line = { fontSize: '0.98rem', lineHeight: 2, color: 'var(--ink)', margin: '0 0 0.3rem', direction: 'ltr', textAlign: 'right' };
+  const para = { fontSize: '0.92rem', lineHeight: 2.05, color: 'var(--ink)', margin: '0 0 1rem', textAlign: 'justify' };
+  const mail = { direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontWeight: 500 };
+  const ext = { direction: 'ltr', display: 'inline-block', borderBottom: '1px solid var(--gold)', fontSize: '0.85rem', wordBreak: 'break-all' };
+  return (
+    <main data-screen-label="Datenschutz">
+      <PageTitle technical="DATENSCHUTZ // GŌSĀN" title="حفاظت از داده‌ها — Datenschutzerklärung" lede="پردازش داده‌ها در این وب‌سایت، بر پایهٔ DSGVO و TDDDG" />
+      <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
+        <Reveal>
+          <p style={para}>
+            این صفحه شرح می‌دهد که هنگام بازدید از وب‌سایت گاهنامهٔ گوسان چه داده‌هایی پردازش می‌شود، به چه منظور و بر کدام مبنای حقوقی — و شما در برابر آن چه حقوقی دارید. مبنای این اعلامیه، مقررات عمومی حفاظت از داده‌های اتحادیهٔ اروپا (DSGVO) و قانون آلمانی TDDDG است.
+          </p>
+          <p style={para}>
+            این وب‌سایت یک سایت ایستاست: نه کوکی می‌گذارد، نه کاربران را ردیابی می‌کند و نه محتوایی از سرویس‌های ثالث بارگذاری می‌کند. قلم‌ها و پرونده‌های رسانه‌ای همگی از خود سایت بارگیری می‌شوند. شمار بازدیدها را بی‌کوکی و بی‌ذخیرهٔ نشانی IP می‌شماریم؛ شرح آن در بخش «آمار بازدید» آمده است.
+          </p>
+
+          <div style={label}>مسئول پردازش داده‌ها · Verantwortlicher</div>
+          <p style={line}>Gōsān Institute e. V. i. Gr.</p>
+          <p style={line}>Friedrichstr. 155</p>
+          <p style={line}>10117 Berlin, Germany</p>
+          <p style={line}>Vertreten durch: Yalda Zamani</p>
+          <p style={line}>E-Mail: <a href="mailto:info@gosan.org" style={mail}>info@gosan.org</a></p>
+
+          <div style={label}>میزبانی وب‌سایت · Hosting (GitHub Pages)</div>
+          <p style={para}>
+            این وب‌سایت روی GitHub Pages میزبانی می‌شود؛ سرویسی از شرکت GitHub, Inc. (ایالات متحدهٔ آمریکا). با هر بار باز شدن صفحه، سرورهای GitHub به‌طور خودکار داده‌های فنی اتصال را دریافت می‌کنند: نشانی IP، شناسهٔ مرورگر (User-Agent) و زمان درخواست. این داده‌ها برای نمایش سایت و تأمین امنیت فنی آن لازم است. مبنای حقوقی: Art. 6 Abs. 1 lit. f DSGVO — منافع مشروع ما در ارائهٔ پایدار و امن وب‌سایت.
+          </p>
+          <p style={para}>
+            GitHub, Inc. زیر «چارچوب حریم دادهٔ اتحادیهٔ اروپا و آمریکا» (EU-US Data Privacy Framework) گواهی شده است؛ انتقال داده به آمریکا از این رو بر تصمیم کفایت کمیسیون اروپا (Art. 45 DSGVO) استوار است. جزئیات پردازش نزد GitHub در اعلامیهٔ حریم خصوصی خود GitHub آمده است:{' '}
+            <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" style={ext}>docs.github.com/…/github-general-privacy-statement</a>
+          </p>
+
+          <div style={label}>آمار بازدید · Reichweitenmessung (ohne Cookies)</div>
+          <p style={para}>
+            برای آنکه بدانیم کدام نوشته‌ها خوانده می‌شود و گاهنامه چگونه ورق زده می‌شود، هر بازدید را با یک پیام کوتاه می‌شماریم. این پیام نشانی صفحه، وب‌سایتی که از آن آمده‌اید، زبان مرورگر، مدت ماندن در صفحه، اندازهٔ پیمایش آن، و کارهایی چون ورق زدن گاهنامه، دریافت PDF، هم‌رسانی یا عضویت در خبرنامه را در بر دارد. کشور و شهر را سرور Cloudflare از روی اتصال تشخیص می‌دهد.
+          </p>
+          <p style={para}>
+            نشانی IP شما ذخیره نمی‌شود. برای شمردن بازدیدکنندگان یک روز، از نشانی IP و شناسهٔ مرورگر، همراه با کلیدی روزانه، یک کد درهم‌سازی‌شده ساخته می‌شود؛ این کلید هر شب پاک می‌شود و پس از آن، کد به هیچ فردی بازنمی‌گردد. هیچ کوکی یا شناسه‌ای در دستگاه شما ذخیره نمی‌شود، داده‌ها به کسی واگذار نمی‌شود و پس از ۲۵ ماه پاک می‌شود. اگر مرورگر شما «Do Not Track» یا «Global Privacy Control» را بفرستد، هیچ چیزی شمرده نمی‌شود.
+          </p>
+          <p style={para}>
+            پردازش روی سرویس Cloudflare Workers و پایگاه‌دادهٔ D1 از شرکت Cloudflare, Inc. (ایالات متحدهٔ آمریکا) انجام می‌شود که زیر EU-US Data Privacy Framework گواهی شده است (Art. 45 DSGVO). مبنای حقوقی: Art. 6 Abs. 1 lit. f DSGVO — منافع مشروع ما در شناختن خوانندگان و بهتر کردن گاهنامه. با پیامی به info@gosan.org می‌توانید به این پردازش اعتراض کنید (Art. 21 DSGVO).
+          </p>
+
+          <div style={label}>تماس · Kontakt per E-Mail</div>
+          <p style={para}>
+            فرم تماس این وب‌سایت تنها برنامهٔ ایمیل خود شما را باز می‌کند (پیوند mailto:)؛ خود وب‌سایت هیچ داده‌ای دریافت یا ذخیره نمی‌کند. آنچه با ایمیل برای ما بفرستید، تنها برای پاسخ‌گویی و پیگیری همان مکاتبه پردازش می‌شود (Art. 6 Abs. 1 lit. b und f DSGVO) و به کسی واگذار نمی‌شود. پس از پایان مکاتبه، ایمیل‌ها حذف می‌شوند، مگر آنکه نگهداری آنها تکلیف قانونی باشد.
+          </p>
+
+          <div style={label}>خبرنامه · Newsletter</div>
+          <p style={para}>
+            در وب‌سایت فرمی برای عضویت در خبرنامه هست. نشانی ایمیلی که ثبت می‌کنید تنها برای فرستادن خبرنامه ذخیره و به‌کار می‌رود و به هیچ منظور دیگری پردازش نمی‌شود. مبنای حقوقی: رضایت شما (Art. 6 Abs. 1 lit. a DSGVO). این رضایت را هر زمان می‌توانید پس بگیرید — با پیامی به info@gosan.org یا از راه لغو عضویت در خود خبرنامه. پس از آن، نشانی شما حذف می‌شود. پس گرفتن رضایت، به قانونی بودن پردازشی که پیش از آن انجام شده خدشه‌ای نمی‌زند.
+          </p>
+
+          <div style={label}>حافظهٔ مرورگر — بدون کوکی · Browser-Speicher (keine Cookies)</div>
+          <p style={para}>
+            این وب‌سایت کوکی نمی‌گذارد. تنها از حافظهٔ مرورگر شما (sessionStorage / localStorage) برای کارکردهای فنی استفاده می‌شود: نگه داشتن جای پیمایش صفحه و وضعیت ظاهری سایت. در این حافظه هیچ دادهٔ شخصی ذخیره نمی‌شود؛ محتوای آن در مرورگر خود شما می‌ماند و هرگز به ما یا دیگری فرستاده نمی‌شود. این ذخیره‌سازی برای کارکرد سایت ضروری است و بنابر § 25 Abs. 2 Nr. 2 TDDDG نیازی به رضایت ندارد؛ از همین روست که این سایت بنر کوکی ندارد.
+          </p>
+
+          <div style={label}>حقوق شما · Ihre Rechte als betroffene Person</div>
+          <p style={para}>
+            دربارهٔ داده‌های شخصی خود، این حقوق را دارید: دسترسی (Art. 15)، تصحیح (Art. 16)، حذف (Art. 17)، محدود کردن پردازش (Art. 18)، انتقال داده‌ها (Art. 20)، اعتراض به پردازشِ مبتنی بر منافع مشروع (Art. 21)، پس گرفتن رضایت در هر زمان بدون اثر بر پردازش پیشین (Art. 7 Abs. 3) و شکایت نزد مرجع نظارتی (Art. 77 DSGVO). برای به‌کار بستن این حقوق کافی است به <a href="mailto:info@gosan.org" style={mail}>info@gosan.org</a> بنویسید.
+          </p>
+          <p style={para}>
+            مرجع نظارتی صلاحیت‌دار برای شکایت: Berliner Beauftragte für Datenschutz und Informationsfreiheit (BlnBDI)، Alt-Moabit 59–61, 10555 Berlin —{' '}
+            <a href="https://www.datenschutz-berlin.de" target="_blank" rel="noopener noreferrer" style={ext}>datenschutz-berlin.de</a>
+          </p>
+
+          <MotifDivider style={{ margin: '2.6rem 0 1.4rem' }} />
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>آخرین بازنگری: اکتبر ۲۰۲۶ · Stand: Oktober 2026</p>
+        </Reveal>
+      </div>
+    </main>
+  );
+}
+
+
+/* donation configuration — set the PayPal link to activate the button
+   (PayPal.Me link or hosted-button URL of the institute account) */
+const GOSAN_DONATE = {
+  paypal: '',            // e.g. 'https://www.paypal.com/donate/?hosted_button_id=…'
+  iban: '',              // filled after Registereintragung + bank account
+  monthly: { 5: '', 20: '', 50: '', 100: '' },  // PayPal monthly-subscription links per tier
+  yearly: { 5: '', 20: '', 50: '', 100: '' },   // PayPal annual-payment links per tier (recommended path)
+};
+
+function SupportPage() {
+  const label = { fontSize: '0.72rem', letterSpacing: '0.09em', color: 'var(--gold-deep)', textTransform: 'uppercase', fontWeight: 700, margin: '2rem 0 0.6rem' };
+  const para = { fontSize: '0.95rem', lineHeight: 2.05, color: 'var(--ink)', margin: '0 0 1rem', textAlign: 'justify' };
+  const note = { fontSize: '0.85rem', lineHeight: 2, color: 'var(--text-muted)', margin: '0 0 1rem', textAlign: 'justify' };
+  const payBtn = {
+    display: 'inline-block', padding: '0.7rem 2.2rem', border: '1px solid var(--ink)',
+    background: GOSAN_DONATE.paypal ? 'var(--ink)' : 'var(--surface-band)',
+    color: GOSAN_DONATE.paypal ? 'var(--paper, #EAEAE6)' : 'var(--text-muted)',
+    fontWeight: 600, textDecoration: 'none', cursor: GOSAN_DONATE.paypal ? 'pointer' : 'default',
+  };
+  return (
+    <main data-screen-label="حمایت از گوسان">
+      <PageTitle technical="SUPPORT // GŌSĀN" title="حمایت از گوسان" />
+      <div className="wrap" style={{ maxWidth: '760px', paddingBottom: '5rem' }}>
+        <Reveal>
+          <p style={para}>
+            تداوم و بهبود فعالیت‌های گوسان تنها با پشتیبانی خوانندگان آن ممکن است. قلم‌بهای نویسندگان و پژوهشگران، دستمزد تحریریه و هزینه‌های فنی، همه از حمایت‌های مردمی تأمین می‌شود. گوسان آگهی و بودجهٔ نهادی نمی‌پذیرد؛ حامیان در محتوا دستی ندارند و محتوای گوسان را همراه با همگان، پس از انتشار می‌خوانند.
+          </p>
+
+          <MotifDivider style={{ margin: '2rem 0 1.4rem' }} />
+          <div style={label}>حلقهٔ یاران گوسان · Freundeskreis</div>
+          <p style={para}>
+            موفقیت و ماندگاری هر نهاد فرهنگی و پژوهشی را همواره حلقه‌ای از یاران آن نهاد امکان‌پذیر ساخته است. آنچه گوسان منتشر می‌کند بر همگان گشوده است و پشتیبانی، امتیازی برای کسی به همراه ندارد. پشتیبانی از فعالیت‌های گاهنامه و اندیشکده، سهم داشتن در ماندگاری این نهاد است، و گوسان این همراهی را از یاد نمی‌برد.
+          </p>
+          <p style={para}>
+            گوسان هم‌اکنون مراحل ثبت رسمی به‌عنوان نهادی غیرانتفاعی را در آلمان می‌گذراند. با پایان این مراحل، راه دریافت کمک‌ها گشوده خواهد شد.
+          </p>
+          <div className="sup-tiers" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(178px, 1fr))', gap: '0.9rem', margin: '0 0 1rem' }}>
+            {[
+              /* What ONE MONTH at each level covers, against finance/RATES.md
+                 (technical run rate €15.16/mo, Band A €20/h). The two upper
+                 cards name where the money goes and stop short of a fraction:
+                 a fraction is a price list — the reader multiplies it back and
+                 judges the fee, and the arithmetic was wrong besides, since B1
+                 is €400 per CONTRIBUTOR and a paper carries three of them. */
+              { amt: 5, what: 'بخشی از هزینهٔ میزبانی و ابزارها را می‌پوشاند و چراغ تارنما را روشن نگه می‌دارد.' },
+              { amt: 20, what: 'یک ساعت کار ویراستاری و آماده‌سازی متن را می‌پوشاند.' },
+              { amt: 50, what: 'سهمی از قلم‌بهای یک جستار گاهنامه است.' },
+              { amt: 100, what: 'سهمی از قلم‌بهای پژوهشگران اندیشکده است.' },
+            ].map((t) => {
+              const yLink = GOSAN_DONATE.yearly[t.amt];
+              const mLink = GOSAN_DONATE.monthly[t.amt];
+              const optStyle = (primary, active) => ({
+                /* one line each: the label carries the period and the sum, and a
+                   wrapped «— €60» reads as a second, smaller offer */
+                display: 'block', textAlign: 'center', whiteSpace: 'nowrap',
+                padding: '0.45rem 0.3rem', fontSize: '0.72rem',
+                fontWeight: primary ? 700 : 400, textDecoration: 'none', cursor: active ? 'pointer' : 'default',
+                border: '1px solid ' + (primary ? 'var(--ink)' : 'var(--line, #CFCCC3)'),
+                background: primary ? 'var(--ink)' : 'transparent',
+                color: primary ? 'var(--paper, #EAEAE6)' : 'var(--ink)',
+              });
+              return (
+                <div key={t.amt} style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1rem 0.8rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--ink)' }}>{'\u20AC'}{t.amt}</span>
+                  <span style={{ fontSize: '0.76rem', lineHeight: 1.8, color: 'var(--text-muted)', minHeight: '3.6em' }}>{t.what}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: 'auto', borderTop: '1px dashed var(--line, #CFCCC3)', paddingTop: '0.7rem' }}>
+                    {mLink
+                      ? <a href={mLink} target="_blank" rel="noopener noreferrer" style={optStyle(true, true)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</a>
+                      : <span style={optStyle(true, false)}>حمایت برای یک ماه — {'\u20AC'}{t.amt}</span>}
+                    {yLink
+                      ? <a href={yLink} target="_blank" rel="noopener noreferrer" style={optStyle(false, true)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</a>
+                      : <span style={optStyle(false, false)}>حمایت برای یک سال — {'\u20AC'}{t.amt * 12}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div style={label}>پی‌پال · PayPal</div>
+          {GOSAN_DONATE.paypal
+            ? <p style={para}><a href={GOSAN_DONATE.paypal} target="_blank" rel="noopener noreferrer" style={payBtn}>کمک از راه PayPal</a></p>
+            : <p style={note}>پرداخت با PayPal و کارت‌های بانکی بین‌المللی با راه‌اندازی رسمی گشوده می‌شود و همین‌جا در دسترس خواهد بود.</p>}
+
+          <div style={label}>انتقال بانکی · Überweisung</div>
+          <p style={note}>
+            شماره حساب انجمن (IBAN) پس از ثبت رسمی و گشایش حساب، در همین صفحه اعلام می‌شود.
+          </p>
+
+          <div style={label}>حامیان در آلمان</div>
+          <p style={note}>
+            انجمن اندیشکدهٔ گوسان (Gōsān Institute e. V. i. Gr.) در آستانهٔ ثبت رسمی در برلین است و تأیید عام‌المنفعگی را پس از ثبت پی می‌گیرد. با تأیید ادارهٔ دارایی (§ 60a AO)، برای کمک‌ها و حق عضویت گواهی مالیاتی (Zuwendungsbestätigung) صادر می‌شود و مالیات‌دهندگان آلمان می‌توانند آن را در اظهارنامهٔ مالیاتی خود به حساب آورند؛ کمک به انجمن‌های فرهنگی از همین معافیت برخوردار است. تا آن هنگام کمک‌ها پذیرفته می‌شود، ولی گواهی مالیاتی همراه ندارد.
+          </p>
+
+          <div style={label}>حامیان در اروپا و دیگر کشورها · European &amp; International Donors</div>
+          <p style={note}>
+            از هر جای اروپا و جهان می‌توان از گوسان حمایت کرد: انتقال بانکی (در منطقهٔ یورو با SEPA و بی‌هزینه)، یا پرداخت با PayPal و کارت بانکی. بنا بر حقوق اتحادیهٔ اروپا، کمک به نهادهای عام‌المنفعهٔ یک کشور عضو می‌تواند در کشور محل اقامت حامی از مالیات کسر شود؛ گوسان پس از تأیید عام‌المنفعگی، اسناد لازم را در اختیار حامیانی می‌گذارد که بخواهند از این راه بهره ببرند. برای کمک‌های کلان از دیگر کشورهای اروپایی، راه گواهی مالیاتی محلی از شبکهٔ Transnational Giving Europe بررسی و همین‌جا اعلام خواهد شد.
+          </p>
+
+          <div style={label}>حامیان در آمریکا · U.S. Donors</div>
+          <p style={note}>
+            از آمریکا می‌توان با کارت بانکی و PayPal از گوسان حمایت کرد. کسر مالیاتی آمریکا (tax-deductible) هنوز برقرار نیست؛ پس از تأیید عام‌المنفعگی، راه کمکی که در آمریکا از مالیات کسر شود، از صندوق دوستان آمریکایی (American Friends Fund) گشوده و همین‌جا اعلام می‌شود.
+          </p>
+
+          <div style={label}>شفافیت · Transparenz</div>
+          <p style={note}>
+            گوسان برنامهٔ مالی پانزده‌سالهٔ خود را در سه مرحله تعریف کرده است. رشد هر مرحله تنها بر پایهٔ منابع پایدار به‌دست‌آمده آغاز می‌شود. برآورد نیاز سالانهٔ گاهنامهٔ گوسان و اندیشکدهٔ فرهنگ و هنر گوسان در فاز اول حدود ۶۵ هزار یورو است: نزدیک به ۳۷ درصد آن به عنوان قلم‌بها به نویسندگان و پژوهشگران می‌رسد؛ حدود ۲۲ درصد دستمزد تحریریه و مدیریت است؛ حدود ۲۲ درصد هزینه‌های پشتیبانی، ویرایش و ترجمه؛ و تنها حدود ۴ درصد هزینه‌های فنی (میزبانی و ابزارها). باقی، اندوختهٔ احتیاطی است. گوسان هر سال گزارشی از منابع و مصارف خود منتشر می‌کند، و نام هیچ حامی بی‌خواست او برده نمی‌شود.
+          </p>
+
+          <MotifDivider style={{ margin: '2.4rem 0 1.2rem' }} />
+          <div style={{ border: '1px solid var(--line, #CFCCC3)', background: 'var(--surface-band)', padding: '1.3rem 1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+            <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500, color: 'var(--ink)' }}>برای پرسش دربارهٔ حمایت، کمک نهادی یا همکاری با ما در تماس باشید.</p>
+            <a href="mailto:info@gosan.org" style={{ display: 'inline-block', padding: '0.55rem 1.7rem', border: '1px solid var(--ink)', background: 'var(--ink)', color: 'var(--paper, #EAEAE6)', fontWeight: 600, fontSize: '0.88rem', textDecoration: 'none', direction: 'ltr' }}>info@gosan.org</a>
+          </div>
+        </Reveal>
+      </div>
+    </main>
+  );
+}
+
+
+Object.assign(window, { ArchivePage, AboutPage, ContactPage, ImpressumPage, DatenschutzPage, SupportPage });

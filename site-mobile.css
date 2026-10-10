@@ -1,0 +1,488 @@
+/* ==========================================================================
+   Gōsān — the phone and tablet layer (2026-09-15)
+
+   Loaded after site.css, so every rule here is a small-screen override of the
+   desktop design, never a second design. The model is the reading pace of
+   Shahrivar.org on a phone: the issue is seen in a few thumb-lengths, cards
+   are compact and scannable, and an essay opens on its first paragraph. The
+   identity stays Gōsān's own — paper ground, gold diamonds and rules, the
+   calligraphy, the display face, the teal byline.
+
+   Before this layer (375px wide): home page 18,100px — the پیشخوان counter
+   stacked fifteen full cards (7,000px) and the sections repeated them at full
+   size (9,000px); essay text set at 13px, and 980px of summary and sharing
+   standing between the title and the first paragraph.
+
+   Breakpoints follow site.css: 760px is where the phone bar and drawer take
+   over; 820px is where the counter used to stack; 920px is where the article
+   and home sidebars drop under the main column.
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   Shared helper: clamp a dek to a few lines instead of dropping it outright
+   ------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .nc-home .nc-dek {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
+/* =========================================================================
+   HOME — tablet and phone
+   ========================================================================= */
+
+/* پیشخوان: below 820px the counter stays a counter — a rail the thumb swipes
+   through, the next card always peeking in from the left — instead of turning
+   into a tower of fifteen full-width cards. */
+@media (max-width: 820px) {
+  .nc-home .nc-feat-wrap { padding-inline: 0; }
+  .nc-home .nc-feat-wrap .nc-feat,
+  .nc-home .nc-feat-head + .nc-feat-wrap .nc-feat {
+    flex-direction: row; overflow-x: auto; overflow-y: hidden;
+    gap: 1.1rem; padding: 1.1rem 1.6rem 0.4rem;
+    scroll-padding-inline: 1.6rem;
+    scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* the cards beyond the screen's edge never cross the viewport vertically, so
+     the scroll-reveal would leave them invisible: in the rail they are simply on */
+  .nc-home .nc-feat > .rv {
+    flex: 0 0 44%; scroll-snap-align: start;
+    opacity: 1; transform: none;
+  }
+  .nc-home .nc-feat .nc-img-wrap { aspect-ratio: 4 / 3; margin-bottom: 0.7rem; }
+  .nc-home .nc-feat .nc-title { font-size: 1.15rem; line-height: 1.5; }
+  .nc-home .nc-feat .nc-dek { font-size: 0.84rem; line-height: 1.8; -webkit-line-clamp: 2; }
+  .nc-home .nc-feat-arrow { display: none; }
+}
+
+/* the sidebar, once it has dropped under the sections (tablet): two columns of
+   blocks side by side, not a second column of full-width boxes */
+@media (min-width: 761px) and (max-width: 920px) {
+  .nc-home .nc-aside {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 2.2rem; position: static; align-items: start;
+  }
+  .nc-home .nc-cover-card { display: none; }
+  .nc-home .nc-grid2 .nc-title { font-size: 1.2rem; }
+}
+
+/* =========================================================================
+   HOME — phone
+   ========================================================================= */
+@media (max-width: 760px) {
+  /* masthead: the calligraphy a little smaller, and the cover sits beside the
+     issue lines as one row rather than a second tall block under the logo */
+  :root { --mast-logo: 132px; }
+  .nc-masthead { padding-top: 0.7rem; }
+  .nc-masthead .nc-masthead-grid { gap: 0.7rem; }
+  .nc-masthead .nc-mast-side.is-start {
+    flex-direction: row !important; align-items: center !important;
+    gap: 0.85rem; padding-bottom: 0.9rem;
+  }
+  .nc-masthead .nc-mast-cover { max-height: 88px; }
+  .nc-masthead .nc-mast-meta { align-items: flex-start !important; text-align: right; gap: 0.25rem; }
+  .nc-masthead .nc-mast-name { font-size: 0.92rem; }
+
+  /* the counter: one card and a sliver of the next */
+  .nc-home .nc-feat > .rv { flex-basis: 76%; }
+  .nc-home .nc-feat .nc-title { font-size: 1.04rem; line-height: 1.55; }
+  .nc-home .nc-feat .nc-dek { display: none; }
+  .nc-feat-head { padding: 1.7rem 1.6rem 0; }
+
+  /* sections: tighter rhythm, the same diamond-and-rule heads */
+  .nc-home .nc-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.4rem 1.6rem 2.6rem; gap: 2.2rem;
+  }
+  .nc-home .nc-section { margin-bottom: 2.1rem; }
+  .nc-home .nc-sectionhead { margin: 0 0 1rem; gap: 0.6rem; }
+  .nc-home .nc-sectionhead .nc-sh-label { font-size: 0.98rem; }
+
+  /* category grids: two compact columns — photograph, title, author — the way
+     a reader scans a contents page. The section head already names the
+     section, so the card's own tag steps aside. An odd count opens with a lead
+     card across both columns, which keeps the grid from ending on a hole. */
+  .nc-home .nc-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.95rem; }
+  .nc-home .nc-grid2 > article { min-width: 0; }
+  .nc-home .nc-grid2 .nc-img-wrap { aspect-ratio: 4 / 3; margin-bottom: 0.55rem; }
+  .nc-home .nc-grid2 .nc-kicker,
+  .nc-home .nc-rows .nc-kicker { display: none; }
+  .nc-home .nc-grid2 .nc-title { font-size: 0.9rem; line-height: 1.6; margin-top: 0.1rem !important; }
+  .nc-home .nc-grid2 .nc-by { font-size: 0.74rem; margin-top: 0.3rem; }
+  .nc-home .nc-grid2 .nc-dek { display: none; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) { grid-column: 1 / -1; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-img-wrap { aspect-ratio: 16 / 10; margin-bottom: 0.75rem; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-title { font-size: 1.12rem; line-height: 1.55; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-by { font-size: 0.8rem; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-dek {
+    display: -webkit-box; -webkit-line-clamp: 2; font-size: 0.84rem; line-height: 1.85;
+  }
+
+  /* single-piece sections (یادمان، گفتگو): a list row, thumbnail beside text */
+  .nc-home .nc-row { grid-template-columns: 38% minmax(0, 1fr); gap: 0.9rem; padding-bottom: 1rem; }
+  .nc-home .nc-row:hover { transform: none; }
+  .nc-home .nc-row .nc-title { font-size: 0.95rem; line-height: 1.6; margin-top: 0 !important; }
+  .nc-home .nc-row .nc-by { font-size: 0.74rem; margin-top: 0.3rem; }
+  .nc-home .nc-row .nc-dek { -webkit-line-clamp: 2; font-size: 0.8rem; line-height: 1.8; margin-top: 0.3rem; }
+
+  /* an empty section says so in two lines, not a poster */
+  .nc-home .nc-cat-invite { padding: 1rem 1.1rem; }
+  .nc-home .nc-cat-invite-lead { font-size: 0.86rem; margin-bottom: 0.35rem; }
+  .nc-home .nc-cat-invite-body { font-size: 0.8rem; line-height: 1.85; margin-bottom: 0.7rem; }
+
+  /* sidebar: the cover card repeats the masthead's cover and its call, so on a
+     phone it steps aside; the rest keeps its order, in slimmer boxes */
+  .nc-home .nc-aside { position: static; gap: 1.6rem; }
+  .nc-home .nc-cover-card { display: none; }
+  .nc-home .nc-popular a { font-size: 0.92rem; }
+  .nc-home .nc-news-mini { padding: 1.15rem 1.2rem; }
+  .nc-home .nc-news-mini p { margin-bottom: 0.8rem; }
+  .nc-home .nc-news-mini form { flex-direction: row; align-items: stretch; }
+  .nc-home .nc-news-mini input { flex: 1 1 auto; min-width: 0; }
+  .nc-home .nc-news-mini button { flex: 0 0 auto; }
+  .nc-home .nc-editors { padding: 1.3rem 1.2rem; }
+
+  .nc-blog-band { padding: 2.2rem 0 2.6rem; }
+  .nc-blog-band > .wrap { padding-inline: 1.6rem; }
+  .nc-blog-desc { margin-bottom: 1.3rem; }
+  .nc-blog-grid { gap: 1.4rem; }
+}
+
+/* =========================================================================
+   ARCHIVE — tablet and phone
+   ========================================================================= */
+/* the archive cards are text — tag, title, a line of the dek, the byline — so
+   they pair up the way a contents page does, rather than running one card to a
+   screen down a single column */
+@media (max-width: 920px) {
+  .archive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem 1.6rem; }
+  .archive-grid > * { min-width: 0; }
+}
+@media (max-width: 760px) {
+  /* the page title (archive, گاه‌نوشت, support…) carries its desktop air as
+     inline styles: a 4rem crown and a display-size heading take a third of the
+     first screen before a single entry shows */
+  .page-title { padding: 1.9rem 1.4rem 1.4rem !important; }
+  .page-title h1 { font-size: 2rem !important; margin: 0.55rem 0 0.35rem !important; }
+  .page-title p { font-size: 0.88rem; }
+
+  .archive-grid { gap: 1.4rem 0.95rem; }
+  .archive-grid .gsn-card h4 { font-size: 0.95rem; line-height: 1.6; }
+  .archive-grid .gsn-card p {
+    font-size: 0.8rem; line-height: 1.8;
+    text-align: right;   /* justified, a 148px column opens rivers between the words */
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+  }
+  .archive-grid .gsn-card .gsn-byline { font-size: 0.74rem; margin-top: 0.6rem; }
+  .filter-row { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start !important;
+    scrollbar-width: none; padding-inline: 1.6rem; margin-inline: -1.6rem; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-row .filter-btn { flex: 0 0 auto; }
+}
+
+/* =========================================================================
+   ARTICLE — tablet and phone
+   ========================================================================= */
+@media (max-width: 920px) {
+  /* the essay opens on its text: the listen bar and the summary stay above it,
+     the share card moves below it. The aside dissolves into the layout grid so
+     its blocks can be ordered around the article. */
+  .article-layout .article-aside { display: contents; }
+  .article-layout .article-aside > .listen-bar,
+  .article-layout .article-aside > .summary-card { order: -1; }
+  .article-layout .article-aside > .share-card { order: 2; }
+
+  /* the drafting rules hang 6rem past the head on both sides; site.css already
+     retires them on a phone, and a tablet has no spare margin for them either
+     (768px wide: 81px of sideways scroll) */
+  .gsn-draft-h, .gsn-draft-v { display: none !important; }
+
+  /* reading size: the desktop's 13px column was set for a two-column spread;
+     a single column on a handheld screen reads at 16px. The essay bodies carry
+     their 0.82rem as an inline style from the rendered essay HTML, which only
+     !important can outweigh from a stylesheet. */
+  .article-layout article p:not([class]),
+  .article-layout article .essay-lede { font-size: 1rem !important; line-height: 2.05 !important; }
+  .article-layout .essay-cols { font-size: 0.95rem; line-height: 2; }
+  .article-layout .fn-list li { font-size: 0.88rem; }
+  .article-layout .article-toc li { font-size: 0.86rem; line-height: 1.75; }
+  .article-layout .summary-text { font-size: 0.9rem; line-height: 2; }
+
+  /* footnotes: a 290px card centred over its marker cannot fit near the edge of
+     a narrow column — and even hidden, those cards widened the document (on a
+     375px phone the layout viewport grew to 452px, so the browser zoomed the
+     whole essay out). Here the note rises as a sheet from the foot of the
+     screen instead: fixed, so it never adds width, and always fully in view. */
+  .fn-card {
+    position: fixed; top: auto; bottom: 1rem; left: 1rem; right: 1rem;
+    width: auto; max-width: 34rem; margin-inline: auto;
+    transform: translateY(14px);
+    box-shadow: 0 18px 44px -14px rgba(28, 26, 23, 0.45);
+  }
+  .fn-card.is-open { transform: none; }
+  .fn-card::after { display: none; }
+  .fn-card-text { font-size: 0.9rem; }
+}
+
+/* =========================================================================
+   ARTICLE — phone
+   ========================================================================= */
+@media (max-width: 760px) {
+  .article-head { padding: 1.9rem 1.4rem 1.1rem; }
+  /* the title carries font-size 2.4rem as an inline style, and its word pairs
+     are bound with no-break spaces so a line never ends on a lone word; at
+     38px a bound pair such as «نظام‌های تمامیت‌خواه» is wider than the phone,
+     and the whole essay was zoomed out to fit it (375px → 407–510px) */
+  .article-head .gsn-display {
+    font-size: 1.72rem !important; line-height: 1.45; margin: 0.45rem 0 0.8rem !important;
+    overflow-wrap: break-word;
+  }
+  .article-byline { gap: 0.4rem 0.9rem; }
+  .article-chips { margin-top: 1rem; }
+  .article-layout { padding: 0 1.4rem 1rem; gap: 1.5rem; }
+  .article-layout article h2.gsn-display { font-size: 1.22rem; line-height: 1.6; }
+  .summary-card { padding: 0.95rem 1.1rem 1rem; }
+  .share-card { padding: 1.1rem 1.1rem; }
+  .article-bio { padding-inline: 1.4rem; }
+  .comments-section { padding: 1.6rem 1.4rem 2.4rem; }
+}
+
+/* =========================================================================
+   شیوه‌نامه — tablet and phone
+   ========================================================================= */
+@media (max-width: 900px) {
+  /* the contents turn into one swipeable row of six links; as a grid item the
+     row's max-content width became the column's minimum (874px on a phone), so
+     the whole page scrolled sideways. The column may now shrink to the screen
+     and the row scrolls inside it, as intended. */
+  .sv-layout { grid-template-columns: minmax(0, 1fr); }
+  .sv-layout > * { min-width: 0; }
+}
+
+/* =========================================================================
+   PHONE BAR, DRAWER AND FOOTER — phone
+   ========================================================================= */
+@media (max-width: 760px) {
+  /* the closed drawer waits just past the right edge, and its shadow used to
+     reach 36px back into the page as a grey band down the whole screen; the
+     shadow now arrives with the drawer */
+  .mnav-panel { box-shadow: none; }
+  .mnav-panel.is-open { box-shadow: -18px 0 40px -22px rgba(28, 26, 23, 0.55); }
+
+  /* the statement across the top, the two link columns side by side under it */
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem 1.2rem; }
+  .foot-grid > :first-child { grid-column: 1 / -1; }
+}
+
+/* ==========================================================================
+   Handheld audit, 2 October 2026 — every phone from 320px and every iPad,
+   upright and on its side. Findings and their remedies, in page order.
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   Up to 1100px: the drafting rules of the inner pages hang 6rem past the head
+   on both sides. At 1024px (iPad Pro upright, every iPad on its side) that was
+   46px of sideways scroll on the archive, essay, support and contact pages.
+   ------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .gsn-draft-h, .gsn-draft-v { display: none !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Up to 1000px: the bar and the drawer (site.css). The home bar used to ride
+   up over the foot of the calligraphy; as an opaque paper bar it would clip
+   the tail, so the overlap is retired wherever the bar is in use. The bar's
+   small mark is quiet while the big calligraphy is still on screen, and
+   arrives when that has scrolled away — one mark at a time, not two stacked.
+   ------------------------------------------------------------------------- */
+@media (max-width: 1000px) {
+  :root { --head-overlap: 0px; }
+  .nc-topics .nc-topics-logo:not(.is-docked) { opacity: 0; pointer-events: none; }
+  .nc-topics .nc-topics-logo { transition: opacity 0.35s var(--ease-out); }
+  /* the search glyph in the bar is 23px: a finger needs more */
+  .nav-search { padding: 0.5rem 0.55rem; margin: -0.5rem -0.55rem; }
+}
+
+/* -------------------------------------------------------------------------
+   Up to 920px (iPad upright, phones): footer and essay furniture
+   ------------------------------------------------------------------------- */
+@media (max-width: 920px) {
+  /* the footer dropped to ONE column between 761 and 920 and two below — the
+     tablet read worse than the phone. Statement across the top, the two link
+     columns beneath, at every handheld width. */
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 2.4rem; }
+  .foot-grid > :first-child { grid-column: 1 / -1; }
+
+  /* a silent «نسخهٔ صوتی» bar — no audio yet — is 70px of nothing between the
+     head and the summary; it returns the moment a recording exists */
+  .article-layout .listen-bar.is-disabled { display: none; }
+  /* an active one spans the column like the summary under it, instead of a
+     420px pill ranged to one side */
+  .article-layout .listen-bar { max-width: none; }
+
+  /* figure captions carry source URLs: one unbroken token wider than the
+     column was clipped at the edge (Herzfeld, تصویر ۳) */
+  .essay-figure figcaption, .fn-list li, .fn-card-text { overflow-wrap: anywhere; }
+  /* …and the essays' own bibliographies carry URLs and long German compounds
+     as inline-styled paragraphs: one such token (Herzfeld, «Hauser 2025»)
+     widened a 320px phone's page to 356px, and the browser zoomed the whole
+     essay out to fit it. A Persian word never reaches the measure, so this
+     only ever breaks what cannot fit a line anyway. */
+  .article-layout article { overflow-wrap: anywhere; }
+
+  /* footnote markers are 5px of superscript: the touch target grows without
+     moving a glyph (padding on an inline element adds no line height) */
+  .fn-ref { padding: 0.5em 0.35em; margin: -0.5em -0.15em; }
+
+  /* the Latin half of the footer's bilingual links no longer wraps with an
+     orphaned «·» at the line start: it drops to its own line, lighter */
+  .foot-alt { display: block; font-size: 0.78rem; color: var(--grey-faint, #9A9A9A); margin-top: -0.1rem; }
+  .foot-dot { display: none; }
+}
+
+/* -------------------------------------------------------------------------
+   iPad upright, 761–920: home grids
+   ------------------------------------------------------------------------- */
+@media (min-width: 761px) and (max-width: 920px) {
+  /* a three-card section ended on a hole (two cards, then one beside empty
+     space): as on the phone, an odd count opens with a lead card across both
+     columns */
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) { grid-column: 1 / -1; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-img-wrap { aspect-ratio: 16 / 9; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-title { font-size: 1.3rem; }
+  /* the editors' dark card sat under the popular list with a hole beside it;
+     it now runs across both sidebar columns as a band */
+  .nc-home .nc-aside .nc-editors { grid-column: 1 / -1; }
+  .nc-home .nc-aside .nc-editors p { max-width: 36rem; margin-inline: auto; }
+}
+
+/* iPad upright and large phones, 560–920: the four support tiers ran three
+   across and left the fourth alone on its own row — two by two instead */
+@media (min-width: 560px) and (max-width: 920px) {
+  .sup-tiers { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Phones, up to 760px
+   ------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  /* --- home: sidebar cards ---
+     the sidebar's blocks carry `flex: 1 1 280px` from the tablet row layout;
+     once the sidebar is a column that basis becomes a HEIGHT, and the
+     newsletter and editors' cards stood 320px tall around 120px of content */
+  .nc-home .nc-aside-block { flex: 0 0 auto; }
+  /* …and the column still wrapped (flex-wrap from the tablet rule), so on a
+     320px phone the blocks were sized to their longest line (318px) inside a
+     269px column, and the page zoomed out to fit them */
+  .nc-home .nc-aside { flex-wrap: nowrap; }
+  .nc-home .nc-aside-block { width: 100%; box-sizing: border-box; }
+
+  /* --- home: the small print ---
+     kickers at 10.5px, the provenance pill at 8px, «بخش نخست، پارهٔ یکم» at
+     8px, the issue line at 9.6px: all brought to 11–13px, the floor for
+     reading at arm's length */
+  .nc-home .nc-kicker { font-size: 0.72rem; letter-spacing: 0.1em; }
+  .nc-home .nc-origin { font-size: 0.7rem; padding: 0.32rem 0.75rem 0.24rem; }
+  .nc-home .nc-title .title-sub { font-size: 0.82rem; line-height: 1.5; }
+  .nc-home .nc-title .title-part { font-size: 0.72rem; margin-top: 0.3em; }
+  .nc-home .nc-grid2 > article:first-child:nth-last-child(odd) .nc-title .title-sub { font-size: 0.9rem; }
+  .nc-home .nc-by, .nc-home .nc-grid2 .nc-by, .nc-home .nc-row .nc-by { font-size: 0.8rem; }
+  .nc-masthead .nc-issueline { font-size: 0.7rem; letter-spacing: 0.08em; }
+  .nc-masthead .nc-mast-issn { font-size: 0.64rem; }
+  .nc-masthead .nc-mast-sub { padding: 0.45rem 0 2px; margin-top: 0.1rem; }   /* a 23px link becomes a 36px target */
+  .nc-sectionhead .nc-sh-more { padding: 0.45rem 0.2rem; margin: -0.45rem -0.2rem; }
+  .series-nav-count, .sv-note-tag { font-size: 0.72rem; }
+  .essay-figure figcaption { font-size: 0.8rem; }
+
+  /* --- essay head: the two dates on one line under the name, instead of
+     the second date wrapping alone and centring under the avatar --- */
+  .article-byline { flex-wrap: wrap; gap: 0.35rem 1.1rem; }
+  .article-byline > span:first-child { flex: 0 0 100%; justify-content: center; margin-bottom: 0.15rem; }
+  .article-byline .byline-date { font-size: 0.8rem; }
+
+  /* --- about: the engraving ---
+     a 300px-wide portrait plate is 700px tall on a phone — two screens of one
+     picture between the statement and the masthead. Narrower, so it is seen
+     whole in one screen, uncropped. */
+  .about-manifesto .man-figure { max-width: 230px; }
+
+  /* --- about, contact: the gold dot motif is 140px of pattern over nothing on
+     a phone column; it stays a desktop margin device --- */
+  .contact-grid .gsn-dots { display: none; }
+
+  /* --- support tiers: the description's reserved three lines pushed the
+     buttons down in a one-column stack; the card closes around its text --- */
+  .sup-tiers > div > span:nth-of-type(2) { min-height: 0 !important; }
+
+  /* --- drawer: the mail line is a 27px target --- */
+  .mnav-mail { padding: 0.4rem 0; }
+}
+
+/* -------------------------------------------------------------------------
+   Narrow phones, up to 600px: the measure is about 36 characters, and
+   justified setting opens rivers between the words (visible in every essay,
+   in the notes, and in the Latin references). Ranged right, the word spacing
+   is even; the ragged left edge is the price, and the smaller one.
+   ------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  .article-layout article p,
+  .article-layout article li,
+  .article-layout .essay-lede,
+  .article-layout .essay-close,
+  .fn-list li, .fn-card, .fn-card-text,
+  .summary-text, .article-bio-text,
+  .sv-p, .sv-note p, .sv-list li,
+  .nc-manifesto-p, .nc-manifesto-close, .about-text p,
+  .blog-body p, .blog-excerpt, .nc-blog-card p,
+  .contact-grid p, .gsn-card p { text-align: start !important; }
+  .fn-list li[dir="ltr"], .fn-card[dir="ltr"] { text-align: left !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Small phones, up to 400px: the provenance pill «اندیشکدهٔ فرهنگ و هنر گوسان»
+   is 160px of no-break text in a 127px card column; it may take two lines
+   ------------------------------------------------------------------------- */
+@media (max-width: 400px) {
+  .nc-home .nc-grid2 .nc-origin { white-space: normal; text-align: start; line-height: 1.45; border-radius: 12px; }
+}
+
+/* -------------------------------------------------------------------------
+   Small phones, up to 480px: the archive as a list
+   Two columns of 148px turned every long title into five lines and every
+   dossier tag into a two-line box. One entry per row reads as a contents
+   page should: tag, title, two lines of the dek, the byline.
+   ------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .archive-grid { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; }
+  .archive-grid .gsn-card { padding-top: 1.1rem; }
+  .archive-grid .gsn-card h4 { font-size: 1.04rem; line-height: 1.6; margin-bottom: 0.35rem; }
+  .archive-grid .gsn-card p { font-size: 0.84rem; -webkit-line-clamp: 2; }
+  .archive-grid .gsn-card .gsn-byline { font-size: 0.78rem; margin-top: 0.45rem; }
+  .archive-grid .gsn-tag { font-size: 0.7rem; }
+  /* the archive and other page titles: an 8rem crown of kicker + title + lede
+     above the first entry comes down a little further on the smallest screens */
+  .page-title h1 { font-size: 1.8rem !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Touch screens, any width: controls sized for a finger, not a cursor
+   ------------------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  /* the photo-credit «i» was 17px and 45% opaque — invisible and untappable */
+  .cover-credit-btn { width: 26px; height: 26px; font-size: 13px; opacity: 0.7; }
+  .cover-credit { bottom: 10px; left: 10px; }
+  /* ghost links («همهٔ گاه‌نوشت‌ها», «ارسال مقاله») are 23px tall */
+  .gsn-btn--ghost { padding: 0.45rem 0; }
+  /* the shared hover-zoom on figures has no meaning on touch */
+  .essay-figure:hover img { transform: none; }
+}
+
+/* ---- a floor under the small lines of a card title on a phone (audit, 8 Oct 2026): the part label and the
+   subtitle are set as a share of the title, and under a small title they fell to 8 px ---- */
+@media (max-width: 760px) {
+  .title-part { font-size: max(0.55em, 0.7rem); }
+  .title-sub { font-size: max(0.72em, 0.8rem); }
+  .nc-masthead .nc-issueline { font-size: 0.72rem; }
+}

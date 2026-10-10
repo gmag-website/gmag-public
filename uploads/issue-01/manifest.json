@@ -1,0 +1,129 @@
+{
+ "issue": 1,
+ "pages": 116,
+ "blank_leaves": 0,
+ "width": 160,
+ "height": 240,
+ "line": "سال ۱ · شمارهٔ ۱ · مهرگان ۲۵۸۵ (۱۴۰۵)",
+ "chapters": [
+  {
+   "slug": "editor-word",
+   "section": "سرآغاز",
+   "title": "سخن سردبیر",
+   "author": "یلدا زمانی",
+   "folio": 6
+  },
+  {
+   "slug": "about-gosan",
+   "section": "سرآغاز",
+   "title": "دربارهٔ گوسان",
+   "author": "تیم نویسندگان گاهنامهٔ گوسان",
+   "folio": 7
+  },
+  {
+   "slug": "ph-shavarebi",
+   "section": "جستار",
+   "title": "گوسان کیست؟ سنت گوسانان در ایران باستان",
+   "author": "احسان شواربی",
+   "folio": 9
+  },
+  {
+   "slug": "music-totalitarian-regimes",
+   "section": "جستار",
+   "title": "نقش موسیقی در نظام‌های تمامیت‌خواه",
+   "author": "حافظ باباشاهی",
+   "folio": 10
+  },
+  {
+   "slug": "azarkeyvani-creation-myth",
+   "section": "جستار",
+   "title": "تأویلی آذرکیوانی از اسطورۀ آفرینش زردشتی در کتاب دبستان مذاهب",
+   "author": "فرزانه گشتاسب",
+   "folio": 28
+  },
+  {
+   "slug": "ethos-of-survival",
+   "section": "جستار",
+   "title": "گذار از خلقیات بقاء",
+   "author": "سهراب لبیب",
+   "folio": 34
+  },
+  {
+   "slug": "herzfeld-german-archives",
+   "section": "جستار",
+   "title": "ارنست هرتسفلد در آیینۀ اسناد وزارت خارجۀ آلمان — بخش نخست",
+   "author": "سهیل دلشاد",
+   "folio": 42
+  },
+  {
+   "slug": "farabi-music-politics",
+   "section": "جستار",
+   "title": "موسیقی، ریاضی، و سیاست در نزد فارابی",
+   "author": "امین نایب‌پور",
+   "folio": 50
+  },
+  {
+   "slug": "note-for-gosan",
+   "section": "دیدگاه",
+   "title": "یادداشتی برای گوسان",
+   "author": "سام گیوراد",
+   "folio": 58
+  },
+  {
+   "slug": "crossroads-ahead",
+   "section": "دیدگاه",
+   "title": "دوراهی پیشِ رو",
+   "author": "مهرداد غلامی",
+   "folio": 60
+  },
+  {
+   "slug": "beyzaie-myth-symbolic-action",
+   "section": "یادمان",
+   "title": "حقیقتی که نمی‌رهاند؛ اسطوره‌سازی و کُنشِ نمادین در تئاتر بهرام بیضایی",
+   "author": "حامد امان‌پور قرایی",
+   "folio": 67
+  },
+  {
+   "slug": "interview-farnaz-modarresifar",
+   "section": "گفتگو",
+   "title": "سنتور در کانون آوانگاردیسم: گفتگو با فرناز مدرسی‌فر",
+   "author": "یلدا زمانی",
+   "folio": 72
+  },
+  {
+   "slug": "tt-intro",
+   "section": "اندیشکده",
+   "title": "اندیشکدهٔ فرهنگ و هنر گوسان",
+   "author": "",
+   "folio": 79
+  },
+  {
+   "slug": "between-two-defeats",
+   "section": "سیاست‌گذاری فرهنگی",
+   "title": "میانِ دو شکست: دولت، بازار و سیاست‌گذاری فرهنگی در ایران",
+   "author": "یلدا زمانی",
+   "folio": 81
+  },
+  {
+   "slug": "oil-to-narrative",
+   "section": "اقتصاد",
+   "title": "از نفت تا روایت: اهمیت ایجاد صندوق سرمایه‌گذاری ملی برای فرهنگ و هنر",
+   "author": "مصطفی بوشهری",
+   "folio": 104
+  },
+  {
+   "slug": "contributors",
+   "section": "پایان",
+   "title": "همکاران این شماره",
+   "author": "",
+   "folio": 109
+  },
+  {
+   "slug": "credits",
+   "section": "پایان",
+   "title": "تصویرهای این شماره",
+   "author": "",
+   "folio": 112
+  }
+ ]
+}
