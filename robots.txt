@@ -1,0 +1,28 @@
+# Pre-launch (EIC, 9 Oct 2026): search engines stay out until the launch green light, and every
+# page also carries noindex. Link-preview crawlers may read the pages, so a shared link shows its card.
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: *
+Disallow: /
